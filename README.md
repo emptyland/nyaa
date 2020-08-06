@@ -1,0 +1,2 @@
+# nyaa
+A simple game
