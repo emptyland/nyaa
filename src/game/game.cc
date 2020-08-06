@@ -92,7 +92,7 @@ Game::IdGenerator::IdGenerator()
     : bucket_id_((::rand() & 0xffff0000) >> 16) {
 }
 
-uint64_t Game::IdGenerator::Next() {
+uint64_t Game::IdGenerator::New() {
     uint16_t seq = sequence_number_++;
     timeval time_val;
     ::gettimeofday(&time_val, nullptr);
@@ -101,9 +101,5 @@ uint64_t Game::IdGenerator::Next() {
         | ((mills & 0x7ffffffffff) << 12)
         | (sequence_number_ & 0x1fff);
 }
-
-/*static*/ EntityId EntityId::New() { return EntityId::Of(ThisGame->NewEntityId()); }
-
-/*static*/ EntityId EntityId::Next() { return EntityId::Of(ThisGame->NextEntityId()); }
 
 } // namespace nyaa
