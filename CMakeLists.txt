@@ -44,6 +44,7 @@ set(GAME_SRC
     src/game/game.cc
     src/game/scene.cc
     src/game/boot-scene.cc
+    src/resource/font-set.cc
     src/base/arena-utils.cc
     src/base/arenas.cc
     src/base/hash.cc
@@ -58,6 +59,7 @@ set(GAME_SRC
 
 include_directories(
     /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
+    /usr/local/include/freetype2
     /usr/local/include
     src
 )

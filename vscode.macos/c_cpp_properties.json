@@ -4,6 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "/usr/local/include",
+                "/usr/local/include/freetype2",
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src"
             ],

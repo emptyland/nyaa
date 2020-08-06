@@ -92,7 +92,7 @@ Game::IdGenerator::IdGenerator()
     : bucket_id_((::rand() & 0xffff0000) >> 16) {
 }
 
-uint64_t Game::IdGenerator::Next() {
+uint64_t Game::IdGenerator::New() {
     uint16_t seq = sequence_number_++;
     timeval time_val;
     ::gettimeofday(&time_val, nullptr);
