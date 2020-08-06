@@ -4,6 +4,8 @@
         "bitset": "cpp",
         "functional": "cpp",
         "future": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "__tree": "cpp",
+        "complex": "cpp"
     }
 }
