@@ -8,7 +8,7 @@
             "name": "LLDB Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/main",
+            "program": "${workspaceFolder}/build/nyaa",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -1,3 +1,9 @@
 {
-    "cmake.cmakePath": "/usr/local/bin/cmake"
+    "cmake.cmakePath": "/usr/local/bin/cmake",
+    "files.associations": {
+        "bitset": "cpp",
+        "functional": "cpp",
+        "future": "cpp",
+        "list": "cpp"
+    }
 }

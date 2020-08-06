@@ -7,7 +7,7 @@
             "command": "make",
             "args": [
                 "-j",
-                "1"
+                "2"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
@@ -17,8 +17,8 @@
             ],
             "presentation": {
                 "echo": true,
-                "reveal": "never",
-                "focus": false,
+                "reveal": "always",
+                "focus": true,
                 "panel": "new"
             },
             "group": {

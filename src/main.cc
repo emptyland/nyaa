@@ -1,24 +1,27 @@
-#include <Glut/glut.h>
-#include <OpenGL/gl.h>
+#include "game/game.h"
+#include "entity/entity.h"
+#include "glog/logging.h"
 
-void renderScene(void) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-    glBegin(GL_TRIANGLES);
-    glVertex3f(-0.5, -0.5, 0.0);
-    glVertex3f(0.5, 0.0, 0.0);
-    glVertex3f(0.0, 0.5, 0.0);
-    glEnd();
-    glutSwapBuffers();
-}
+class SimpleEntity : public nyaa::entity::Entity<SimpleEntity> {
+public:
+    SimpleEntity(int value): value_(value) {}
+
+    DEF_VAL_GETTER(int, value);
+private:
+    int value_;
+};
 
 int main(int argc, char* argv[]) {
-    glutInit(&argc, (char**)argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(320, 320);
-    glutCreateWindow("Hello OpenGL");
-    glutDisplayFunc(renderScene);
-    glutMainLoop();//enters the GLUT event processing loop.
+#if defined(DEBUG)
+    FLAGS_logtostderr = true;
+    google::InitGoogleLogging(argv[0]);
+#endif
+    
+    nyaa::AtExit at_exit(nyaa::AtExit::INITIALIZER);
+    if (!nyaa::ThisGame->Prepare()) {
+        return -1;
+    }
+
+    nyaa::ThisGame->Run();
     return 0;
 }
