@@ -44,7 +44,7 @@ set(GAME_SRC
     src/game/game.cc
     src/game/scene.cc
     src/game/boot-scene.cc
-    src/resource/font-set.cc
+    src/resource/font-library.cc
     src/base/arena-utils.cc
     src/base/arenas.cc
     src/base/hash.cc

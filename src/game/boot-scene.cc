@@ -1,7 +1,7 @@
 #include "game/boot-scene.h"
 #include "game/identifiers.h"
 #include "game/game.h"
-#include "resource/font-set.h"
+#include "resource/font-library.h"
 #include <GLFW/glfw3.h>
 
 namespace nyaa {

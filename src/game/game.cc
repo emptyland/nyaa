@@ -1,7 +1,7 @@
 #include "game/boot-scene.h"
 #include "game/scene.h"
 #include "game/game.h"
-#include "resource/font-set.h"
+#include "resource/font-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -49,7 +49,7 @@ bool Game::Prepare() {
 
     res::FontLibrary::Options options;
     options.default_font_file = "assets/DinkieBitmap-9pxDemo.ttf";
-    options.default_font_size = 32;
+    options.default_font_size = 48;
     if (!font_lib_->LoadFaces(options)) {
         return false;
     }
