@@ -9,6 +9,9 @@
 using GLFWwindow = struct GLFWwindow;
 
 namespace nyaa {
+namespace res {
+class FontLibrary;
+}
 
 class Scene;
 
@@ -21,6 +24,8 @@ public:
     DEF_VAL_GETTER(int, window_w);
     DEF_VAL_GETTER(int, fb_h);
     DEF_VAL_GETTER(int, fb_w);
+
+    res::FontLibrary *font_lib() const { return font_lib_.get(); }
 
     bool Prepare();
     void Run();
@@ -46,6 +51,8 @@ private:
 
     Scene *scene_ = nullptr;
     std::unique_ptr<Scene> boot_scene_;
+    std::unique_ptr<res::FontLibrary> font_lib_;
+
     double ts_ = 0;
     GLFWwindow *window_ = nullptr;
     int window_h_ = 0;

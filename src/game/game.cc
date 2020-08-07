@@ -1,6 +1,7 @@
 #include "game/boot-scene.h"
 #include "game/scene.h"
 #include "game/game.h"
+#include "resource/font-set.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +12,8 @@ namespace nyaa {
 base::LazyInstance<Game> ThisGame;
 
 Game::Game()
-    : boot_scene_(new BootScene(this)) {
+    : boot_scene_(new BootScene(this))
+    , font_lib_(new res::FontLibrary()) {
     // Total initialize
     glfwInit();
 }
@@ -44,6 +46,13 @@ bool Game::Prepare() {
     glfwSwapInterval(60);
 
     ts_ = glfwGetTime();
+
+    res::FontLibrary::Options options;
+    options.default_font_file = "assets/DinkieBitmap-9pxDemo.ttf";
+    options.default_font_size = 32;
+    if (!font_lib_->LoadFaces(options)) {
+        return false;
+    }
 
     scene_ = boot_scene_.get();
     boot_scene_->Reset();

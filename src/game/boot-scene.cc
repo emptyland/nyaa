@@ -1,6 +1,7 @@
 #include "game/boot-scene.h"
 #include "game/identifiers.h"
 #include "game/game.h"
+#include "resource/font-set.h"
 #include <GLFW/glfw3.h>
 
 namespace nyaa {
@@ -35,6 +36,7 @@ void BootScene::OnMouseInput(double x, double y) {
 }
 
 void BootScene::Render(double d) {
+    game()->font_lib()->default_face()->Render("Hello, World", 0, game()->fb_h()/2);
     //printf("render delta: %f\n", d);
 }
     
