@@ -8,7 +8,8 @@
         "__tree": "cpp",
         "complex": "cpp",
         "unordered_map": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "string_view": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
