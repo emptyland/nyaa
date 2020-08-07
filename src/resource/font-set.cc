@@ -5,8 +5,6 @@
 #include FT_FREETYPE_H
 #include "glog/logging.h"
 #include <GL/glew.h>
-#include <locale>
-#include <codecvt>
 
 namespace nyaa {
 
@@ -58,15 +56,9 @@ void FontFace::Prepare() {
         0);
     buffered_texs_.push_back(texture);
     
-    // base::CodePointIteratorUtf8 iter("Hello 中文, World 汉字");
-    // for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
-    //     FindOrInsertCharacter(iter.ToU32());
-    // }
     for (int i = 1; i < 128; i++) { // Prepare ASCII chars
         FindOrInsertCharacter(i);
     }
-
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 0);
 }
 
 void FontFace::Render(std::string_view text, float x, float y) {
@@ -77,7 +69,6 @@ void FontFace::Render(std::string_view text, float x, float y) {
         const Character *info = FindOrInsertCharacter(iter.ToU32());
         chars.push_back(info);
     }
-    //chars.erase(chars.begin());
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
