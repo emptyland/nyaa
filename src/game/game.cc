@@ -102,8 +102,4 @@ uint64_t Game::IdGenerator::New() {
         | (sequence_number_ & 0x1fff);
 }
 
-/*static*/ EntityId EntityId::New() { return EntityId::Of(ThisGame->NewEntityId()); }
-
-/*static*/ EntityId EntityId::Next() { return EntityId::Of(ThisGame->NextEntityId()); }
-
 } // namespace nyaa
