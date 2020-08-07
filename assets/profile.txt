@@ -1,5 +1,8 @@
-name              | demo,demo,demo
-window_width      | 300
-window_height     | 300
-default_font_face |
-default_font_size |
+
+# property          # value
+-------------------------------------
+| name              | demo,demo,demo
+| window_width      | 300
+| window_height     | 300
+| default_font_face |
+| default_font_size |

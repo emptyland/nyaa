@@ -43,6 +43,11 @@ private:
 
 class FontFace final {
 public:
+    static constexpr int kBufferTexW = 1024;
+    static constexpr int kBufferTexH = 1024;
+    static constexpr float kBufferTexWf = static_cast<float>(kBufferTexW);
+    static constexpr float kBufferTexHf = static_cast<float>(kBufferTexH);
+
     ~FontFace();
 
     void Render(std::string_view text, float x, float y);
@@ -62,6 +67,7 @@ private:
 
     FontFace(FT_FaceRec_ *face, int pixel_size): face_(face), pixel_size_(pixel_size) {}
     void Prepare();
+    const Character *FindOrInsertCharacter(uint32_t code_point);
 
     FT_FaceRec_ *face_;
     const int pixel_size_;

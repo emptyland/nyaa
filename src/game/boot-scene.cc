@@ -36,7 +36,7 @@ void BootScene::OnMouseInput(double x, double y) {
 }
 
 void BootScene::Render(double d) {
-    game()->font_lib()->default_face()->Render("Hello, World", 0, game()->fb_h()/2);
+    game()->font_lib()->default_face()->Render("Hello 中文, World 汉字1234?", 0, game()->fb_h()/2);
     //printf("render delta: %f\n", d);
 }
     

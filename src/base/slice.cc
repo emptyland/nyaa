@@ -515,6 +515,29 @@ void *Round64BytesFill(const uint64_t zag, void *chunk, size_t n) {
     Append("\n");
 }
 
+void CodePointIteratorUtf8::Next() {
+    if ((*p_ & 0b10000000) == 0) {
+        // 1 byte code point, ASCII
+        value_ = (*p_++ & 0b01111111);
+    } else if ((*p_ & 0b11100000) == 0b11000000) {
+        // 2 byte code point
+        value_ = (*p_++ & 0b00011111) << 6;
+        value_ |= (*p_++ & 0b00111111);
+    } else if ((*p_ & 0b11110000) == 0b11100000) {
+        // 3 byte code point
+        value_ = (*p_++ & 0b00001111) << 12;
+        value_ |= (*p_++ & 0b00111111) << 6;
+        value_ |= (*p_++ & 0b00111111);
+    } else {
+        // 4 byte code point
+        value_ = (*p_++ & 0b00000111) << 18;
+        value_ |= (*p_++ & 0b00111111) << 12;
+        value_ |= (*p_++ & 0b00111111) << 6;
+        value_ |= (*p_++ & 0b00111111);
+    }
+}
+
+
 } // namespace base
     
 } // namespace nyaa

@@ -369,6 +369,29 @@ private:
     FILE *file_;
 }; // class StdFilePrinter
 
+
+class CodePointIteratorUtf8 {
+public:
+    CodePointIteratorUtf8(std::string_view value)
+        : p_(value.data() + value.size())
+        , start_(value.data())
+        , end_(value.data() + value.size()) {}
+
+    void SeekFirst() { p_ = start_; Next(); }
+
+    bool Valid() const { return p_ <= end_; }
+
+    void Next();
+
+    char32_t value() const { return value_; }
+    uint32_t ToU32() const { return static_cast<uint32_t>(value()); }
+
+private:
+    const char *p_;
+    const char *const start_;
+    const char *const end_;
+    char32_t value_ = 0;
+};
     
 } // namespace base
     
