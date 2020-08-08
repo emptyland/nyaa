@@ -65,7 +65,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
 
     res::FontLibrary::Options options;
     options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
-    options.default_font_size = 48;
+    options.default_font_size = properties()->default_font_size();
     if (!font_lib_->LoadFaces(options)) {
         return false;
     }

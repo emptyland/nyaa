@@ -84,6 +84,12 @@ protected:
         case res::DefValType::F64:
             TODO();
             break;
+        case res::DefValType::ID: {
+            int32_t id = 0;
+            if (base::Slice::ParseI32(src.data(), src.size(), &id) == 0) {
+                *static_cast<ResourceId *>(receive) = ResourceId::Of(id);
+            }
+        } break;
         default:
             break;
         }

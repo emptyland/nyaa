@@ -17,7 +17,7 @@ protected:
     Identifier(T value): value_(value) {}
 
 private:
-    const T value_;
+    T value_;
 }; // class Identifier
 
 class EntityId final : public Identifier<uint64_t> {
@@ -31,7 +31,7 @@ private:
 
 class ResourceId final : public Identifier<uint32_t> {
 public:
-    static ResourceId Of(uint64_t value) { return ResourceId(value); }
+    static ResourceId Of(uint32_t value) { return ResourceId(value); }
 private:
     ResourceId(uint64_t value): Identifier<uint32_t>(value) {}
 }; // class ResourceId
