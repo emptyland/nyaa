@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 #endif
     
     nyaa::AtExit at_exit(nyaa::AtExit::INITIALIZER);
-    if (!nyaa::ThisGame->Prepare()) {
+    if (!nyaa::ThisGame->Prepare("assets/properties.txt")) {
         return -1;
     }
 

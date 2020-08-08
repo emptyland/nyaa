@@ -2,8 +2,9 @@
 #ifndef NYAA_RESOURCE_DEFINITION_H_
 #define NYAA_RESOURCE_DEFINITION_H_
 
+#include "game/identifiers.h"
+#include "base/slice.h"
 #include "base/base.h"
-#include <stdio.h>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -11,6 +12,17 @@
 namespace nyaa {
 
 namespace res {
+
+enum class DefValType {
+    STRING,
+    I32,
+    I64,
+    U32,
+    U64,
+    F32,
+    F64,
+    ID,
+}; // enum class DefValType
 
 class DefinitionReader {
 public:
@@ -42,17 +54,45 @@ public:
     int Read(DefinitionReader *reader) {
         std::vector<std::string_view> items;
         int rv = 0;
-        while ((rv = reader->Read(&items)) == 0) {
-            items.clear();
-        }
+        while ((rv = reader->Read(&items)) == 0) {}
         if (rv > 0) {
             static_cast<T *>(this)->Parse(items);
         }
         return rv;
     }
 
+    using ClassId = uintptr_t;
+    static ClassId class_id() { return reinterpret_cast<uintptr_t>(&class_); }
+
+protected:
+    int ParseValue(std::string_view src, DefValType type, void *receive) {
+        switch (type) {
+        case res::DefValType::STRING:
+            *static_cast<std::string*>(receive) = src;
+            break;
+        case res::DefValType::I32:
+            return base::Slice::ParseI32(src.data(), src.size(), static_cast<int32_t*>(receive));
+        case res::DefValType::U32:
+            return base::Slice::ParseI32(src.data(), src.size(), static_cast<int32_t*>(receive));
+        case res::DefValType::I64:
+            return base::Slice::ParseI64(src.data(), src.size(), static_cast<int64_t*>(receive));
+        case res::DefValType::U64:
+            return base::Slice::ParseU64(src.data(), src.size(), static_cast<uint64_t*>(receive));
+        case res::DefValType::F32:
+            TODO();
+            break;
+        case res::DefValType::F64:
+            TODO();
+            break;
+        default:
+            break;
+        }
+        return 0;
+    }
+    static const int class_;
 }; // template<class T> class DefinitionRow
 
+template<class T> /*static*/ const int Definition<T>::class_ = 0;
     
 } // namespace res
 

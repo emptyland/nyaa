@@ -19,7 +19,7 @@ FontLibrary::~FontLibrary() { FT_Done_FreeType(lib_); }
 
 bool FontLibrary::LoadFaces(const FontLibrary::Options &options) {
     FT_Face face;
-    FT_Error err = FT_New_Face(lib_, options.default_font_file, 0, &face);
+    FT_Error err = FT_New_Face(lib_, options.default_font_file.c_str(), 0, &face);
     if (err) {
         DLOG(ERROR) << "Load " << options.default_font_file << " font file fail!";
         return false;

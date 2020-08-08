@@ -4,6 +4,7 @@
 
 #include "game/identifiers.h"
 #include "base/lazy-instance.h"
+#include "base/slice.h"
 #include "base/base.h"
 
 using GLFWwindow = struct GLFWwindow;
@@ -11,9 +12,10 @@ using GLFWwindow = struct GLFWwindow;
 namespace nyaa {
 namespace res {
 class FontLibrary;
-}
+} // namespace res
 
 class Scene;
+class Properties;
 
 class Game final {
 public:
@@ -25,9 +27,11 @@ public:
     DEF_VAL_GETTER(int, fb_h);
     DEF_VAL_GETTER(int, fb_w);
 
+    const Properties *properties() const { return properties_.get(); }
     res::FontLibrary *font_lib() const { return font_lib_.get(); }
+    base::AbstractPrinter *debug_out() { return &stdout_; }
 
-    bool Prepare();
+    bool Prepare(const std::string &properties_file_name);
     void Run();
     void Exit() { exit_ = true; }
 
@@ -52,7 +56,8 @@ private:
     Scene *scene_ = nullptr;
     std::unique_ptr<Scene> boot_scene_;
     std::unique_ptr<res::FontLibrary> font_lib_;
-
+    std::unique_ptr<Properties> properties_;
+    base::StdFilePrinter stdout_;
     double ts_ = 0;
     GLFWwindow *window_ = nullptr;
     int window_h_ = 0;

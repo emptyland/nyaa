@@ -28,6 +28,13 @@ public:
 private:
     EntityId(uint64_t value): Identifier<uint64_t>(value) {}
 }; // class EntityId
+
+class ResourceId final : public Identifier<uint32_t> {
+public:
+    static ResourceId Of(uint64_t value) { return ResourceId(value); }
+private:
+    ResourceId(uint64_t value): Identifier<uint32_t>(value) {}
+}; // class ResourceId
     
 } // namespace nyaa
 

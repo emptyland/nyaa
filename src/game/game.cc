@@ -1,6 +1,8 @@
+#include "game/game.h"
+#include "game/properties.h"
 #include "game/boot-scene.h"
 #include "game/scene.h"
-#include "game/game.h"
+#include "resource/definition.h"
 #include "resource/font-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
@@ -13,7 +15,9 @@ base::LazyInstance<Game> ThisGame;
 
 Game::Game()
     : boot_scene_(new BootScene(this))
-    , font_lib_(new res::FontLibrary()) {
+    , font_lib_(new res::FontLibrary())
+    , properties_(new Properties())
+    , stdout_(stdout) {
     // Total initialize
     glfwInit();
 }
@@ -26,10 +30,22 @@ void Game::SetWindowTitle(const char *title) {
     glfwSetWindowTitle(window_, title);
 }
 
-bool Game::Prepare() {
+bool Game::Prepare(const std::string &properties_file_name) {
+    FILE *fp = ::fopen(properties_file_name.c_str(), "rb");
+    if (fp == nullptr) {
+        DLOG(ERROR) << "can not open properties file: " << properties_file_name;
+        return false;
+    }
+    res::DefinitionReader rd(fp, true/*ownership*/);
+    while (properties_->Read(&rd) != EOF) {}
+#ifdef DEBUG
+    properties_->Print(debug_out());
+#endif
 
     DCHECK(window_ == nullptr);
-    window_ = glfwCreateWindow(300, 300, "demo,demo,demo", nullptr, nullptr);
+    window_ = glfwCreateWindow(properties()->window_width(),
+        properties()->window_height(),
+        properties()->name().c_str(), nullptr, nullptr);
     if (!window_) {
         DLOG(ERROR) << "can not create window.";
         return false;
@@ -48,7 +64,7 @@ bool Game::Prepare() {
     ts_ = glfwGetTime();
 
     res::FontLibrary::Options options;
-    options.default_font_file = "assets/DinkieBitmap-9pxDemo.ttf";
+    options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
     options.default_font_size = 48;
     if (!font_lib_->LoadFaces(options)) {
         return false;

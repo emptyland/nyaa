@@ -1,8 +1,8 @@
-
 # property        # value
 -------------------------------------
 name              | demo,demo,demo
+assets_dir        | assets
 window_width      | 300
 window_height     | 300
-default_font_face | DinkieBitmap-9pxDemo.ttf
+default_font_file | DinkieBitmap-9pxDemo.ttf
 default_font_size | 48

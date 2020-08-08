@@ -7,6 +7,7 @@
 #include <string_view>
 #include <memory>
 #include <vector>
+#include <string>
 
 struct FT_LibraryRec_;
 struct FT_FaceRec_;
@@ -20,11 +21,11 @@ class FontFace;
 class FontLibrary final {
 public:
     struct Options {
-        const char *default_font_file = nullptr;
+        std::string default_font_file;
         int default_font_size = 0;
-        const char *title_font_file = nullptr;
+        std::string title_font_file;
         int title_font_size = 0;
-        const char *system_font_file = nullptr;
+        std::string system_font_file;
         int system_font_size = 0;
     };
 
