@@ -53,20 +53,24 @@ public:
 
     ~FontFace();
 
+    DEF_VAL_GETTER(uint32_t, buffered_tex);
+
     void Render(std::string_view text, float x, float y, Vertex3f color = {1,1,1});
     void Render(TextID id, float x, float y, Vertex3f color = {1,1,1});
 
-    friend class FontLibrary;
-private:
     struct Character {
         Character *next_;
         Character *prev_;
         uint32_t code_point;
-        Vertex4<uint32_t> glyph;
+        Vertex4i glyph;
         Vertex2i bearing;
         long advance;
     };
 
+    const Character *FindOrInsertCharacter(uint32_t code_point);
+
+    friend class FontLibrary;
+private:
     FontFace(FT_FaceRec_ *face, int pixel_size)
         : face_(face)
         , pixel_size_(pixel_size) {
@@ -75,7 +79,6 @@ private:
     }
 
     void Prepare();
-    const Character *FindOrInsertCharacter(uint32_t code_point);
 
     FT_FaceRec_ *face_;
     const int pixel_size_;

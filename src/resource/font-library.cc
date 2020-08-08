@@ -61,6 +61,11 @@ void FontFace::Prepare() {
     for (int i = 1; i < 128; i++) { // Prepare ASCII chars
         FindOrInsertCharacter(i);
     }
+
+    // base::CodePointIteratorUtf8 iter("><,.?/汉字");
+    // for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
+    //     FindOrInsertCharacter(iter.ToU32());
+    // }
 }
 
 void FontFace::Render(TextID id, float x, float y, Vertex3f color) {
@@ -98,28 +103,28 @@ void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
         if (!info) {
             continue;
         }
-        float x_pos = x + info->bearing.x;
-        float y_pos = y - (info->glyph.h - info->bearing.y);
+        double x_pos = x + info->bearing.x;
+        double y_pos = y - (info->glyph.h - info->bearing.y);
 
-        float x_tex = static_cast<float>(info->glyph.x) / kBufferTexWf;
-        float y_tex = static_cast<float>(info->glyph.y) / kBufferTexHf;
-        glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos, y_pos + info->glyph.h, 0); // TL
+        double x_tex = static_cast<double>(info->glyph.x) / kBufferTexWf;
+        double y_tex = static_cast<double>(info->glyph.y) / kBufferTexHf;
+        glTexCoord2d(x_tex, y_tex);
+        glVertex3d(x_pos, y_pos + info->glyph.h, 0); // TL
 
-        x_tex = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        y_tex = static_cast<float>(info->glyph.y) / kBufferTexHf;
-        glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos + info->glyph.w, y_pos + info->glyph.h, 0); // TR
+        x_tex = static_cast<double>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+        y_tex = static_cast<double>(info->glyph.y) / kBufferTexHf;
+        glTexCoord2d(x_tex, y_tex);
+        glVertex3d(x_pos + info->glyph.w, y_pos + info->glyph.h, 0); // TR
 
-        x_tex = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        y_tex = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-        glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos + info->glyph.w, y_pos, 0); // BR
+        x_tex = static_cast<double>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+        y_tex = static_cast<double>(info->glyph.y + info->glyph.h) / kBufferTexHf;
+        glTexCoord2d(x_tex, y_tex);
+        glVertex3d(x_pos + info->glyph.w, y_pos, 0); // BR
 
-        x_tex = static_cast<float>(info->glyph.x) / kBufferTexWf;
-        y_tex = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-        glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos, y_pos, 0); // BL
+        x_tex = static_cast<double>(info->glyph.x) / kBufferTexWf;
+        y_tex = static_cast<double>(info->glyph.y + info->glyph.h) / kBufferTexHf;
+        glTexCoord2d(x_tex, y_tex);
+        glVertex3d(x_pos, y_pos, 0); // BL
 
         x += (info->advance >> 6);
     }
@@ -146,20 +151,20 @@ const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) 
     }
 
     Character *info = nullptr;
-    last_x_offset_ += pixel_size_;
     if (last_y_offset_ + pixel_size_ >= kBufferTexH) {
         last_x_offset_ = 0;
         info = chars_dummy_.prev_;
         QUEUE_REMOVE(info);
         buffered_chars_.erase(info->code_point);
     } else {
+        if (last_x_offset_ + pixel_size_ >= kBufferTexW) {
+            last_y_offset_ += pixel_size_;
+            last_x_offset_ = 0;
+        }
         info = new Character{nullptr, nullptr};
         info->glyph.x = last_x_offset_;
         info->glyph.y = last_y_offset_;
-        if (last_x_offset_ > kBufferTexW - pixel_size_) {
-            last_x_offset_ = 0;
-            last_y_offset_ += pixel_size_;
-        }
+        last_x_offset_ += pixel_size_;
     }
     info->code_point = code_point;
     info->glyph.w = face_->glyph->bitmap.width;

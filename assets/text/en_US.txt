@@ -1,7 +1,7 @@
 #    ID                   # string
 ------------------------------------------------------------------------------------------------------------------------
 TEST_STRING_1             | Hello, World
-TEST_STRING_2             | Hello 中文, World ,./<>?汉字∙1234
+TEST_STRING_2             | <>汉字?~!@#$%^&*()_+=-,.;:'"[]{}仁义礼智信∙忠孝忍悌勇
 TITLE_OPTION_1            | New Game
 TITLE_OPTION_2            | Test Mode
 TITLE_OPTION_3            | Exit

@@ -2,10 +2,10 @@
 -------------------------------------
 name              | demo,demo,demo
 assets_dir        | assets
-window_width      | 300
-window_height     | 300
+window_width      | 1024
+window_height     | 768
 language          | text/en_US.txt
-default_font_file | wqy-zenhei.ttc
+default_font_file | PingFang.ttc
 default_font_size | 48
 system_font_file  | DinkieBitmap-9pxDemo.ttf
 system_font_size  | 32
