@@ -14,10 +14,7 @@ BootScene::~BootScene() {
 }
 
 void BootScene::Reset() {
-    // for (int i = 0; i < 1000; i++) {
-    //     EntityId id = game()->NewEntityId();
-    //     printf("%08llx\n", id.value());
-    // }
+
 }
 
 void BootScene::OnKeyInput(int key, int code, int action, int mods) {
@@ -32,13 +29,11 @@ void BootScene::OnKeyInput(int key, int code, int action, int mods) {
 }
 
 void BootScene::OnMouseInput(double x, double y) {
-    //printf("mouse position: %f %f\n", x, y);
 }
 
 void BootScene::Render(double d) {
-    game()->font_lib()->default_face()->Render("Hello 中文, World 汉字1234?", 0, game()->fb_h()/2);
-    game()->font_lib()->default_face()->Render(res::TEST_STRING_1, 0, game()->fb_h()/2 + 32);
-    //printf("render delta: %f\n", d);
+    game()->font_lib()->default_face()->Render(res::TEST_STRING_1, 0, game()->fb_h()/2 + 35);
+    game()->font_lib()->default_face()->Render(res::TEST_STRING_2, 0, game()->fb_h()/2, {0,1,0});
 }
     
 } // namespace nyaa

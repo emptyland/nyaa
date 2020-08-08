@@ -6,6 +6,8 @@ namespace nyaa {
 namespace res {
 
 enum TextID {
+    TEST_STRING_1, // Hello, World
+    TEST_STRING_2, // Hello 中文, World 汉字1234?
     TITLE_OPTION_1, // New Game
     TITLE_OPTION_2, // Test Mode
     TITLE_OPTION_3, // Exit
@@ -14,7 +16,6 @@ enum TextID {
     TITLE_ROLE_3, // Steve∙Wang
     TITLE_ROLE_4, // Tommy∙Zhang
     TITLE_ROLE_5, // Timmy∙Zhang
-    TEST_STRING_1, // Hello, World
     MAX_TEXT_ID,
 }; // enum TextID
 

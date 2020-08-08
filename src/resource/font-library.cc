@@ -2,6 +2,7 @@
 #include "resource/text-library.h"
 #include "game/game.h"
 #include "base/slice.h"
+#include "base/queue-macros.h"
 #include "freetype2/ft2build.h"
 #include FT_FREETYPE_H
 #include "glog/logging.h"
@@ -55,21 +56,21 @@ void FontFace::Prepare() {
         GL_ALPHA, 
         GL_UNSIGNED_BYTE, 
         0);
-    buffered_texs_.push_back(texture);
+    buffered_tex_ = texture;
     
     for (int i = 1; i < 128; i++) { // Prepare ASCII chars
         FindOrInsertCharacter(i);
     }
 }
 
-void FontFace::Render(TextID id, float x, float y) {
+void FontFace::Render(TextID id, float x, float y, Vertex3f color) {
     std::string_view text = ThisGame->text_lib()->Load(id);
-    Render(text, x, y);
+    Render(text, x, y, color);
 }
 
-void FontFace::Render(std::string_view text, float x, float y) {
+void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
     std::vector<const Character *> chars;
-    glBindTexture(GL_TEXTURE_2D, buffered_texs_.back());
+    glBindTexture(GL_TEXTURE_2D, buffered_tex_);
     base::CodePointIteratorUtf8 iter(text);
     for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
         const Character *info = FindOrInsertCharacter(iter.ToU32());
@@ -88,7 +89,7 @@ void FontFace::Render(std::string_view text, float x, float y) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(color.x, color.y, color.z);
     glBegin(GL_QUADS);
 
     // TL TR | BL BR
@@ -97,26 +98,26 @@ void FontFace::Render(std::string_view text, float x, float y) {
         if (!info) {
             continue;
         }
-        float x_pos = x + info->bearing_w;
-        float y_pos = y - (info->glyph_h - info->bearing_h);
+        float x_pos = x + info->bearing.x;
+        float y_pos = y - (info->glyph.h - info->bearing.y);
 
-        float x_tex = static_cast<float>(info->glyph_x) / kBufferTexWf;
-        float y_tex = static_cast<float>(info->glyph_y) / kBufferTexHf;
+        float x_tex = static_cast<float>(info->glyph.x) / kBufferTexWf;
+        float y_tex = static_cast<float>(info->glyph.y) / kBufferTexHf;
         glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos, y_pos + info->glyph_h, 0); // TL
+        glVertex3f(x_pos, y_pos + info->glyph.h, 0); // TL
 
-        x_tex = static_cast<float>(info->glyph_x + info->glyph_w) / kBufferTexWf;
-        y_tex = static_cast<float>(info->glyph_y) / kBufferTexHf;
+        x_tex = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+        y_tex = static_cast<float>(info->glyph.y) / kBufferTexHf;
         glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos + info->glyph_w, y_pos + info->glyph_h, 0); // TR
+        glVertex3f(x_pos + info->glyph.w, y_pos + info->glyph.h, 0); // TR
 
-        x_tex = static_cast<float>(info->glyph_x + info->glyph_w) / kBufferTexWf;
-        y_tex = static_cast<float>(info->glyph_y + info->glyph_h) / kBufferTexHf;
+        x_tex = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+        y_tex = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
         glTexCoord2f(x_tex, y_tex);
-        glVertex3f(x_pos + info->glyph_w, y_pos, 0); // BR
+        glVertex3f(x_pos + info->glyph.w, y_pos, 0); // BR
 
-        x_tex = static_cast<float>(info->glyph_x) / kBufferTexWf;
-        y_tex = static_cast<float>(info->glyph_y + info->glyph_h) / kBufferTexHf;
+        x_tex = static_cast<float>(info->glyph.x) / kBufferTexWf;
+        y_tex = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
         glTexCoord2f(x_tex, y_tex);
         glVertex3f(x_pos, y_pos, 0); // BL
 
@@ -134,42 +135,57 @@ void FontFace::Render(std::string_view text, float x, float y) {
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {
     auto iter = buffered_chars_.find(code_point);
     if (iter != buffered_chars_.end()) {
-        return &iter->second;
+        QUEUE_REMOVE(iter->second);
+        QUEUE_INSERT_HEAD(&chars_dummy_, iter->second);
+        return iter->second;
     }
 
     FT_Error err = FT_Load_Char(face_, code_point, FT_LOAD_RENDER);
     if (err) {
         return nullptr;
     }
+
+    Character *info = nullptr;
+    last_x_offset_ += pixel_size_;
+    if (last_y_offset_ + pixel_size_ >= kBufferTexH) {
+        last_x_offset_ = 0;
+        info = chars_dummy_.prev_;
+        QUEUE_REMOVE(info);
+        buffered_chars_.erase(info->code_point);
+    } else {
+        info = new Character{nullptr, nullptr};
+        info->glyph.x = last_x_offset_;
+        info->glyph.y = last_y_offset_;
+        if (last_x_offset_ > kBufferTexW - pixel_size_) {
+            last_x_offset_ = 0;
+            last_y_offset_ += pixel_size_;
+        }
+    }
+    info->code_point = code_point;
+    info->glyph.w = face_->glyph->bitmap.width;
+    info->glyph.h = face_->glyph->bitmap.rows;
+    info->bearing.x = face_->glyph->bitmap_left;
+    info->bearing.y = face_->glyph->bitmap_top;
+    info->advance = face_->glyph->advance.x;
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexSubImage2D(
         GL_TEXTURE_2D,
         0,
-        last_x_offset_,
-        last_y_offset_,
-        face_->glyph->bitmap.width,
-        face_->glyph->bitmap.rows,
+        info->glyph.x,
+        info->glyph.y,
+        info->glyph.w,
+        info->glyph.h,
         GL_ALPHA,
         GL_UNSIGNED_BYTE,
         face_->glyph->bitmap.buffer
     );
     glPixelStorei(GL_UNPACK_ALIGNMENT, 0);
-    Character info{
-        buffered_texs_.back(),
-        static_cast<uint32_t>(last_x_offset_),
-        static_cast<uint32_t>(last_y_offset_),
-        face_->glyph->bitmap.width, face_->glyph->bitmap.rows,
-        face_->glyph->bitmap_left, face_->glyph->bitmap_top,
-        face_->glyph->advance.x
-    };
+
+    QUEUE_INSERT_HEAD(&chars_dummy_, info);
     buffered_chars_[code_point] = info;
 
-    last_x_offset_ += pixel_size_;
-    if (last_x_offset_ > kBufferTexW - pixel_size_) {
-        last_x_offset_ = 0;
-        last_y_offset_ += pixel_size_;
-    }
-    return &buffered_chars_[code_point];
+    return info;
 }
 
 } // namespace res 
