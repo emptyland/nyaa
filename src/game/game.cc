@@ -4,6 +4,7 @@
 #include "game/scene.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
+#include "resource/text-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +17,7 @@ base::LazyInstance<Game> ThisGame;
 Game::Game()
     : boot_scene_(new BootScene(this))
     , font_lib_(new res::FontLibrary())
+    , text_lib_(new res::TextLibrary())
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
@@ -38,6 +40,10 @@ bool Game::Prepare(const std::string &properties_file_name) {
     }
     res::DefinitionReader rd(fp, true/*ownership*/);
     while (properties_->Read(&rd) != EOF) {}
+
+    if (!text_lib_->Prepare(properties()->assets_dir() + "/" + properties()->language())) {
+        return false;
+    }
 #ifdef DEBUG
     properties_->Print(debug_out());
 #endif

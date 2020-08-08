@@ -18,7 +18,8 @@ for line in f.readlines():
     print('    %s, // %s' % (items[0].strip(' '), items[1].strip(' ')))
     #print(items[0].strip(' '), items[1].strip(' '))
 
-print('''}; // enum TextID
+print('''    MAX_TEXT_ID,
+}; // enum TextID
 
 } // namespace res
 } // namespace nyaa

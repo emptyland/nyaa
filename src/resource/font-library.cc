@@ -1,4 +1,5 @@
 #include "resource/font-library.h"
+#include "resource/text-library.h"
 #include "game/game.h"
 #include "base/slice.h"
 #include "freetype2/ft2build.h"
@@ -59,6 +60,11 @@ void FontFace::Prepare() {
     for (int i = 1; i < 128; i++) { // Prepare ASCII chars
         FindOrInsertCharacter(i);
     }
+}
+
+void FontFace::Render(TextID id, float x, float y) {
+    std::string_view text = ThisGame->text_lib()->Load(id);
+    Render(text, x, y);
 }
 
 void FontFace::Render(std::string_view text, float x, float y) {

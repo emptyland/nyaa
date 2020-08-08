@@ -2,6 +2,7 @@
 #ifndef NYAA_RESOURCE_FONT_SET_H_
 #define NYAA_RESOURCE_FONT_SET_H_
 
+#include "resource/text-id.h"
 #include "base/base.h"
 #include <unordered_map>
 #include <string_view>
@@ -52,6 +53,7 @@ public:
     ~FontFace();
 
     void Render(std::string_view text, float x, float y);
+    void Render(TextID id, float x, float y);
 
     friend class FontLibrary;
 private:

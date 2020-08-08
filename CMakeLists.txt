@@ -46,6 +46,7 @@ set(GAME_SRC
     src/game/boot-scene.cc
     src/game/properties.cc
     src/resource/font-library.cc
+    src/resource/text-library.cc
     src/resource/definition.cc
     src/base/arena-utils.cc
     src/base/arenas.cc

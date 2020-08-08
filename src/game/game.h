@@ -12,6 +12,7 @@ using GLFWwindow = struct GLFWwindow;
 namespace nyaa {
 namespace res {
 class FontLibrary;
+class TextLibrary;
 } // namespace res
 
 class Scene;
@@ -29,6 +30,7 @@ public:
 
     const Properties *properties() const { return properties_.get(); }
     res::FontLibrary *font_lib() const { return font_lib_.get(); }
+    res::TextLibrary *text_lib() const { return text_lib_.get(); }
     base::AbstractPrinter *debug_out() { return &stdout_; }
 
     bool Prepare(const std::string &properties_file_name);
@@ -56,6 +58,7 @@ private:
     Scene *scene_ = nullptr;
     std::unique_ptr<Scene> boot_scene_;
     std::unique_ptr<res::FontLibrary> font_lib_;
+    std::unique_ptr<res::TextLibrary> text_lib_;
     std::unique_ptr<Properties> properties_;
     base::StdFilePrinter stdout_;
     double ts_ = 0;

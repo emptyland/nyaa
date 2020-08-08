@@ -15,6 +15,7 @@ enum TextID {
     TITLE_ROLE_4, // Tommy∙Zhang
     TITLE_ROLE_5, // Timmy∙Zhang
     TEST_STRING_1, // Hello, World
+    MAX_TEXT_ID,
 }; // enum TextID
 
 } // namespace res
