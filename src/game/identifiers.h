@@ -1,6 +1,7 @@
 #ifndef NYAA_GAME_IDENTIFIERS_H_
 #define NYAA_GAME_IDENTIFIERS_H_
 
+#include "base/arena-utils.h"
 #include "base/base.h"
 
 namespace nyaa {
@@ -35,6 +36,16 @@ public:
 private:
     ResourceId(uint64_t value): Identifier<uint32_t>(value) {}
 }; // class ResourceId
+
+namespace base {
+
+template <> struct ArenaHash<ResourceId>
+    : public std::unary_function<ResourceId, size_t> {
+    inline size_t operator () (ResourceId value) const { return value.value(); }
+}; // template <> struct ArenaHash<ArenaString *>
+    
+} // namespace base
+
     
 } // namespace nyaa
 

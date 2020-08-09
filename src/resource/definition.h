@@ -22,6 +22,7 @@ enum class DefValType {
     F32,
     F64,
     ID,
+    VERTEX4I,
 }; // enum class DefValType
 
 class DefinitionReader {
@@ -90,6 +91,9 @@ protected:
                 *static_cast<ResourceId *>(receive) = ResourceId::Of(id);
             }
         } break;
+        case res::VERTEX4I:
+            TODO();
+            break;
         default:
             break;
         }
