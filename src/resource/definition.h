@@ -22,7 +22,10 @@ enum class DefValType {
     F32,
     F64,
     ID,
+    VERTEX2I,
     VERTEX4I,
+    ARRAY_I32,
+    ARRAY_U32,
 }; // enum class DefValType
 
 class DefinitionReader {
@@ -49,6 +52,144 @@ private:
     std::unique_ptr<char[]> buf_;
 }; // class DefinitionReader
 
+
+template<DefValType Ty>
+struct DefValParser {};
+
+template<>
+struct DefValParser<DefValType::STRING> {
+    using Type = std::string;
+    int Parse(std::string_view input, std::string *receive) {
+        *receive = input;
+        return 0;
+    }
+};
+
+template<>
+struct DefValParser<DefValType::I32> {
+    using Type = int32_t;
+    int Parse(std::string_view input, int32_t *receive) {
+        return base::Slice::ParseI32(input.data(), input.size(), receive);
+    }
+};
+
+template<>
+struct DefValParser<DefValType::U32> {
+    using Type = uint32_t;
+    int Parse(std::string_view input, uint32_t *receive) {
+        return base::Slice::ParseI32(input.data(), input.size(), bit_cast<int32_t *>(receive));
+    }
+};
+
+template<>
+struct DefValParser<DefValType::I64> {
+    using Type = int64_t;
+    int Parse(std::string_view input, int64_t *receive) {
+        return base::Slice::ParseI64(input.data(), input.size(), receive);
+    }
+};
+
+template<>
+struct DefValParser<DefValType::U64> {
+    using Type = uint64_t;
+    int Parse(std::string_view input, uint64_t *receive) {
+        return base::Slice::ParseU64(input.data(), input.size(), receive);
+    }
+};
+
+template<>
+struct DefValParser<DefValType::F32> {
+    using Type = float;
+    int Parse(std::string_view input, float *receive) {
+        std::string tmp(input);
+        *receive = ::atof(tmp.c_str());
+        return 0;
+    }
+};
+
+template<>
+struct DefValParser<DefValType::F64> {
+    using Type = double;
+    int Parse(std::string_view input, double *receive) {
+        std::string tmp(input);
+        *receive = ::atof(tmp.c_str());
+        return 0;
+    }
+};
+
+template<>
+struct DefValParser<DefValType::ID> {
+    using Type = ResourceId;
+    int Parse(std::string_view input, ResourceId *receive) {
+        int32_t id = 0;
+        if (base::Slice::ParseI32(input.data(), input.size(), &id) == 0) {
+            *receive = ResourceId::Of(id);
+            return 0;
+        }
+        return -1;
+    }
+};
+
+template<class T, int Items = sizeof(T)/sizeof(int)>
+int ParseVertex_Ni(std::string_view input, T *vec) {
+    int value[4] = {0}, i = 0;
+    const char *start = input.data(), *p = start, *e = start + input.size();
+    while (p < e) {
+        if (*p == ',') {
+            if (i > Items - 1) {
+                return -1;
+            }
+            if (int err = base::Slice::ParseI32(start, p - start, &value[i++]); err) {
+                return err;
+            }
+            start = p + 1;
+        }
+        p++;
+    }
+    if (i > Items - 1) {
+        return -1;
+    }
+    if (int err = base::Slice::ParseI32(start, p - start, &value[i++]); err) {
+        return err;
+    }
+    ::memcpy(vec, value, sizeof(*vec));
+    return 0;
+}
+
+int ParseArray_i32(std::string_view input, int32_t *receive);
+
+template<>
+struct DefValParser<DefValType::VERTEX2I> {
+    using Type = Vertex2i;
+    int Parse(std::string_view input, Vertex2i *receive) {
+        return ParseVertex_Ni(input, receive);
+    }
+};
+
+template<>
+struct DefValParser<DefValType::VERTEX4I> {
+    using Type = Vertex4i;
+    int Parse(std::string_view input, Vertex4i *receive) {
+        return ParseVertex_Ni(input, receive);
+    }
+};
+
+template<>
+struct DefValParser<DefValType::ARRAY_I32> {
+    using Type = int32_t;
+    int Parse(std::string_view input, int32_t *receive) {
+        return ParseArray_i32(input, receive);
+    }
+};
+
+template<>
+struct DefValParser<DefValType::ARRAY_U32> {
+    using Type = int32_t;
+    int Parse(std::string_view input, int32_t *receive) {
+        return ParseArray_i32(input, receive);
+    }
+};
+
 template<class T>
 class Definition {
 public:
@@ -66,66 +207,49 @@ public:
     static ClassId class_id() { return reinterpret_cast<uintptr_t>(&class_); }
 
 protected:
-    int ParseValue(std::string_view src, DefValType type, void *receive) {
-        switch (type) {
-        case res::DefValType::STRING:
-            *static_cast<std::string*>(receive) = src;
-            break;
-        case res::DefValType::I32:
-            return base::Slice::ParseI32(src.data(), src.size(), static_cast<int32_t*>(receive));
-        case res::DefValType::U32:
-            return base::Slice::ParseI32(src.data(), src.size(), static_cast<int32_t*>(receive));
-        case res::DefValType::I64:
-            return base::Slice::ParseI64(src.data(), src.size(), static_cast<int64_t*>(receive));
-        case res::DefValType::U64:
-            return base::Slice::ParseU64(src.data(), src.size(), static_cast<uint64_t*>(receive));
-        case res::DefValType::F32:
-            TODO();
-            break;
-        case res::DefValType::F64:
-            TODO();
-            break;
-        case res::DefValType::ID: {
-            int32_t id = 0;
-            if (base::Slice::ParseI32(src.data(), src.size(), &id) == 0) {
-                *static_cast<ResourceId *>(receive) = ResourceId::Of(id);
-            }
-        } break;
-        case res::DefValType::VERTEX4I:
-            return ParseVertex4i(src, static_cast<Vertex4i*>(receive));
-        default:
-            break;
-        }
-        return 0;
+    template<DefValType Ty, class S = typename DefValParser<Ty>::Type>
+    inline int ParseValue(std::string_view input, S *receiver) {
+        return DefValParser<Ty>{}.Parse(input, receiver);
     }
 
-    int ParseVertex4i(std::string_view input, Vertex4i *vec) {
-        int value[4] = {0}, i = 0;
-        const char *start = input.data(), *p = start, *e = start + input.size();
-        while (p < e) {
-            if (*p == ',') {
-                if (i > 3) {
-                    return -1;
-                }
-                if (int err = base::Slice::ParseI32(start, p - start, &value[i++]); err) {
-                    return err;
-                }
-                start = p + 1;
-            }
-            p++;
-        }
-        if (i > 3) {
-            return -1;
-        }
-        if (int err = base::Slice::ParseI32(start, p - start, &value[i++]); err) {
-            return err;
-        }
-        ::memcpy(vec, value, sizeof(*vec));
-        return 0;
-    }
+    int ParseValue(std::string_view input, DefValType type, void *receiver);
 
     static const int class_;
 }; // template<class T> class DefinitionRow
+
+template<class T>
+int Definition<T>::ParseValue(std::string_view input, DefValType type, void *receiver) {
+    switch (type) {
+    case DefValType::STRING:
+        return DefValParser<DefValType::STRING>{}.Parse(input, static_cast<std::string *>(receiver));
+    case DefValType::I32:
+        return DefValParser<DefValType::I32>{}.Parse(input, static_cast<int32_t *>(receiver));
+    case DefValType::U32:
+        return DefValParser<DefValType::U32>{}.Parse(input, static_cast<uint32_t *>(receiver));
+    case DefValType::I64:
+        return DefValParser<DefValType::I64>{}.Parse(input, static_cast<int64_t *>(receiver));
+    case DefValType::U64:
+        return DefValParser<DefValType::U64>{}.Parse(input, static_cast<uint64_t *>(receiver));
+    case DefValType::F32:
+        return DefValParser<DefValType::F32>{}.Parse(input, static_cast<float *>(receiver));
+    case DefValType::F64:
+        return DefValParser<DefValType::F64>{}.Parse(input, static_cast<double *>(receiver));
+    case DefValType::ID:
+        return DefValParser<DefValType::ID>{}.Parse(input, static_cast<ResourceId *>(receiver));
+    case DefValType::VERTEX2I:
+        return DefValParser<DefValType::VERTEX2I>{}.Parse(input, static_cast<Vertex2i *>(receiver));
+    case DefValType::VERTEX4I:
+        return DefValParser<DefValType::VERTEX4I>{}.Parse(input, static_cast<Vertex4i *>(receiver));
+    case DefValType::ARRAY_I32:
+        return DefValParser<DefValType::ARRAY_I32>{}.Parse(input, static_cast<int32_t *>(receiver));
+    case DefValType::ARRAY_U32:
+        return DefValParser<DefValType::ARRAY_U32>{}.Parse(input, static_cast<int32_t *>(receiver));
+    default:
+        NOREACHED();
+        break;
+    }
+    return 0;
+}
 
 template<class T> /*static*/ const int Definition<T>::class_ = 0;
     

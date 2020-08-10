@@ -19,10 +19,10 @@ public:
     DEF_VAL_GETTER(int, index);
 
     void Parse(const std::vector<std::string_view> &items) {
-        ParseValue(items[0], DefValType::STRING, &file_name_);
-        ParseValue(items[1], DefValType::ID, &id_);
-        ParseValue(items[2], DefValType::VERTEX4I, &bound_);
-        ParseValue(items[3], DefValType::I32, &index_);
+        ParseValue<DefValType::STRING>  (items[0], &file_name_);
+        ParseValue<DefValType::ID>      (items[1], &id_);
+        ParseValue<DefValType::VERTEX4I>(items[2], &bound_);
+        ParseValue<DefValType::I32>     (items[3], &index_);
     }
 private:
     std::string file_name_;

@@ -32,6 +32,7 @@ private:
 
 class ResourceId final : public Identifier<uint32_t> {
 public:
+    ResourceId(): ResourceId(0) {}
     static ResourceId Of(uint32_t value) { return ResourceId(value); }
 private:
     ResourceId(uint64_t value): Identifier<uint32_t>(value) {}

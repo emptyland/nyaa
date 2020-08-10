@@ -37,7 +37,7 @@ void BootScene::Render(double d) {
     //game()->font_lib()->default_face()->Render(res::TEST_STRING_2, 0, game()->fb_h()/2, {0,1,0});
 
     Projection2DScope p2d_scope(game());
-    const res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(101200));
+    const res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(102080));
     DCHECK(tex != nullptr);
 
     glEnable(GL_TEXTURE_2D);

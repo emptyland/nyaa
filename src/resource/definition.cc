@@ -4,6 +4,25 @@ namespace nyaa {
 
 namespace res {
 
+int ParseArray_i32(std::string_view input, int32_t *receive) {
+        const char *start = input.data(), *p = start, *e = start + input.size();
+    int i = 1;
+    while (p < e) {
+        if (*p == ',') {
+            if (int err = base::Slice::ParseI32(start, p - start, &receive[i++]); err) {
+                return err;
+            }
+            start = p + 1;
+        }
+        p++;
+    }
+    if (int err = base::Slice::ParseI32(start, p - start, &receive[i++]); err) {
+        return err;
+    }
+    *receive = i - 1;
+    return 0;
+}
+
 int DefinitionReader::Read(std::vector<std::string_view> *items) {
     if (::feof(file_)) {
         return EOF;

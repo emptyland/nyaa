@@ -68,7 +68,10 @@
         "system_error": "cpp",
         "thread": "cpp",
         "typeinfo": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "iomanip": "cpp",
+        "iostream": "cpp",
+        "__memory": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "python.linting.enabled": false

@@ -48,6 +48,7 @@ set(GAME_SRC
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc
+    src/resource/avatar-library.cc
     src/resource/definition.cc
     src/base/arena-utils.cc
     src/base/arenas.cc
