@@ -1,6 +1,7 @@
 #include "game/boot-scene.h"
 #include "game/identifiers.h"
 #include "game/game.h"
+#include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include <GLFW/glfw3.h>
 
@@ -33,8 +34,36 @@ void BootScene::OnMouseInput(double x, double y) {
 
 void BootScene::Render(double d) {
     game()->font_lib()->default_face()->Render(res::TEST_STRING_1, 0, game()->fb_h()/2 + 50);
-    game()->font_lib()->default_face()->Render(res::TEST_STRING_2, 0, game()->fb_h()/2, {0,1,0});
+    //game()->font_lib()->default_face()->Render(res::TEST_STRING_2, 0, game()->fb_h()/2, {0,1,0});
 
+    Projection2DScope p2d_scope(game());
+    const res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(101200));
+    DCHECK(tex != nullptr);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
+    glBegin(GL_QUADS);
+
+    const int w = 24 * 3;
+    const int h = 32 * 3;
+
+    // 0,1(3) 1,1(2)
+    // 0,0(0) 1,0(1)
+    glTexCoord2f(tex->coord(0).x, tex->coord(0).y);
+    glVertex2i(0, h);
+    
+    glTexCoord2f(tex->coord(1).x, tex->coord(1).y);
+    glVertex2i(w, h);
+    
+    glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
+    glVertex2i(w, 0);;
+
+    glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
+    glVertex2i(0, 0);
+
+    glEnd();
 #if 0
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

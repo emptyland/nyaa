@@ -4,8 +4,9 @@
 
 #include "game/identifiers.h"
 #include "base/lazy-instance.h"
+#include "base/arenas.h"
 #include "base/slice.h"
-#include "base/base.h"
+
 
 using GLFWwindow = struct GLFWwindow;
 
@@ -13,6 +14,7 @@ namespace nyaa {
 namespace res {
 class FontLibrary;
 class TextLibrary;
+class TextureLibrary;
 } // namespace res
 
 class Scene;
@@ -31,6 +33,7 @@ public:
     const Properties *properties() const { return properties_.get(); }
     res::FontLibrary *font_lib() const { return font_lib_.get(); }
     res::TextLibrary *text_lib() const { return text_lib_.get(); }
+    res::TextureLibrary *texture_lib() const { return texture_lib_.get(); }
     base::AbstractPrinter *debug_out() { return &stdout_; }
 
     bool Prepare(const std::string &properties_file_name);
@@ -41,6 +44,9 @@ public:
 
     EntityId NewEntityId() { return EntityId::Of(eid_generator_.New()); }
     EntityId NextEntityId() { return EntityId::Of(eid_generator_.Next()); }
+
+    void EnterProjection2D();
+    void LeaveProjection2D();
 private:
     class IdGenerator {
     public:
@@ -55,10 +61,12 @@ private:
     static void OnKeyInput(GLFWwindow *window,int key, int code, int action, int mods);
     static void OnMouseInput(GLFWwindow *window, double x, double y);
 
+    base::StandaloneArena arena_;
     Scene *scene_ = nullptr;
     std::unique_ptr<Scene> boot_scene_;
     std::unique_ptr<res::FontLibrary> font_lib_;
     std::unique_ptr<res::TextLibrary> text_lib_;
+    std::unique_ptr<res::TextureLibrary> texture_lib_;
     std::unique_ptr<Properties> properties_;
     base::StdFilePrinter stdout_;
     double ts_ = 0;
@@ -72,6 +80,16 @@ private:
 }; // class Game
 
 extern base::LazyInstance<Game> ThisGame;
+
+class Projection2DScope final {
+public:
+    Projection2DScope(Game *game): owns_(game) { owns_->EnterProjection2D(); }
+    ~Projection2DScope() { owns_->LeaveProjection2D(); }
+
+    DISALLOW_IMPLICIT_CONSTRUCTORS(Projection2DScope);
+private:
+    Game *const owns_;
+};
     
 } // namespace nyaa
 

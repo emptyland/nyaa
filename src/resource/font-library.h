@@ -3,13 +3,11 @@
 #define NYAA_RESOURCE_FONT_SET_H_
 
 #include "resource/text-id.h"
-#include "base/base.h"
+#include "base/arena.h"
 #include <unordered_map>
 #include <string_view>
 #include <memory>
-#include <vector>
 #include <string>
-#include <list>
 
 struct FT_LibraryRec_;
 struct FT_FaceRec_;
@@ -31,7 +29,7 @@ public:
         int system_font_size = 0;
     };
 
-    FontLibrary();
+    FontLibrary(base::Arena *arena);
     ~FontLibrary();
 
     FontFace *default_face() const { return default_face_.get(); }
@@ -42,6 +40,7 @@ public:
 private:
     FT_LibraryRec_ *lib_;
     std::unique_ptr<FontFace> default_face_;
+    base::Arena *const arena_;
 }; // class FontRender
 
 class FontFace final {
@@ -58,9 +57,9 @@ public:
     void Render(std::string_view text, float x, float y, Vertex3f color = {1,1,1});
     void Render(TextID id, float x, float y, Vertex3f color = {1,1,1});
 
-    struct Character {
-        Character *next_;
-        Character *prev_;
+    struct Character : public base::ArenaObject {
+        Character *next_ = nullptr;
+        Character *prev_ = nullptr;
         uint32_t code_point;
         Vertex4i glyph;
         Vertex2i bearing;
@@ -71,9 +70,10 @@ public:
 
     friend class FontLibrary;
 private:
-    FontFace(FT_FaceRec_ *face, int pixel_size)
+    FontFace(FT_FaceRec_ *face, int pixel_size, base::Arena *arena)
         : face_(face)
-        , pixel_size_(pixel_size) {
+        , pixel_size_(pixel_size)
+        , arena_(arena) {
         chars_dummy_.next_ = &chars_dummy_;
         chars_dummy_.prev_ = &chars_dummy_;
     }
@@ -81,6 +81,7 @@ private:
     void Prepare();
 
     FT_FaceRec_ *face_;
+    base::Arena *const arena_;
     const int pixel_size_;
     int last_x_offset_ = 0;
     int last_y_offset_ = 0;

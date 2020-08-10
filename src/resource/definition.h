@@ -91,14 +91,39 @@ protected:
                 *static_cast<ResourceId *>(receive) = ResourceId::Of(id);
             }
         } break;
-        case res::VERTEX4I:
-            TODO();
-            break;
+        case res::DefValType::VERTEX4I:
+            return ParseVertex4i(src, static_cast<Vertex4i*>(receive));
         default:
             break;
         }
         return 0;
     }
+
+    int ParseVertex4i(std::string_view input, Vertex4i *vec) {
+        int value[4] = {0}, i = 0;
+        const char *start = input.data(), *p = start, *e = start + input.size();
+        while (p < e) {
+            if (*p == ',') {
+                if (i > 3) {
+                    return -1;
+                }
+                if (int err = base::Slice::ParseI32(start, p - start, &value[i++]); err) {
+                    return err;
+                }
+                start = p + 1;
+            }
+            p++;
+        }
+        if (i > 3) {
+            return -1;
+        }
+        if (int err = base::Slice::ParseI32(start, p - start, &value[i++]); err) {
+            return err;
+        }
+        ::memcpy(vec, value, sizeof(*vec));
+        return 0;
+    }
+
     static const int class_;
 }; // template<class T> class DefinitionRow
 

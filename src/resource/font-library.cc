@@ -12,7 +12,8 @@ namespace nyaa {
 
 namespace res {
 
-FontLibrary::FontLibrary() {
+FontLibrary::FontLibrary(base::Arena *arena)
+    : arena_(arena) {
     FT_Error err = FT_Init_FreeType(&lib_);
     (void)err;
 }
@@ -28,7 +29,7 @@ bool FontLibrary::LoadFaces(const FontLibrary::Options &options) {
     }
     FT_Select_Charmap(face , ft_encoding_unicode);
     FT_Set_Pixel_Sizes(face, 0, options.default_font_size);
-    default_face_.reset(new FontFace(face, options.default_font_size));
+    default_face_.reset(new FontFace(face, options.default_font_size, arena_));
     default_face_->Prepare();
 
     return true;
@@ -61,11 +62,6 @@ void FontFace::Prepare() {
     for (int i = 1; i < 128; i++) { // Prepare ASCII chars
         FindOrInsertCharacter(i);
     }
-
-    // base::CodePointIteratorUtf8 iter("><,.?/汉字");
-    // for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
-    //     FindOrInsertCharacter(iter.ToU32());
-    // }
 }
 
 void FontFace::Render(TextID id, float x, float y, Vertex3f color) {
@@ -82,13 +78,7 @@ void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
         chars.push_back(info);
     }
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glDisable(GL_CULL_FACE);
+    ThisGame->EnterProjection2D();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -132,9 +122,7 @@ void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
+    ThisGame->LeaveProjection2D();
 }
 
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {
@@ -161,7 +149,7 @@ const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) 
             last_y_offset_ += pixel_size_;
             last_x_offset_ = 0;
         }
-        info = new Character{nullptr, nullptr};
+        info = new (arena_) Character;
         info->glyph.x = last_x_offset_;
         info->glyph.y = last_y_offset_;
         last_x_offset_ += pixel_size_;

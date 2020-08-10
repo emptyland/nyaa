@@ -59,12 +59,15 @@ set(GAME_SRC
     src/base/zone.cc
     src/base/crc32.c
     src/base/sha256.c
+    third_party/lodepng/lodepng.cpp
+    third_party/lodepng/lodepng_util.cpp
 )
 
 include_directories(
     /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
     /usr/local/include/freetype2
     /usr/local/include
+    third_party/lodepng
     src
 )
 

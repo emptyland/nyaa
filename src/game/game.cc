@@ -5,6 +5,7 @@
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
+#include "resource/texture-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,20 +17,21 @@ base::LazyInstance<Game> ThisGame;
 
 Game::Game()
     : boot_scene_(new BootScene(this))
-    , font_lib_(new res::FontLibrary())
-    , text_lib_(new res::TextLibrary())
+    , font_lib_(new res::FontLibrary(&arena_))
+    , text_lib_(new res::TextLibrary(&arena_))
+    , texture_lib_(new res::TextureLibrary(&arena_))
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
-    glfwInit();
+    ::glfwInit();
 }
 
 Game::~Game() {
-
+    ::glfwTerminate();
 }
 
 void Game::SetWindowTitle(const char *title) {
-    glfwSetWindowTitle(window_, title);
+    ::glfwSetWindowTitle(window_, title);
 }
 
 bool Game::Prepare(const std::string &properties_file_name) {
@@ -73,6 +75,10 @@ bool Game::Prepare(const std::string &properties_file_name) {
     options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
     options.default_font_size = properties()->default_font_size();
     if (!font_lib_->LoadFaces(options)) {
+        return false;
+    }
+
+    if (!texture_lib_->Prepare(properties()->assets_dir() + "/" + res::TextureLibrary::kTextureDefFileName)) {
         return false;
     }
 
@@ -131,6 +137,22 @@ uint64_t Game::IdGenerator::New() {
     return (static_cast<uint64_t>(bucket_id_ & 0x3ff) << 54) 
         | ((mills & 0x7ffffffffff) << 12)
         | (sequence_number_ & 0x1fff);
+}
+
+void Game::EnterProjection2D() {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_CULL_FACE);
+}
+
+void Game::LeaveProjection2D() {
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
 
 } // namespace nyaa

@@ -6,7 +6,8 @@
                 "/usr/local/include",
                 "/usr/local/include/freetype2",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/third_party/lodepng"
             ],
             "defines": ["DEBUG"],
             "macFrameworkPath": [

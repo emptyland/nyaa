@@ -35,7 +35,7 @@ bool TextLibrary::Prepare(const std::string &file_name) {
 
 const char *TextLibrary::NewString(std::string_view input) {
     size_t request_size = sizeof(NRStrHeader) + input.size() + 1;
-    NRStrHeader *header = static_cast<NRStrHeader *>(arena_.Allocate(request_size));
+    NRStrHeader *header = static_cast<NRStrHeader *>(arena_->Allocate(request_size));
     header->len = static_cast<int>(input.size());
     ::memcpy(header->data, input.data(), input.size());
     header->data[input.size()] = 0;

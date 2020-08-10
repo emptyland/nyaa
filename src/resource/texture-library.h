@@ -11,7 +11,7 @@ namespace nyaa {
 
 namespace res {
 
-class Texture : base::ArenaObject {
+class Texture : public base::ArenaObject {
 public:
     Texture(ResourceId id, uint32_t tex_id, int index, Vertex2f p0, Vertex2f p1, Vertex2f p2, Vertex2f p3)
         : id_(id)
@@ -40,6 +40,9 @@ private:
 
 class TextureLibrary final {
 public:
+    static const char kTextureDir[];
+    static const char kTextureDefFileName[];
+
     TextureLibrary(base::Arena *arena)
         : arena_(arena)
         , textures_(arena)
@@ -56,6 +59,8 @@ public:
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(TextureLibrary);
 private:
+    uint32_t LoadPictureFile(const std::string &name, Vertex2f *size);
+
     base::Arena *const arena_;
     base::ArenaUnorderedMap<ResourceId, Texture*> textures_;
     base::ArenaVector<uint32_t> texture_ids_;

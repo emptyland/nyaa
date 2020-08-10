@@ -3,8 +3,8 @@
 #define NYAA_RESOURCE_TEXT_LIBRARY_H_
 
 #include "resource/text-id.h"
-#include "base/arenas.h"
-#include "base/base.h"
+#include "base/arena.h"
+#include "glog/logging.h"
 
 namespace nyaa {
 
@@ -19,7 +19,7 @@ using NRStr = const char *;
 
 class TextLibrary final {
 public:
-    TextLibrary() = default;
+    TextLibrary(base::Arena *arena): arena_(arena) {}
 
     std::string_view Load(TextID id) const {
         int index = static_cast<int>(id);
@@ -37,7 +37,7 @@ private:
         return std::string_view(s, len);
     }
 
-    base::StandaloneArena arena_;
+    base::Arena *const arena_;
     NRStr text_[MAX_TEXT_ID];
 }; // class TextLibrary
 
