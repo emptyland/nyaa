@@ -3,9 +3,34 @@
 #include "game/game.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
+#include "resource/avatar-library.h"
 #include <GLFW/glfw3.h>
 
 namespace nyaa {
+
+class AvatarEntity {
+public:
+    AvatarEntity(res::Avatar *def): def_(def) {}
+
+    DEF_VAL_PROP_RW(float, speed);
+    DEF_VAL_PROP_RW(double, time);
+    
+    res::Texture *GetFrame() const {
+        if (speed_ == 0.0) {
+            return def_->key_frame(dir_);
+        }
+        int i = static_cast<int>(time_ / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
+        return def_->frame(dir_, i);
+    }
+
+    void AddTime(double d) { time_ += d; }
+
+private:
+    res::Avatar::Direction dir_ = res::Avatar::kDown;
+    res::Avatar *def_;
+    float speed_ = 0;
+    double time_ = 0;
+}; // class AvatarEntity
 
 BootScene::BootScene(Game *game)
     : Scene(game) {
@@ -15,7 +40,15 @@ BootScene::~BootScene() {
 }
 
 void BootScene::Reset() {
+    res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
+    DCHECK(def != nullptr);
+    avatar1_.reset(new AvatarEntity(def));
+    avatar1_->set_speed(0.9);
 
+    def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100050));
+    DCHECK(def != nullptr);
+    avatar2_.reset(new AvatarEntity(def));
+    avatar2_->set_speed(0.9);
 }
 
 void BootScene::OnKeyInput(int key, int code, int action, int mods) {
@@ -37,8 +70,11 @@ void BootScene::Render(double d) {
     //game()->font_lib()->default_face()->Render(res::TEST_STRING_2, 0, game()->fb_h()/2, {0,1,0});
 
     Projection2DScope p2d_scope(game());
-    const res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(102080));
-    DCHECK(tex != nullptr);
+    // const res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(102080));
+    // DCHECK(tex != nullptr);
+    avatar1_->AddTime(d);
+    avatar2_->AddTime(d);
+    res::Texture *tex = avatar1_->GetFrame();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -62,6 +98,19 @@ void BootScene::Render(double d) {
 
     glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
     glVertex2i(0, 0);
+
+    tex = avatar2_->GetFrame();
+    glTexCoord2f(tex->coord(0).x, tex->coord(0).y);
+    glVertex2i(w, h);
+    
+    glTexCoord2f(tex->coord(1).x, tex->coord(1).y);
+    glVertex2i(w + w, h);
+    
+    glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
+    glVertex2i(w + w, 0);;
+
+    glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
+    glVertex2i(w, 0);
 
     glEnd();
 #if 0

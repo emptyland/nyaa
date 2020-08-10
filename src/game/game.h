@@ -15,6 +15,7 @@ namespace res {
 class FontLibrary;
 class TextLibrary;
 class TextureLibrary;
+class AvatarLibrary;
 } // namespace res
 
 class Scene;
@@ -33,6 +34,7 @@ public:
     const Properties *properties() const { return properties_.get(); }
     res::FontLibrary *font_lib() const { return font_lib_.get(); }
     res::TextLibrary *text_lib() const { return text_lib_.get(); }
+    res::AvatarLibrary *avatar_lib() const { return avatar_lib_.get(); }
     res::TextureLibrary *texture_lib() const { return texture_lib_.get(); }
     base::AbstractPrinter *debug_out() { return &stdout_; }
 
@@ -67,6 +69,7 @@ private:
     std::unique_ptr<res::FontLibrary> font_lib_;
     std::unique_ptr<res::TextLibrary> text_lib_;
     std::unique_ptr<res::TextureLibrary> texture_lib_;
+    std::unique_ptr<res::AvatarLibrary> avatar_lib_;
     std::unique_ptr<Properties> properties_;
     base::StdFilePrinter stdout_;
     double ts_ = 0;

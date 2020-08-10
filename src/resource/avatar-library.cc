@@ -60,6 +60,9 @@ Avatar::Avatar(ResourceId id, Vertex2f size, float speed, int frames_count)
     ::memset(textures_, 0, sizeof(textures_));
 }
 
+const char AvatarLibrary::kAvatarDir[] = "textures";
+const char AvatarLibrary::kAvatarDefFileName[] = "textures/avatar.txt";
+
 bool AvatarLibrary::Prepare(const std::string &file_name) {
     FILE *fp = ::fopen(file_name.c_str(), "r");
     if (!fp) {
@@ -91,12 +94,33 @@ bool AvatarLibrary::Prepare(const std::string &file_name) {
         Texture *tex;
         for (int i = 0; i < row.up_frames_size(); i++) {
             if (tex = tex_lib_->FindOrNull(row.up_frames()[i]); !tex) {
-                // TODO:
+                DLOG(ERROR) << "Can not find texture by id: " << row.up_frames()[i].value();
                 return false;
             }
             avatar->textures_[Avatar::kUp][i] = tex;
         }
-        // TODO:
+        for (int i = 0; i < row.down_frames_size(); i++) {
+            if (tex = tex_lib_->FindOrNull(row.down_frames()[i]); !tex) {
+                DLOG(ERROR) << "Can not find texture by id: " << row.down_frames()[i].value();
+                return false;
+            }
+            avatar->textures_[Avatar::kDown][i] = tex;
+        }
+        for (int i = 0; i < row.left_frames_size(); i++) {
+            if (tex = tex_lib_->FindOrNull(row.left_frames()[i]); !tex) {
+                DLOG(ERROR) << "Can not find texture by id: " << row.left_frames()[i].value();
+                return false;
+            }
+            avatar->textures_[Avatar::kLeft][i] = tex;
+        }
+        for (int i = 0; i < row.right_frames_size(); i++) {
+            if (tex = tex_lib_->FindOrNull(row.right_frames()[i]); !tex) {
+                DLOG(ERROR) << "Can not find texture by id: " << row.right_frames()[i].value();
+                return false;
+            }
+            avatar->textures_[Avatar::kRight][i] = tex;
+        }
+        avatars_[row.id()] = avatar;
     }
     return true;
 }

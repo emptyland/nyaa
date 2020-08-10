@@ -32,6 +32,14 @@ public:
     DEF_VAL_GETTER(float, speed);
     DEF_VAL_GETTER(Vertex2f, size);
 
+    Texture *key_frame(Direction dir) const { return frame(dir, 0); }
+
+    Texture *frame(Direction dir, int i) const {
+        DCHECK_GE(i, 0);
+        DCHECK_LT(i, frames_count_);
+        return textures_[dir][i];
+    }
+
     friend class AvatarLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(Avatar);
 private:
@@ -45,6 +53,9 @@ private:
     
 class AvatarLibrary final {
 public:
+    static const char kAvatarDir[];
+    static const char kAvatarDefFileName[];
+
     AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena)
         : arena_(arena)
         , tex_lib_(tex_lib)

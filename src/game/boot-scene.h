@@ -7,6 +7,8 @@
 
 namespace nyaa {
 
+class AvatarEntity;
+
 class BootScene : public Scene {
 public:
     BootScene(Game *game);
@@ -16,6 +18,10 @@ public:
     void OnKeyInput(int key, int code, int action, int mods) final;
     void OnMouseInput(double x, double y) final;
     void Render(double delta) final;
+
+private:
+    std::unique_ptr<AvatarEntity> avatar1_;
+    std::unique_ptr<AvatarEntity> avatar2_;
 }; // class BootScene
     
 } // namespace nyaa
