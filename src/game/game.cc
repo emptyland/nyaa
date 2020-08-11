@@ -7,6 +7,7 @@
 #include "resource/text-library.h"
 #include "resource/texture-library.h"
 #include "resource/avatar-library.h"
+#include "resource/cube-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -22,6 +23,7 @@ Game::Game()
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))
     , avatar_lib_(new res::AvatarLibrary(texture_lib_.get(), &arena_))
+    , cube_lib_(new res::CubeLibrary(texture_lib_.get(), &arena_))
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
@@ -83,6 +85,9 @@ bool Game::Prepare(const std::string &properties_file_name) {
         return false;
     }
     if (!avatar_lib_->Prepare(properties()->assets_dir() + "/" + res::AvatarLibrary::kAvatarDefFileName)) {
+        return false;
+    }
+    if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) {
         return false;
     }
 

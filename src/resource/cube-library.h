@@ -2,6 +2,7 @@
 #ifndef NYAA_RESOURCE_CUBE_LIBRARY_H_
 #define NYAA_RESOURCE_CUBE_LIBRARY_H_
 
+#include "resource/cube-kinds-inl.h"
 #include "game/identifiers.h"
 #include "base/arena-utils.h"
 #include <string>
@@ -13,14 +14,25 @@ namespace res {
 class Texture;
 class TextureLibrary;
 
-class Cube {
+class Cube final : public base::ArenaObject {
 public:
     enum Kind {
-
+    #define ENUM_KIND(name) name,
+        DEFINE_CUBE_KINDS(ENUM_KIND)
+    #undef ENUM_KIND
         MAX_CUBE_KINDS,
-    };
+    }; // enum Kind
 
+    DEF_VAL_GETTER(Kind, kind);
+    DEF_VAL_GETTER(ResourceId, id);
+    DEF_PTR_GETTER(Texture, top_tex);
+    DEF_PTR_GETTER(Texture, edge_tex);
+    DEF_VAL_GETTER(std::string_view, name);
+
+    friend class CubeLibrary;
 private:
+    Cube(Kind kind): kind_(kind) {}
+
     Kind kind_;
     ResourceId id_;
     Texture *top_tex_;
