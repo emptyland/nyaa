@@ -1,36 +1,13 @@
 #include "game/boot-scene.h"
 #include "game/identifiers.h"
 #include "game/game.h"
+#include "entity/avatar-entity.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/avatar-library.h"
 #include <GLFW/glfw3.h>
 
 namespace nyaa {
-
-class AvatarEntity {
-public:
-    AvatarEntity(res::Avatar *def): def_(def) {}
-
-    DEF_VAL_PROP_RW(float, speed);
-    DEF_VAL_PROP_RW(double, time);
-    
-    res::Texture *GetFrame() const {
-        if (speed_ == 0.0) {
-            return def_->key_frame(dir_);
-        }
-        int i = static_cast<int>(time_ / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
-        return def_->frame(dir_, i);
-    }
-
-    void AddTime(double d) { time_ += d; }
-
-private:
-    res::Avatar::Direction dir_ = res::Avatar::kDown;
-    res::Avatar *def_;
-    float speed_ = 0;
-    double time_ = 0;
-}; // class AvatarEntity
 
 BootScene::BootScene(Game *game)
     : Scene(game) {
@@ -42,12 +19,12 @@ BootScene::~BootScene() {
 void BootScene::Reset() {
     res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
     DCHECK(def != nullptr);
-    avatar1_.reset(new AvatarEntity(def));
+    avatar1_.reset(new entity::AvatarEntity(def));
     avatar1_->set_speed(0.9);
 
     def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100050));
     DCHECK(def != nullptr);
-    avatar2_.reset(new AvatarEntity(def));
+    avatar2_.reset(new entity::AvatarEntity(def));
     avatar2_->set_speed(0.9);
 }
 
