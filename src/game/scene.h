@@ -15,7 +15,12 @@ public:
     virtual ~Scene();
 
     DEF_PTR_GETTER(Game, game);
+    DEF_PTR_PROP_RW(Scene, prev);
 
+    void SwitchTo(Scene *prev = nullptr);
+    void DelayDispose();
+
+    virtual const char *Name() const = 0;
     virtual void Reset();
     virtual void OnKeyInput(int key, int code, int action, int mods);
     virtual void OnMouseInput(double x, double y);
@@ -24,8 +29,9 @@ public:
     DISALLOW_ALL_CONSTRUCTORS(Scene);
 
 private:
-    Game *   game_;
     EntityId id_;
+    Game *   game_;
+    Scene *  prev_ = nullptr;
 };
 
 }  // namespace nyaa

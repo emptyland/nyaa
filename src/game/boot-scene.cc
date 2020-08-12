@@ -1,4 +1,5 @@
 #include "game/boot-scene.h"
+#include "game/test-scene.h"
 #include "game/identifiers.h"
 #include "game/game.h"
 #include "component/avatar-component.h"
@@ -29,6 +30,11 @@ void BootScene::Reset() {
 void BootScene::OnKeyInput(int key, int code, int action, int mods) {
     switch (key) {
         case GLFW_KEY_ESCAPE: game()->Exit(); break;
+
+        case GLFW_KEY_T: {
+            TestScene *test_scene = new TestScene(game());
+            test_scene->SwitchTo(this);
+        } break;
 
         default: break;
     }

@@ -2,16 +2,6 @@
 #include "entity/entity.h"
 #include "glog/logging.h"
 
-class SimpleEntity : public nyaa::entity::Entity<SimpleEntity> {
-public:
-    SimpleEntity(int value) : value_(value) {}
-
-    DEF_VAL_GETTER(int, value);
-
-private:
-    int value_;
-};
-
 int main(int argc, char* argv[]) {
 #if defined(DEBUG)
     FLAGS_logtostderr = true;

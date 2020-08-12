@@ -6,6 +6,7 @@
 #include "base/lazy-instance.h"
 #include "base/arenas.h"
 #include "base/slice.h"
+#include <deque>
 
 using GLFWwindow = struct GLFWwindow;
 
@@ -18,8 +19,13 @@ class AvatarLibrary;
 class CubeLibrary;
 }  // namespace res
 
+namespace sys {
+class EntityAllocationSystem;
+}  // namespace sys
+
 class Scene;
 class Properties;
+class Game;
 
 class Game final {
 public:
@@ -30,14 +36,16 @@ public:
     DEF_VAL_GETTER(int, window_w);
     DEF_VAL_GETTER(int, fb_h);
     DEF_VAL_GETTER(int, fb_w);
+    DEF_PTR_PROP_RW(Scene, scene);
 
-    const Properties *     properties() const { return properties_.get(); }
-    res::FontLibrary *     font_lib() const { return font_lib_.get(); }
-    res::TextLibrary *     text_lib() const { return text_lib_.get(); }
-    res::AvatarLibrary *   avatar_lib() const { return avatar_lib_.get(); }
-    res::TextureLibrary *  texture_lib() const { return texture_lib_.get(); }
-    res::CubeLibrary *     cube_lib() const { return cube_lib_.get(); }
-    base::AbstractPrinter *debug_out() { return &stdout_; }
+    const Properties *           properties() const { return properties_.get(); }
+    sys::EntityAllocationSystem *entity_allocator() const { return entity_allocator_.get(); }
+    res::FontLibrary *           font_lib() const { return font_lib_.get(); }
+    res::TextLibrary *           text_lib() const { return text_lib_.get(); }
+    res::AvatarLibrary *         avatar_lib() const { return avatar_lib_.get(); }
+    res::TextureLibrary *        texture_lib() const { return texture_lib_.get(); }
+    res::CubeLibrary *           cube_lib() const { return cube_lib_.get(); }
+    base::AbstractPrinter *      debug_out() { return &stdout_; }
 
     bool Prepare(const std::string &properties_file_name);
     void Run();
@@ -51,6 +59,9 @@ public:
     void EnterProjection2D();
     void LeaveProjection2D();
 
+    static inline Game *This();
+
+    void DelayDeleteScene(Scene *scene);
 private:
     class IdGenerator {
     public:
@@ -66,27 +77,31 @@ private:
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
     static void OnMouseInput(GLFWwindow *window, double x, double y);
 
-    base::StandaloneArena                arena_;
-    Scene *                              scene_ = nullptr;
-    std::unique_ptr<Scene>               boot_scene_;
-    std::unique_ptr<res::FontLibrary>    font_lib_;
-    std::unique_ptr<res::TextLibrary>    text_lib_;
-    std::unique_ptr<res::TextureLibrary> texture_lib_;
-    std::unique_ptr<res::AvatarLibrary>  avatar_lib_;
-    std::unique_ptr<res::CubeLibrary>    cube_lib_;
-    std::unique_ptr<Properties>          properties_;
-    base::StdFilePrinter                 stdout_;
-    double                               ts_       = 0;
-    GLFWwindow *                         window_   = nullptr;
-    int                                  window_h_ = 0;
-    int                                  window_w_ = 0;
-    int                                  fb_h_     = 0;
-    int                                  fb_w_     = 0;
-    bool                                 exit_     = false;
-    IdGenerator                          eid_generator_;
+    base::StandaloneArena                        arena_;
+    Scene *                                      scene_ = nullptr;
+    std::unique_ptr<Scene>                       boot_scene_;
+    std::unique_ptr<sys::EntityAllocationSystem> entity_allocator_;
+    std::unique_ptr<res::FontLibrary>            font_lib_;
+    std::unique_ptr<res::TextLibrary>            text_lib_;
+    std::unique_ptr<res::TextureLibrary>         texture_lib_;
+    std::unique_ptr<res::AvatarLibrary>          avatar_lib_;
+    std::unique_ptr<res::CubeLibrary>            cube_lib_;
+    std::unique_ptr<Properties>                  properties_;
+    std::deque<Scene *>                          recycle_scenes_;
+    base::StdFilePrinter                         stdout_;
+    double                                       ts_       = 0;
+    GLFWwindow *                                 window_   = nullptr;
+    int                                          window_h_ = 0;
+    int                                          window_w_ = 0;
+    int                                          fb_h_     = 0;
+    int                                          fb_w_     = 0;
+    bool                                         exit_     = false;
+    IdGenerator                                  eid_generator_;
 };  // class Game
 
 extern base::LazyInstance<Game> ThisGame;
+
+/*static*/ inline Game *Game::This() { return ThisGame.Get(); }
 
 class Projection2DScope final {
 public:

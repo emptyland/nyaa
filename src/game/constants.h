@@ -5,10 +5,11 @@
 namespace nyaa {
 
 static constexpr int kRegionSize = 1024;
-static constexpr int kRegionLevels = 16;
-    
-} // namespace nyaa
 
+static constexpr int kTerrainMaxLevels = 16;
 
+static constexpr int kTerrainSurfaceLevel = 7;
 
-#endif // NYAA_GAME_CONSTANTS_H_
+}  // namespace nyaa
+
+#endif  // NYAA_GAME_CONSTANTS_H_

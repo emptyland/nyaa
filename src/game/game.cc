@@ -2,6 +2,7 @@
 #include "game/properties.h"
 #include "game/boot-scene.h"
 #include "game/scene.h"
+#include "system/entity-allocation-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -19,6 +20,7 @@ base::LazyInstance<Game> ThisGame;
 
 Game::Game()
     : boot_scene_(new BootScene(this))
+    , entity_allocator_(new sys::EntityAllocationSystem())
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))
@@ -94,7 +96,7 @@ void Game::Run() {
         glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
 
         // TO 3D
-        glViewport(0, 0, fb_w_, fb_h_);
+        //glViewport(0, 0, fb_w_, fb_h_);
 
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -103,6 +105,15 @@ void Game::Run() {
 
         glfwSwapBuffers(window_);
         glfwPollEvents();
+
+        // Others process
+        while (!recycle_scenes_.empty()) {
+            Scene *junk = recycle_scenes_.front();
+            recycle_scenes_.pop_front();
+
+            DLOG(INFO) << "Delete junk scene: " << junk->Name();
+            delete junk;
+        }
     }
 
     glfwDestroyWindow(window_);
@@ -117,6 +128,14 @@ void Game::Run() {
 /*static*/ void Game::OnMouseInput(GLFWwindow *window, double x, double y) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
     if (game->scene_) { game->scene_->OnMouseInput(x, y); }
+}
+
+void Game::DelayDeleteScene(Scene *scene) {
+#ifndef NDEBUG
+    auto iter = std::find(recycle_scenes_.begin(), recycle_scenes_.end(), scene);
+    DCHECK(iter == recycle_scenes_.end());
+#endif
+    recycle_scenes_.push_back(DCHECK_NOTNULL(scene));
 }
 
 Game::IdGenerator::IdGenerator() : bucket_id_((::rand() & 0xffff0000) >> 16) {}
