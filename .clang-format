@@ -39,7 +39,7 @@ PointerAlignment: Right
 #缩进宽度
 IndentWidth: 4
 # 连续的空行保留几行
-MaxEmptyLinesToKeep: 1
+# MaxEmptyLinesToKeep: 1
 # 在 @property 后面添加空格, \@property (readonly) 而不是 \@property(readonly).
 ObjCSpaceAfterProperty: true
 # OC block后面的缩进
@@ -52,7 +52,7 @@ AlignOperands: true
 SpacesInSquareBrackets: false
 # 小括号两边添加空格
 SpacesInParentheses : false
-#等号两边的空格
+# 等号两边的空格
 SpaceBeforeAssignmentOperators: true
 # 容器类的空格 例如 OC的字典
 SpacesInContainerLiterals: true

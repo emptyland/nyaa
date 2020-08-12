@@ -6,8 +6,8 @@
 #include "glog/logging.h"
 
 namespace nyaa {
-namespace entity {
-class AvatarEntity;
+namespace com {
+class AvatarComponent;
 }  // namespace entity
 
 class BootScene : public Scene {
@@ -21,8 +21,8 @@ public:
     void Render(double delta) final;
 
 private:
-    std::unique_ptr<entity::AvatarEntity> avatar1_;
-    std::unique_ptr<entity::AvatarEntity> avatar2_;
+    std::unique_ptr<com::AvatarComponent> avatar1_;
+    std::unique_ptr<com::AvatarComponent> avatar2_;
 };  // class BootScene
 
 }  // namespace nyaa

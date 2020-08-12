@@ -1,28 +1,25 @@
 #ifndef NYAA_ENTITY_ENTITY_H_
 #define NYAA_ENTITY_ENTITY_H_
 
+#include "game/identifiers.h"
 #include "base/base.h"
 
 namespace nyaa {
 
 namespace entity {
 
-template<class T>
 class Entity {
 public:
-    using ClassId = uintptr_t;
+    Entity(EntityId id) : id_(id) {}
 
-    Entity() = default;
-    ~Entity() = default;
+    DEF_VAL_PROP_RW(EntityId, id);
 
-    ClassId class_id() const { return reinterpret_cast<ClassId>(&class_); }
 private:
-    inline static int class_;
-}; // class Entity
+    EntityId id_;
+};  // class Entity
 
-    
-} // namespace entity
+}  // namespace entity
 
-} // namespace nyaa
+}  // namespace nyaa
 
-#endif // NYAA_ENTITY_ENTITY_H_
+#endif  // NYAA_ENTITY_ENTITY_H_

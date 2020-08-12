@@ -45,6 +45,7 @@ set(GAME_SRC
     src/game/scene.cc
     src/game/boot-scene.cc
     src/game/properties.cc
+    src/component/cube-component.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc

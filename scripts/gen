@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./scripts/build-cube-index.py > src/resource/cube-kinds-inl.h
+./scripts/build-text-index.py > src/resource/text-id.h
+

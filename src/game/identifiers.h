@@ -23,6 +23,7 @@ private:
 
 class EntityId final : public Identifier<uint64_t> {
 public:
+    EntityId() : EntityId(0) {}
     static EntityId Next();
     static EntityId New();
     static EntityId Of(uint64_t value) { return EntityId(value); }

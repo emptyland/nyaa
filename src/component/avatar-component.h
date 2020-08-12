@@ -1,17 +1,16 @@
 #pragma once
-#ifndef NYAA_ENTITY_AVATAR_ENTITY_H_
-#define NYAA_ENTITY_AVATAR_ENTITY_H_
+#ifndef NYAA_COMPONENT_AVATAR_COMPONENT_H_
+#define NYAA_COMPONENT_AVATAR_COMPONENT_H_
 
 #include "resource/avatar-library.h"
-#include "entity/entity.h"
 
 namespace nyaa {
 
-namespace entity {
+namespace com {
 
-class AvatarEntity final : public Entity<AvatarEntity> {
+class AvatarComponent {
 public:
-    AvatarEntity(res::Avatar *def) : def_(def) {}
+    AvatarComponent(res::Avatar *def) : def_(def) {}
 
     DEF_VAL_PROP_RW(res::Avatar::Direction, dir);
     DEF_VAL_PROP_RW(double, speed);
@@ -25,17 +24,17 @@ public:
 
     void AddTime(double d) { time_ += d; }
 
-    DISALLOW_IMPLICIT_CONSTRUCTORS(AvatarEntity);
+    DISALLOW_IMPLICIT_CONSTRUCTORS(AvatarComponent);
 
 private:
     res::Avatar::Direction dir_ = res::Avatar::kDown;
     res::Avatar *          def_;
     double                 speed_ = 0;
     double                 time_  = 0;
-};  // class AvatarEntity
+};  // class AvatarComponent
 
-}  // namespace entity
+}  // namespace com
 
 }  // namespace nyaa
 
-#endif  // NYAA_ENTITY_AVATAR_ENTITY_H_
+#endif  // NYAA_COMPONENT_AVATAR_COMPONENT_H_

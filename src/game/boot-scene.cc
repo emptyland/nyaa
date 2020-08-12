@@ -1,7 +1,8 @@
 #include "game/boot-scene.h"
 #include "game/identifiers.h"
 #include "game/game.h"
-#include "entity/avatar-entity.h"
+#include "component/avatar-component.h"
+#include "component/cube-component.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/avatar-library.h"
@@ -16,12 +17,12 @@ BootScene::~BootScene() {}
 void BootScene::Reset() {
     res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
     DCHECK(def != nullptr);
-    avatar1_.reset(new entity::AvatarEntity(def));
+    avatar1_.reset(new com::AvatarComponent(def));
     avatar1_->set_speed(0.9);
 
     def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100050));
     DCHECK(def != nullptr);
-    avatar2_.reset(new entity::AvatarEntity(def));
+    avatar2_.reset(new com::AvatarComponent(def));
     avatar2_->set_speed(0.9);
 }
 
@@ -65,7 +66,6 @@ void BootScene::Render(double d) {
 
     glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
     glVertex2i(w, 0);
-    ;
 
     glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
     glVertex2i(0, 0);

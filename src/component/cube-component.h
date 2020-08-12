@@ -1,19 +1,16 @@
 #pragma once
-#ifndef NYAA_ENTITY_CUBE_ENTITY_H_
-#define NYAA_ENTITY_CUBE_ENTITY_H_
+#ifndef NYAA_COMPONENT_CUBE_COMPONENT_H_
+#define NYAA_COMPONENT_CUBE_COMPONENT_H_
 
 #include "resource/cube-library.h"
-#include "entity/entity.h"
 
 namespace nyaa {
 
-namespace entity {
+namespace com {
 
-class CubeEntity final : public Entity<CubeEntity> {
+class CubeComponent {
 public:
     using Kind = res::Cube::Kind;
-
-    CubeEntity() = default;
 
     DEF_VAL_PROP_RW(Kind, kind);
     DEF_VAL_PROP_RW(int, hardness);
@@ -24,10 +21,15 @@ public:
 private:
     Kind kind_     = res::Cube::CUBE_WOOD_1;
     int  hardness_ = 0;
-};  // class CubeEntity
+};  // class CubeComponent
 
-}  // namespace entity
+template<int W, int H>
+struct FloorComponent {
+    CubeComponent cubes[W][H];
+}; // struct FloorComponent
+
+}  // namespace com
 
 }  // namespace nyaa
 
-#endif  // NYAA_ENTITY_CUBE_ENTITY_H_
+#endif  // NYAA_COMPONENT_CUBE_COMPONENT_H_
