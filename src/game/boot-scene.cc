@@ -85,7 +85,6 @@ void BootScene::Render(double d) {
 
     glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
     glVertex2i(w + w, 0);
-    ;
 
     glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
     glVertex2i(w, 0);

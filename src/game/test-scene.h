@@ -10,6 +10,10 @@ namespace entity {
 class Region;
 }  // namespace entity
 
+namespace com {
+class AvatarComponent;
+}  // namespace com
+
 class Game;
 
 class TestScene : public Scene {
@@ -18,13 +22,16 @@ public:
     ~TestScene() final;
 
     const char *Name() const final { return "test-scene"; }
+
     void Reset() final;
+
     void OnKeyInput(int key, int code, int action, int mods) final;
-    //void OnMouseInput(double x, double y) final;
+
     void Render(double delta) final;
 
 private:
-    entity::Region *region_ = nullptr;
+    entity::Region *                      region_ = nullptr;
+    std::unique_ptr<com::AvatarComponent> avatar_;
 };  // class TestScene
 
 }  // namespace nyaa

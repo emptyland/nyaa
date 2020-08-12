@@ -16,7 +16,7 @@ void RandomRegionSystem::FillRegion(entity::Region *region) {
             if (::rand() & 0x3) {
                 surface->cubes[x][y].set_kind(res::Cube::CUBE_WOOD_1);
             } else {
-                surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_2);
+                surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_1);
             }
             surface->cubes[x][y].set_hardness(4);
         }
@@ -29,7 +29,7 @@ void RandomRegionSystem::FillRegion(entity::Region *region) {
                 if (::rand() & 0x1) {
                     surface->cubes[x][y].set_kind(res::Cube::CUBE_WOOD_1);
                 } else {
-                    surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_1);
+                    surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_2);
                 }
                 surface->cubes[x][y].set_hardness(4);
             }
