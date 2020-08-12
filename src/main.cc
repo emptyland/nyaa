@@ -4,9 +4,10 @@
 
 class SimpleEntity : public nyaa::entity::Entity<SimpleEntity> {
 public:
-    SimpleEntity(int value): value_(value) {}
+    SimpleEntity(int value) : value_(value) {}
 
     DEF_VAL_GETTER(int, value);
+
 private:
     int value_;
 };
@@ -16,11 +17,9 @@ int main(int argc, char* argv[]) {
     FLAGS_logtostderr = true;
     google::InitGoogleLogging(argv[0]);
 #endif
-    
+
     nyaa::AtExit at_exit(nyaa::AtExit::INITIALIZER);
-    if (!nyaa::ThisGame->Prepare("assets/properties.txt")) {
-        return -1;
-    }
+    if (!nyaa::ThisGame->Prepare("assets/properties.txt")) { return -1; }
 
     nyaa::ThisGame->Run();
     return 0;

@@ -4,9 +4,7 @@
 
 namespace nyaa {
 
-Scene::Scene(Game *game)
-    : game_(DCHECK_NOTNULL(game))
-    , id_(game->NextEntityId()) {}
+Scene::Scene(Game *game) : game_(DCHECK_NOTNULL(game)), id_(game->NextEntityId()) {}
 
 /*virtual*/ Scene::~Scene() {}
 
@@ -17,5 +15,5 @@ Scene::Scene(Game *game)
 /*virtual*/ void Scene::OnMouseInput(double x, double y) {}
 
 /*virtual*/ void Scene::Render(double delta) {}
-    
-} // namespace nyaa
+
+}  // namespace nyaa

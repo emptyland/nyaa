@@ -24,16 +24,14 @@ struct Varint64 {
     }
 
     static const size_t kMaxLen = 10;
-    
+
     DISALLOW_ALL_CONSTRUCTORS(Varint64);
-}; // struct Varint64
+};  // struct Varint64
 
 struct Varint32 {
     static size_t Encode(void *buf, uint32_t value);
 
-    static uint32_t Decode(const void *buf, size_t *len) {
-        return static_cast<uint32_t>(Varint64::Decode(buf, len));
-    }
+    static uint32_t Decode(const void *buf, size_t *len) { return static_cast<uint32_t>(Varint64::Decode(buf, len)); }
 
     static size_t Sizeof(uint32_t value) {
         if (value == 0) {
@@ -43,13 +41,13 @@ struct Varint32 {
         }
     }
 
-    static const size_t kMaxLen =  5;
-    
+    static const size_t kMaxLen = 5;
+
     DISALLOW_ALL_CONSTRUCTORS(Varint32);
-}; // struct Varint32
+};  // struct Varint32
 
-} // namespace base
+}  // namespace base
 
-} // namespace yukino
+}  // namespace nyaa
 
-#endif // YUKINO_BASE_VARINT_ENCODING_H_
+#endif  // YUKINO_BASE_VARINT_ENCODING_H_

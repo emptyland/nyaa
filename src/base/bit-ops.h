@@ -45,7 +45,7 @@ struct Bits {
     static inline int CountTrailingZeros64(uint64_t x);
 
     DISALLOW_ALL_CONSTRUCTORS(Bits);
-}; // struct Bits
+};  // struct Bits
 
 /*static*/ inline int Bits::FindFirstZero32(uint32_t x) {
     static const int zval[] = {
@@ -56,9 +56,18 @@ struct Bits {
     };
 
     int base = 0;
-    if ((x & 0x0000FFFF) == 0x0000FFFFU) { base += 16; x >>= 16; }
-    if ((x & 0x000000FF) == 0x000000FFU) { base +=  8; x >>=  8; }
-    if ((x & 0x0000000F) == 0x0000000FU) { base +=  4; x >>=  4; }
+    if ((x & 0x0000FFFF) == 0x0000FFFFU) {
+        base += 16;
+        x >>= 16;
+    }
+    if ((x & 0x000000FF) == 0x000000FFU) {
+        base += 8;
+        x >>= 8;
+    }
+    if ((x & 0x0000000F) == 0x0000000FU) {
+        base += 4;
+        x >>= 4;
+    }
     return base + zval[x & 0xFU];
 }
 
@@ -71,9 +80,18 @@ struct Bits {
     };
 
     auto base = 0;
-    if ((x & 0x0000FFFF) == 0) { base += 16; x >>= 16; }
-    if ((x & 0x000000FF) == 0) { base += 8;  x >>=  8; }
-    if ((x & 0x0000000F) == 0) { base += 4;  x >>=  4; }
+    if ((x & 0x0000FFFF) == 0) {
+        base += 16;
+        x >>= 16;
+    }
+    if ((x & 0x000000FF) == 0) {
+        base += 8;
+        x >>= 8;
+    }
+    if ((x & 0x0000000F) == 0) {
+        base += 4;
+        x >>= 4;
+    }
     return base + oval[x & 0xF];
 }
 
@@ -86,20 +104,43 @@ struct Bits {
     };
 
     int base = 0;
-    if ((x & 0xFFFF0000) == 0) {base  = 16; x <<= 16;} else {base = 0;}
-    if ((x & 0xFF000000) == 0) {base +=  8; x <<=  8;}
-    if ((x & 0xF0000000) == 0) {base +=  4; x <<=  4;}
-    return base + zval[x >> (32-4)];
+    if ((x & 0xFFFF0000) == 0) {
+        base = 16;
+        x <<= 16;
+    } else {
+        base = 0;
+    }
+    if ((x & 0xFF000000) == 0) {
+        base += 8;
+        x <<= 8;
+    }
+    if ((x & 0xF0000000) == 0) {
+        base += 4;
+        x <<= 4;
+    }
+    return base + zval[x >> (32 - 4)];
 }
 
 /*static*/ inline int Bits::CountTrailingZeros32(uint32_t x) {
     if (x == 0) return 32;
     auto n = 0;
-    if ((x & 0x0000FFFF) == 0) { n += 16; x >>= 16; }
-    if ((x & 0x000000FF) == 0) { n +=  8; x >>=  8; }
-    if ((x & 0x0000000F) == 0) { n +=  4; x >>=  4; }
-    if ((x & 0x00000003) == 0) { n +=  2; x >>=  2; }
-    if ((x & 0x00000001) == 0) { n +=  1; }
+    if ((x & 0x0000FFFF) == 0) {
+        n += 16;
+        x >>= 16;
+    }
+    if ((x & 0x000000FF) == 0) {
+        n += 8;
+        x >>= 8;
+    }
+    if ((x & 0x0000000F) == 0) {
+        n += 4;
+        x >>= 4;
+    }
+    if ((x & 0x00000003) == 0) {
+        n += 2;
+        x >>= 2;
+    }
+    if ((x & 0x00000001) == 0) { n += 1; }
     return n;
 }
 
@@ -108,7 +149,7 @@ struct Bits {
     x = ((0xcccccccc & x) >> 2) + (0x33333333 & x);
     x = ((0xf0f0f0f0 & x) >> 4) + (0x0f0f0f0f & x);
     x = ((0xff00ff00 & x) >> 8) + (0x00ff00ff & x);
-    x = ((0xffff0000 & x) >>16) + (0x0000ffff & x);
+    x = ((0xffff0000 & x) >> 16) + (0x0000ffff & x);
 
     return static_cast<int>(x);
 }
@@ -131,9 +172,8 @@ struct Bits {
     }
 }
 
-} // namespace base
+}  // namespace base
 
-} // namespace nyaa
+}  // namespace nyaa
 
-#endif // NYAA_BASE_BIT_OPS_H_
-
+#endif  // NYAA_BASE_BIT_OPS_H_

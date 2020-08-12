@@ -22,12 +22,12 @@ public:
     virtual void Render(double delta);
 
     DISALLOW_ALL_CONSTRUCTORS(Scene);
+
 private:
-    Game *game_;
+    Game *   game_;
     EntityId id_;
 };
-    
-} // namespace nyaa
 
+}  // namespace nyaa
 
-#endif // NYAA_GAME_SCENE_H_
+#endif  // NYAA_GAME_SCENE_H_

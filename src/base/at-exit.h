@@ -8,25 +8,24 @@ namespace nyaa {
 
 class AtExit {
 public:
-    enum Linker {
-        INITIALIZER
-    };
+    enum Linker { INITIALIZER };
     using Callback = void (*)(void *);
-    
+
     explicit AtExit(Linker);
     ~AtExit();
 
     static AtExit *This();
-    
+
     void Register(Callback callback, void *params);
+
 private:
     struct Hook;
-    
-    AtExit *prev_ = nullptr;
-    Hook *hook_ = nullptr;
+
+    AtExit *   prev_ = nullptr;
+    Hook *     hook_ = nullptr;
     std::mutex mutex_;
-}; // class AtExit
+};  // class AtExit
 
-} // namespace nyaa
+}  // namespace nyaa
 
-#endif // NYAA_AT_EXIT_H_
+#endif  // NYAA_AT_EXIT_H_

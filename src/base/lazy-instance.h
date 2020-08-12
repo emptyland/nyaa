@@ -11,17 +11,16 @@ namespace nyaa {
 
 namespace base {
 
-template<class T>
+template <class T>
 class DefaultLazyPolicy {
 public:
-    static T *New(void *chunk) { return new (chunk) T; }
-    static void Delete(void *obj) { static_cast<T*>(obj)->~T(); }
+    static T *  New(void *chunk) { return new (chunk) T; }
+    static void Delete(void *obj) { static_cast<T *>(obj)->~T(); }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(DefaultLazyPolicy);
-}; // template<class T> class DefaultLazyPolicy
+};  // template<class T> class DefaultLazyPolicy
 
-
-template<class T, class Policy = DefaultLazyPolicy<T>>
+template <class T, class Policy = DefaultLazyPolicy<T>>
 class LazyInstance {
     static const uintptr_t kPendingMask = 1;
     static const uintptr_t kCreatedMask = ~kPendingMask;
@@ -30,24 +29,19 @@ public:
     LazyInstance() : inst_(0) {}
 
     T *Get() {
-        if (!(inst_.load(std::memory_order_acquire) & kCreatedMask) && NeedInit()) {
-            Install();
-        }
+        if (!(inst_.load(std::memory_order_acquire) & kCreatedMask) && NeedInit()) { Install(); }
         return Instance();
     }
 
-    T *operator -> () { return Get(); }
+    T *operator->() { return Get(); }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(LazyInstance);
+
 private:
     bool NeedInit() {
         uintptr_t expect = 0;
-        if (inst_.compare_exchange_strong(expect, kPendingMask)) {
-            return true;
-        }
-        while (inst_.load(std::memory_order_acquire) == kPendingMask) {
-            std::this_thread::yield();
-        }
+        if (inst_.compare_exchange_strong(expect, kPendingMask)) { return true; }
+        while (inst_.load(std::memory_order_acquire) == kPendingMask) { std::this_thread::yield(); }
         return false;
     }
 
@@ -57,14 +51,14 @@ private:
         inst_.store(reinterpret_cast<uintptr_t>(inst), std::memory_order_release);
     }
 
-    T *Instance() { return reinterpret_cast<T*>(inst_.load(std::memory_order_relaxed)); }
+    T *Instance() { return reinterpret_cast<T *>(inst_.load(std::memory_order_relaxed)); }
 
     std::atomic<uintptr_t> inst_;
-    char body_[sizeof(T)];
-}; // class LazyInstance
+    char                   body_[sizeof(T)];
+};  // class LazyInstance
 
-} // namespace base
+}  // namespace base
 
-} // namespace nyaa
+}  // namespace nyaa
 
-#endif // NYAA_BASE_LAZY_INSTANCE_H_
+#endif  // NYAA_BASE_LAZY_INSTANCE_H_

@@ -6,5 +6,5 @@ namespace nyaa {
 /*static*/ EntityId EntityId::Next() { return ThisGame->NextEntityId(); }
 
 /*static*/ EntityId EntityId::New() { return ThisGame->NewEntityId(); }
-    
-} // namespace nyaa
+
+}  // namespace nyaa

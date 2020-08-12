@@ -13,13 +13,13 @@ namespace res {
 struct NRStrHeader {
     int  len;
     char data[0];
-}; // struct NRStrHeader
+};  // struct NRStrHeader
 
 using NRStr = const char *;
 
 class TextLibrary final {
 public:
-    TextLibrary(base::Arena *arena): arena_(arena) {}
+    TextLibrary(base::Arena *arena) : arena_(arena) {}
 
     std::string_view Load(TextID id) const {
         int index = static_cast<int>(id);
@@ -29,6 +29,7 @@ public:
     }
 
     bool Prepare(const std::string &file_name);
+
 private:
     NRStr NewString(std::string_view input);
 
@@ -38,11 +39,11 @@ private:
     }
 
     base::Arena *const arena_;
-    NRStr text_[MAX_TEXT_ID];
-}; // class TextLibrary
+    NRStr              text_[MAX_TEXT_ID];
+};  // class TextLibrary
 
-} // namespace res
-    
-} // namespace nyaa
+}  // namespace res
 
-#endif // NYAA_RESOURCE_TEXT_LIBRARY_H_
+}  // namespace nyaa
+
+#endif  // NYAA_RESOURCE_TEXT_LIBRARY_H_

@@ -8,73 +8,69 @@
 #include <type_traits>
 
 namespace nyaa {
-    
+
 namespace base {
-    
+
 struct MallocAllocator {
     void *Allocate(size_t size) const { return ::malloc(size); }
-    void Free(void *chunk) const { ::free(chunk); }
-}; // struct MallocAllocator
-    
+    void  Free(void *chunk) const { ::free(chunk); }
+};  // struct MallocAllocator
+
 struct NewAllocator {
     void *Allocate(size_t size) const { return new char[size]; }
-    void Free(void *chunk) const { delete[] static_cast<char *>(chunk); }
-}; // struct NewAllocator
-    
+    void  Free(void *chunk) const { delete[] static_cast<char *>(chunk); }
+};  // struct NewAllocator
+
 struct DelegatedAllocator {
     Allocator *allocator;
-    void *Allocate(size_t size) const { return allocator->Allocate(size, 4); }
-    void Free(void *chunk) const { allocator->Free(chunk, 0); }
-}; // struct DelegatedAllocator
+    void *     Allocate(size_t size) const { return allocator->Allocate(size, 4); }
+    void       Free(void *chunk) const { allocator->Free(chunk, 0); }
+};  // struct DelegatedAllocator
 
-template<class T, int N>
+template <class T, int N>
 class ScopedMemoryTemplate {
 public:
     static const int kSize = N;
-    
+
     ScopedMemoryTemplate() {}
     ~ScopedMemoryTemplate() { Purge(); }
-    
+
     void *Allocate(size_t size) {
         Purge();
-        if (size > kSize) {
-            memory_ = static_cast<T *>(::malloc(size * sizeof(T)));
-        }
+        if (size > kSize) { memory_ = static_cast<T *>(::malloc(size * sizeof(T))); }
         return memory_;
     }
-    
+
     T *New(size_t size) {
         T *raw = static_cast<T *>(Allocate(size));
         if (std::is_constructible<T, void>::value) {
-            for (size_t i = 0; i < size; ++i) {
-                new (raw) T();
-            }
+            for (size_t i = 0; i < size; ++i) { new (raw) T(); }
         }
         return raw;
     }
-    
+
     void Purge() {
         if (memory_ != static_) {
             ::free(memory_);
             memory_ = static_;
         }
     }
-    
+
 private:
     T  static_[kSize];
     T *memory_ = static_;
-}; // class ScopedMemory
-    
+};  // class ScopedMemory
+
 using ScopedMemory = ScopedMemoryTemplate<uint8_t, 128>;
-    
+
 struct ScopedAllocator {
     void *Allocate(size_t size) { return memory->Allocate(size); }
-  
-    ScopedMemory *memory;
-}; // struct ScopedAllocator
-    
-} // namespace base
-    
-} // namespace nyaa
 
-#endif // NYAA_BASE_ALLOCATORS_H_
+    ScopedMemory *memory;
+};  // struct ScopedAllocator
+
+}  // namespace base
+
+}  // namespace nyaa
+
+#endif  // NYAA_BASE_ALLOCATORS_H_

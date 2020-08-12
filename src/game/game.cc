@@ -30,13 +30,9 @@ Game::Game()
     ::glfwInit();
 }
 
-Game::~Game() {
-    ::glfwTerminate();
-}
+Game::~Game() { ::glfwTerminate(); }
 
-void Game::SetWindowTitle(const char *title) {
-    ::glfwSetWindowTitle(window_, title);
-}
+void Game::SetWindowTitle(const char *title) { ::glfwSetWindowTitle(window_, title); }
 
 bool Game::Prepare(const std::string &properties_file_name) {
     FILE *fp = ::fopen(properties_file_name.c_str(), "rb");
@@ -44,20 +40,17 @@ bool Game::Prepare(const std::string &properties_file_name) {
         DLOG(ERROR) << "can not open properties file: " << properties_file_name;
         return false;
     }
-    res::DefinitionReader rd(fp, true/*ownership*/);
+    res::DefinitionReader rd(fp, true /*ownership*/);
     while (properties_->Read(&rd) != EOF) {}
 
-    if (!text_lib_->Prepare(properties()->assets_dir() + "/" + properties()->language())) {
-        return false;
-    }
+    if (!text_lib_->Prepare(properties()->assets_dir() + "/" + properties()->language())) { return false; }
 #ifdef DEBUG
     properties_->Print(debug_out());
 #endif
 
     DCHECK(window_ == nullptr);
-    window_ = glfwCreateWindow(properties()->window_width(),
-        properties()->window_height(),
-        properties()->name().c_str(), nullptr, nullptr);
+    window_ = glfwCreateWindow(properties()->window_width(), properties()->window_height(),
+                               properties()->name().c_str(), nullptr, nullptr);
     if (!window_) {
         DLOG(ERROR) << "can not create window.";
         return false;
@@ -78,18 +71,14 @@ bool Game::Prepare(const std::string &properties_file_name) {
     res::FontLibrary::Options options;
     options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
     options.default_font_size = properties()->default_font_size();
-    if (!font_lib_->LoadFaces(options)) {
-        return false;
-    }
+    if (!font_lib_->LoadFaces(options)) { return false; }
     if (!texture_lib_->Prepare(properties()->assets_dir() + "/" + res::TextureLibrary::kTextureDefFileName)) {
         return false;
     }
     if (!avatar_lib_->Prepare(properties()->assets_dir() + "/" + res::AvatarLibrary::kAvatarDefFileName)) {
         return false;
     }
-    if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) {
-        return false;
-    }
+    if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) { return false; }
 
     scene_ = boot_scene_.get();
     boot_scene_->Reset();
@@ -99,7 +88,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
 void Game::Run() {
     while (!glfwWindowShouldClose(window_) && !exit_) {
         double delta = glfwGetTime() - ts_;
-        ts_ = glfwGetTime();
+        ts_          = glfwGetTime();
 
         glfwGetWindowSize(window_, &window_w_, &window_h_);
         glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
@@ -122,30 +111,23 @@ void Game::Run() {
 
 /*static*/ void Game::OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
-    if (game->scene_) {
-        game->scene_->OnKeyInput(key, code, action, mods);
-    }
+    if (game->scene_) { game->scene_->OnKeyInput(key, code, action, mods); }
 }
 
 /*static*/ void Game::OnMouseInput(GLFWwindow *window, double x, double y) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
-    if (game->scene_) {
-        game->scene_->OnMouseInput(x, y);
-    }
+    if (game->scene_) { game->scene_->OnMouseInput(x, y); }
 }
 
-Game::IdGenerator::IdGenerator()
-    : bucket_id_((::rand() & 0xffff0000) >> 16) {
-}
+Game::IdGenerator::IdGenerator() : bucket_id_((::rand() & 0xffff0000) >> 16) {}
 
 uint64_t Game::IdGenerator::New() {
     uint16_t seq = sequence_number_++;
-    timeval time_val;
+    timeval  time_val;
     ::gettimeofday(&time_val, nullptr);
     uint64_t mills = time_val.tv_sec * 1000 + time_val.tv_usec / 1000;
-    return (static_cast<uint64_t>(bucket_id_ & 0x3ff) << 54) 
-        | ((mills & 0x7ffffffffff) << 12)
-        | (sequence_number_ & 0x1fff);
+    return (static_cast<uint64_t>(bucket_id_ & 0x3ff) << 54) | ((mills & 0x7ffffffffff) << 12) |
+           (sequence_number_ & 0x1fff);
 }
 
 void Game::EnterProjection2D() {
@@ -164,4 +146,4 @@ void Game::LeaveProjection2D() {
     glMatrixMode(GL_MODELVIEW);
 }
 
-} // namespace nyaa
+}  // namespace nyaa

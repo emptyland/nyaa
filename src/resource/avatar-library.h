@@ -42,24 +42,22 @@ public:
 
     friend class AvatarLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(Avatar);
+
 private:
     ResourceId id_;
-    int frames_count_;
-    float speed_;
-    Vertex2f size_;
-    int key_frame_[kMaxDir];
-    Texture *textures_[kMaxDir][kMaxFrames];
-}; // class Avatar
-    
+    int        frames_count_;
+    float      speed_;
+    Vertex2f   size_;
+    int        key_frame_[kMaxDir];
+    Texture *  textures_[kMaxDir][kMaxFrames];
+};  // class Avatar
+
 class AvatarLibrary final {
 public:
     static const char kAvatarDir[];
     static const char kAvatarDefFileName[];
 
-    AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena)
-        : arena_(arena)
-        , tex_lib_(tex_lib)
-        , avatars_(arena) {}
+    AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena) : arena_(arena), tex_lib_(tex_lib), avatars_(arena) {}
 
     bool Prepare(const std::string &file_name);
 
@@ -67,15 +65,15 @@ public:
         auto iter = avatars_.find(id);
         return iter == avatars_.end() ? nullptr : iter->second;
     }
+
 private:
-    base::Arena *const arena_;
-    TextureLibrary *const tex_lib_;
-    base::ArenaUnorderedMap<ResourceId, Avatar*> avatars_;
-}; // class AvatarLibrary
+    base::Arena *const                            arena_;
+    TextureLibrary *const                         tex_lib_;
+    base::ArenaUnorderedMap<ResourceId, Avatar *> avatars_;
+};  // class AvatarLibrary
 
-} // namespace res
+}  // namespace res
 
-} // namespace nyaa
+}  // namespace nyaa
 
-
-#endif // NYAA_RESOURCE_AVATAR_LIBRARY_H_
+#endif  // NYAA_RESOURCE_AVATAR_LIBRARY_H_

@@ -8,7 +8,7 @@
 namespace nyaa {
 namespace entity {
 class AvatarEntity;
-} // namespace entity
+}  // namespace entity
 
 class BootScene : public Scene {
 public:
@@ -23,9 +23,8 @@ public:
 private:
     std::unique_ptr<entity::AvatarEntity> avatar1_;
     std::unique_ptr<entity::AvatarEntity> avatar2_;
-}; // class BootScene
-    
-} // namespace nyaa
+};  // class BootScene
 
+}  // namespace nyaa
 
-#endif // NYAA_GAME_BOOT_SCENE_H_
+#endif  // NYAA_GAME_BOOT_SCENE_H_

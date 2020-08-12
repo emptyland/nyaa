@@ -4,17 +4,13 @@
 
 namespace nyaa {
 
-/*static*/const Properties::PropertyDef Properties::defs_[] = {
+/*static*/ const Properties::PropertyDef Properties::defs_[] = {
 #define PROPERTY_DEF(name, type) \
-    {#name, sizeof(#name) - 1, offsetof(Properties, name##_), res::DefValType::type}
-    PROPERTY_DEF(name, STRING),
-    PROPERTY_DEF(assets_dir, STRING),
-    PROPERTY_DEF(language, STRING),
-    PROPERTY_DEF(window_width, I32),
-    PROPERTY_DEF(window_height, I32),
-    PROPERTY_DEF(default_font_file, STRING),
-    PROPERTY_DEF(default_font_size, I32),
-    {nullptr, 0},
+    { #name, sizeof(#name) - 1, offsetof(Properties, name##_), res::DefValType::type }
+    PROPERTY_DEF(name, STRING),           PROPERTY_DEF(assets_dir, STRING),
+    PROPERTY_DEF(language, STRING),       PROPERTY_DEF(window_width, I32),
+    PROPERTY_DEF(window_height, I32),     PROPERTY_DEF(default_font_file, STRING),
+    PROPERTY_DEF(default_font_size, I32), {nullptr, 0},
 #undef PROPERTY_DEF
 };
 
@@ -30,24 +26,18 @@ void Properties::Print(base::AbstractPrinter *out) const {
 }
 
 void Properties::Parse(const std::vector<std::string_view> &items) {
-    if (items.size() < 2) {
-        return;
-    }
+    if (items.size() < 2) { return; }
     const PropertyDef *def = FindDef(items[0]);
-    if (!def) {
-        return;
-    }
+    if (!def) { return; }
     ParseValue(items[1], def->type, AddressOf<void>(def->offset));
 }
 
 /*static*/ const Properties::PropertyDef *Properties::FindDef(std::string_view target) {
     for (const PropertyDef *def = &defs_[0]; def->name != nullptr; def++) {
         std::string_view name(def->name, def->name_size);
-        if (name == target) {
-            return def;
-        }
+        if (name == target) { return def; }
     }
     return nullptr;
 }
 
-} // namespace nyaa
+}  // namespace nyaa
