@@ -32,6 +32,8 @@ public:
 private:
     entity::Region *                      region_ = nullptr;
     std::unique_ptr<com::AvatarComponent> avatar_;
+    float angle_y_ = 45;
+    float angle_z_ = 45;
 };  // class TestScene
 
 }  // namespace nyaa
