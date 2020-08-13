@@ -1,0 +1,7 @@
+# Install deps
+
+brew install libtiff libjpeg webp little-cms2
+
+# Install python Pillow library
+
+pip install pillow
