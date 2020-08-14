@@ -19,7 +19,7 @@ public:
     res::Texture *GetEdgeTexture() const;
 
 private:
-    Kind kind_     = res::Cube::CUBE_WOOD_1;
+    Kind kind_     = res::Cube::CUBE_AIR;
     int  hardness_ = 0;
 };  // class CubeComponent
 

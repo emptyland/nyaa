@@ -10,6 +10,8 @@ static constexpr int kTerrainMaxLevels = 16;
 
 static constexpr int kTerrainSurfaceLevel = 7;
 
+static constexpr int kDefaultViewportSize = 100;
+
 }  // namespace nyaa
 
 #endif  // NYAA_GAME_CONSTANTS_H_

@@ -6,8 +6,8 @@
 
 namespace nyaa {
 
-namespace entity {
-class Region;
+namespace com {
+class RegionComponent;
 }  // namespace entity
 
 namespace sys {
@@ -16,7 +16,7 @@ class RandomRegionSystem {
 public:
     RandomRegionSystem() = default;
 
-    void FillRegion(entity::Region *region);
+    void Update(com::RegionComponent *region);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(RandomRegionSystem);
 

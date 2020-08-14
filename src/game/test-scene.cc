@@ -1,7 +1,7 @@
 #include "game/test-scene.h"
 #include "game/game.h"
 #include "resource/texture-library.h"
-#include "entity/region.h"
+#include "component/zone-component.h"
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
 #include "system/entity-allocation-system.h"
@@ -15,11 +15,10 @@ TestScene::TestScene(Game *game) : Scene(game) {}
 TestScene::~TestScene() {}
 
 void TestScene::Reset() {
-    Game::This()->entity_allocator()->Register<entity::Region>();
-    region_ = Game::This()->entity_allocator()->Allocate<entity::Region>();
+    region_.reset(new com::RegionComponent());
 
     sys::RandomRegionSystem random_region;
-    random_region.FillRegion(region_);
+    random_region.Update(region_.get());
 
     res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
     DCHECK(def != nullptr);
@@ -80,7 +79,7 @@ void TestScene::Render(double delta) {
     glRotated(angle_z_, 0.0, 1.0, 0.0);
 
     glPushMatrix();
-    glScaled(0.2, 0.2, 0.2);
+    glScaled(0.14, 0.14, 0.14);
 
     constexpr int      n_cubes = 20;
     constexpr Vertex2i center{kRegionSize / 2, kRegionSize / 2};
@@ -92,9 +91,9 @@ void TestScene::Render(double delta) {
     glEnable(GL_CULL_FACE);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    entity::Region::Floor *surface = region_->floor(kTerrainSurfaceLevel);
-    res::Cube *            cube    = game()->cube_lib()->cube(surface->cubes[0][0].kind());
-    res::Texture *         tex     = cube->top_tex();
+    com::RegionComponent::Floor *surface = region_->floor(kTerrainSurfaceLevel);
+    res::Cube *                  cube    = game()->cube_lib()->cube(surface->cubes[0][0].kind());
+    res::Texture *               tex     = cube->top_tex();
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, cube->top_tex()->tex_id());
     glColor3f(1.0, 1.0, 1.0);

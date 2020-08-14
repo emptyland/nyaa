@@ -1,22 +1,22 @@
 #include "system/random-region-system.h"
-#include "entity/region.h"
+#include "component/zone-component.h"
 
 namespace nyaa {
 
 namespace sys {
 
-void RandomRegionSystem::FillRegion(entity::Region *region) {
+void RandomRegionSystem::Update(com::RegionComponent *region) {
     // (1),  fill sky cube
-    for (int i = 0; i < kTerrainMaxLevels; i++) { ::memset(region->floor(i), 0, sizeof(entity::Region::Floor)); }
+    for (int i = 0; i < kTerrainMaxLevels; i++) { ::memset(region->floor(i), 0, sizeof(com::RegionComponent::Floor)); }
 
     // (2), fill surface level
-    entity::Region::Floor *surface = region->floor(kTerrainSurfaceLevel);
+    com::RegionComponent::Floor *surface = region->floor(kTerrainSurfaceLevel);
     for (int y = 0; y < kRegionSize; y++) {
         for (int x = 0; x < kRegionSize; x++) {
             if (::rand() & 0x3) {
-                surface->cubes[x][y].set_kind(res::Cube::CUBE_WOOD_1);
+                surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1);
             } else {
-                surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_1);
+                surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_2);
             }
             surface->cubes[x][y].set_hardness(4);
         }
@@ -27,7 +27,7 @@ void RandomRegionSystem::FillRegion(entity::Region *region) {
         for (int y = 0; y < kRegionSize; y++) {
             for (int x = 0; x < kRegionSize; x++) {
                 if (::rand() & 0x1) {
-                    surface->cubes[x][y].set_kind(res::Cube::CUBE_WOOD_1);
+                    surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1);
                 } else {
                     surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_2);
                 }

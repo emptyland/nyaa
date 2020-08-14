@@ -16,9 +16,11 @@ public:
     DEF_VAL_PROP_RW(double, speed);
     DEF_VAL_PROP_RW(double, time);
 
-    res::Texture *GetFrame() const {
+    res::Texture *GetFrame() const { return GetFrame(time_); }
+
+    res::Texture *GetFrame(double time) const {
         if (speed_ == 0.0) { return def_->key_frame(dir_); }
-        int i = static_cast<int>(time_ / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
+        int i = static_cast<int>(time / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
         return def_->frame(dir_, i);
     }
 

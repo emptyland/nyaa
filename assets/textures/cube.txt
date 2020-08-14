@@ -1,6 +1,6 @@
 # ID   |   Name ID                 # top texture # edge texture # env      # remark    #
 ------------------------------------------------------------------------------------------------------------------------
-100000 | CUBE_AIR                  | 200000      | 200000       | ..       | Air cube has nothing
-100010 | CUBE_WALL_1               | 200000      | 200000       | ..       | cube
-100020 | CUBE_WOOD_1               | 200010      | 200010       | ..       | cube
+100000 | CUBE_AIR                  | 200020      | 200020       | ..       | Air cube has nothing
+100010 | CUBE_DIRT_1               | 200100      | 200750       | ..       | cube
+100020 | CUBE_DIRT_2               | 200190      | 200750       | ..       | cube
 100290 | CUBE_WALL_2               | 200290      | 200290       | ..       | cube

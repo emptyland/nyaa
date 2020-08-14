@@ -46,8 +46,10 @@ set(GAME_SRC
     src/game/boot-scene.cc
     src/game/test-scene.cc
     src/game/properties.cc
+    src/entity/player-entity.cc
     src/component/cube-component.cc
     src/system/random-region-system.cc
+    src/system/avatar-render-system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc

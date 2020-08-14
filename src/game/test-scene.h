@@ -6,11 +6,8 @@
 
 namespace nyaa {
 
-namespace entity {
-class Region;
-}  // namespace entity
-
 namespace com {
+class RegionComponent;
 class AvatarComponent;
 }  // namespace com
 
@@ -30,10 +27,10 @@ public:
     void Render(double delta) final;
 
 private:
-    entity::Region *                      region_ = nullptr;
+    std::unique_ptr<com::RegionComponent> region_;
     std::unique_ptr<com::AvatarComponent> avatar_;
-    float angle_y_ = 45;
-    float angle_z_ = 45;
+    float                                 angle_y_ = 45;
+    float                                 angle_z_ = 45;
 };  // class TestScene
 
 }  // namespace nyaa
