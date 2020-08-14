@@ -17,6 +17,7 @@ public:
 
     DEF_VAL_GETTER(std::string, name);
     DEF_VAL_GETTER(std::string, assets_dir);
+    DEF_VAL_GETTER(int, show_fps);
     DEF_VAL_GETTER(std::string, language);
     DEF_VAL_GETTER(int, window_width);
     DEF_VAL_GETTER(int, window_height);
@@ -46,6 +47,7 @@ private:
     std::string name_;
     std::string assets_dir_;
     std::string language_;
+    int         show_fps_      = 0;
     int         window_width_  = 0;
     int         window_height_ = 0;
     std::string default_font_file_;

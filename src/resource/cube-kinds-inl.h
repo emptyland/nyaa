@@ -6,6 +6,8 @@
     V(CUBE_AIR) \
     V(CUBE_DIRT_1) \
     V(CUBE_DIRT_2) \
-    V(CUBE_WALL_2) \
+    V(CUBE_GRASS_1) \
+    V(CUBE_GRASS_2) \
+    V(CUBE_STONE_1) \
 
 #endif // NYAA_RESOURCE_CUBE_KINDS_INL_H_

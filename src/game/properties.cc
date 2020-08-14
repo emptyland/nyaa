@@ -7,10 +7,15 @@ namespace nyaa {
 /*static*/ const Properties::PropertyDef Properties::defs_[] = {
 #define PROPERTY_DEF(name, type) \
     { #name, sizeof(#name) - 1, offsetof(Properties, name##_), res::DefValType::type }
-    PROPERTY_DEF(name, STRING),           PROPERTY_DEF(assets_dir, STRING),
-    PROPERTY_DEF(language, STRING),       PROPERTY_DEF(window_width, I32),
-    PROPERTY_DEF(window_height, I32),     PROPERTY_DEF(default_font_file, STRING),
-    PROPERTY_DEF(default_font_size, I32), {nullptr, 0},
+    PROPERTY_DEF(name, STRING),
+    PROPERTY_DEF(assets_dir, STRING),
+    PROPERTY_DEF(show_fps, I32),
+    PROPERTY_DEF(language, STRING),
+    PROPERTY_DEF(window_width, I32),
+    PROPERTY_DEF(window_height, I32),
+    PROPERTY_DEF(default_font_file, STRING),
+    PROPERTY_DEF(default_font_size, I32),
+    {nullptr, 0},
 #undef PROPERTY_DEF
 };
 

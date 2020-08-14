@@ -13,10 +13,13 @@ void RandomRegionSystem::Update(com::RegionComponent *region) {
     com::RegionComponent::Floor *surface = region->floor(kTerrainSurfaceLevel);
     for (int y = 0; y < kRegionSize; y++) {
         for (int x = 0; x < kRegionSize; x++) {
-            if (::rand() & 0x3) {
-                surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1);
-            } else {
-                surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_2);
+            int seed = ::rand() & 0x7;
+            switch (seed) {
+                case 0: surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1); break;
+                case 1: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
+                case 2: surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_2); break;
+                case 3: surface->cubes[x][y].set_kind(res::Cube::CUBE_GRASS_2); break;
+                default: surface->cubes[x][y].set_kind(res::Cube::CUBE_GRASS_1); break;
             }
             surface->cubes[x][y].set_hardness(4);
         }
@@ -24,12 +27,13 @@ void RandomRegionSystem::Update(com::RegionComponent *region) {
 
     // (3) fill under ground
     for (int level = 0; level < kTerrainSurfaceLevel; level++) {
+        surface = region->floor(level);
         for (int y = 0; y < kRegionSize; y++) {
             for (int x = 0; x < kRegionSize; x++) {
                 if (::rand() & 0x1) {
                     surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1);
                 } else {
-                    surface->cubes[x][y].set_kind(res::Cube::CUBE_WALL_2);
+                    surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_2);
                 }
                 surface->cubes[x][y].set_hardness(4);
             }

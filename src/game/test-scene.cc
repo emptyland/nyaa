@@ -79,7 +79,7 @@ void TestScene::Render(double delta) {
     glRotated(angle_z_, 0.0, 1.0, 0.0);
 
     glPushMatrix();
-    glScaled(0.14, 0.14, 0.14);
+    glScaled(0.1, 0.1, 0.1);
 
     constexpr int      n_cubes = 20;
     constexpr Vertex2i center{kRegionSize / 2, kRegionSize / 2};
@@ -89,7 +89,7 @@ void TestScene::Render(double delta) {
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     com::RegionComponent::Floor *surface = region_->floor(kTerrainSurfaceLevel);
     res::Cube *                  cube    = game()->cube_lib()->cube(surface->cubes[0][0].kind());

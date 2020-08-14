@@ -3,4 +3,6 @@
 100000 | CUBE_AIR                  | 200020      | 200020       | ..       | Air cube has nothing
 100010 | CUBE_DIRT_1               | 200100      | 200750       | ..       | cube
 100020 | CUBE_DIRT_2               | 200190      | 200750       | ..       | cube
-100290 | CUBE_WALL_2               | 200290      | 200290       | ..       | cube
+100030 | CUBE_GRASS_1              | 200140      | 201420       | ..       | cube
+100040 | CUBE_GRASS_2              | 200150      | 201420       | ..       | cube
+100290 | CUBE_STONE_1              | 200120      | 200120       | ..       | cube

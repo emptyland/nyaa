@@ -36,6 +36,16 @@ Game::~Game() { ::glfwTerminate(); }
 
 void Game::SetWindowTitle(const char *title) { ::glfwSetWindowTitle(window_, title); }
 
+void FrustumResizeCallback(GLFWwindow *window, int w, int h) {
+    glViewport(0, 0, w, h);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(0, w, 0, h, -100.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
 bool Game::Prepare(const std::string &properties_file_name) {
     FILE *fp = ::fopen(properties_file_name.c_str(), "rb");
     if (fp == nullptr) {
@@ -61,6 +71,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwSetWindowUserPointer(window_, this);
     glfwSetKeyCallback(window_, OnKeyInput);
     glfwSetCursorPosCallback(window_, OnMouseInput);
+    //glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -95,13 +106,17 @@ void Game::Run() {
         glfwGetWindowSize(window_, &window_w_, &window_h_);
         glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
 
-        // TO 3D
-        //glViewport(0, 0, fb_w_, fb_h_);
-
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 
         scene_->Render(delta);
+
+        if (properties()->show_fps()) {
+            char fps_buf[120];
+            ::snprintf(fps_buf, sizeof(fps_buf), "FPS: %0.2f", 1 / delta);
+            Projection2DScope scope(this);
+            font_lib()->default_face()->Render(fps_buf, 0, fb_h() - properties()->default_font_size(), {1, 1, 1});
+        }
 
         glfwSwapBuffers(window_);
         glfwPollEvents();
