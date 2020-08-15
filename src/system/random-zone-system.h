@@ -8,20 +8,22 @@ namespace nyaa {
 
 namespace com {
 class RegionComponent;
+class ZoneComponent;
 }  // namespace entity
 
 namespace sys {
 
-class RandomRegionSystem {
+class RandomZoneSystem {
 public:
-    RandomRegionSystem() = default;
+    RandomZoneSystem() = default;
 
+    void Update(com::ZoneComponent *zone);
     void Update(com::RegionComponent *region);
 
-    DISALLOW_IMPLICIT_CONSTRUCTORS(RandomRegionSystem);
+    DISALLOW_IMPLICIT_CONSTRUCTORS(RandomZoneSystem);
 
 private:
-};  // class RandomRegionSystem
+};  // class RandomZoneSystem
 
 }  // namespace sys
 

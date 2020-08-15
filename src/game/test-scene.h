@@ -7,7 +7,7 @@
 namespace nyaa {
 
 namespace com {
-class RegionComponent;
+class ZoneComponent;
 class AvatarComponent;
 }  // namespace com
 
@@ -27,10 +27,8 @@ public:
     void Render(double delta) final;
 
 private:
-    std::unique_ptr<com::RegionComponent> region_;
+    std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<com::AvatarComponent> avatar_;
-    float                                 angle_y_ = 45;
-    float                                 angle_z_ = 45;
 };  // class TestScene
 
 }  // namespace nyaa

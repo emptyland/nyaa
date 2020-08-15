@@ -3,6 +3,8 @@
 #include "game/boot-scene.h"
 #include "game/scene.h"
 #include "system/entity-allocation-system.h"
+#include "system/zone-render-system.h"
+#include "system/random-zone-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -21,6 +23,8 @@ base::LazyInstance<Game> ThisGame;
 Game::Game()
     : boot_scene_(new BootScene(this))
     , entity_allocator_(new sys::EntityAllocationSystem())
+    , zone_render_(new sys::ZoneRenderSystem())
+    , random_zone_(new sys::RandomZoneSystem())
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))
@@ -71,7 +75,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwSetWindowUserPointer(window_, this);
     glfwSetKeyCallback(window_, OnKeyInput);
     glfwSetCursorPosCallback(window_, OnMouseInput);
-    //glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
+    // glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -92,6 +96,10 @@ bool Game::Prepare(const std::string &properties_file_name) {
         return false;
     }
     if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) { return false; }
+
+    // Initial tiles texture id
+    res::Texture *tex = DCHECK_NOTNULL(texture_lib_->FindOrNull(ResourceId::Of(200000)));
+    zone_render()->set_tile_tex_id(tex->tex_id());
 
     scene_ = boot_scene_.get();
     boot_scene_->Reset();

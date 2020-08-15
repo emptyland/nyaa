@@ -10,7 +10,14 @@ static constexpr int kTerrainMaxLevels = 16;
 
 static constexpr int kTerrainSurfaceLevel = 7;
 
-static constexpr int kDefaultViewportSize = 100;
+static constexpr int kDefaultViewportSize = 20;
+
+// Terrain zone render
+static constexpr double kDefaultZoneRotateAngleY = 45;
+
+static constexpr double kDefaultZoneRotateAngleZ = 45;
+
+static constexpr double kDefaultZoneScale = 0.13;
 
 }  // namespace nyaa
 
