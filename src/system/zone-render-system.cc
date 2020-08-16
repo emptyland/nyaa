@@ -25,6 +25,34 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
 
     glViewport(0, 0, fb_size.x, fb_size.y);
 
+#if 0
+    //------------------------------------------------------------------------------------------------------------------
+    // Light
+    GLfloat sun_light_position[] = {0.0f, 10.0f, 0.0f, 1.0f};  //光源的位置在世界坐标系圆心，齐次坐标形式
+    GLfloat sun_light_ambient[]  = {0.1f, 0.1f, 0.1f, 1.0f};  // RGBA模式的环境光，为0
+    GLfloat sun_light_diffuse[]  = {1.0f, 1.0f, 1.0f, 1.0f};  // RGBA模式的漫反射光，全白光
+    GLfloat sun_light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};  // RGBA模式下的镜面光 ，全白光
+    glLightfv(GL_LIGHT0, GL_POSITION, sun_light_position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, sun_light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, sun_light_specular);
+
+    GLfloat sun_mat_ambient[]  = {0.0f, 0.0f, 0.0f, 1.0f};  //定义材质的环境光颜色，为0
+    GLfloat sun_mat_diffuse[]  = {0.1f, 0.1f, 0.1f, 1.0f};  //定义材质的漫反射光颜色，为0
+    GLfloat sun_mat_specular[] = {0.8f, 0.8f, 0.8f, 1.0f};  //定义材质的镜面反射光颜色，为0
+    GLfloat sun_mat_emission[] = {0.8f, 0.8f, 0.8f, 1.0f};  //定义材质的辐射广颜色，为偏红色
+    GLfloat sun_mat_shininess  = 0.0f;
+    glMaterialfv(GL_FRONT, GL_AMBIENT, sun_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, sun_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, sun_mat_specular);
+    glMaterialfv(GL_FRONT, GL_EMISSION, sun_mat_emission);
+    glMaterialf(GL_FRONT, GL_SHININESS, sun_mat_shininess);
+
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    //------------------------------------------------------------------------------------------------------------------
+#endif
+
     //------------------------------------------------------------------------------------------------------------------
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
@@ -75,10 +103,8 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
 void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
     VertexBundle vertexs[24];  // Texture + vertex
     Vertex3f     p0;
-    p0.x = (-zone->viewport().bound().x/2 + i - zone->viewport().adjust_center_x()) * cube_size_;
-    p0.z = (zone->viewport().bound().y/2 - j + zone->viewport().adjust_center_y()) * cube_size_;
-    // p0.x += zone->viewport().adjust_center_x();
-    // p0.z += zone->viewport().adjust_center_y();
+    p0.x = (-zone->viewport().bound().x / 2 + i - zone->viewport().adjust_center_x()) * cube_size_;
+    p0.z = (zone->viewport().bound().y / 2 - j + zone->viewport().adjust_center_y()) * cube_size_;
 
     for (int z = kTerrainSurfaceLevel; z < kTerrainMaxLevels; z++) {
         com::CubeComponent *cube = zone->CubeAt(i, j, z);
