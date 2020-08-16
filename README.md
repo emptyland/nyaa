@@ -1,2 +1,3 @@
 # Nyaa
+
 A simple game

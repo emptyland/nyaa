@@ -28,11 +28,17 @@ private:
 
 class ViewportComponent {
 public:
-    DEF_VAL_PROP_RW(Vertex2i, center_coord);
+    DEF_VAL_PROP_RMW(Vertex2f, center_coord);
     DEF_VAL_PROP_RW(Vertex2i, bound);
 
+    int round_down_center_x() const { return static_cast<int>(center_coord().x); }
+    int round_down_center_y() const { return static_cast<int>(center_coord().y); }
+
+    float adjust_center_x() const { return center_coord().x - round_down_center_x(); }
+    float adjust_center_y() const { return center_coord().y - round_down_center_y(); }
+
 private:
-    Vertex2i center_coord_ = {0, 0};
+    Vertex2f center_coord_ = {0, 0};
     Vertex2i bound_        = {kDefaultViewportSize, kDefaultViewportSize};
 };  // class ViewportComponent
 
@@ -47,7 +53,7 @@ public:
 
     CubeComponent *Cube(int x, int y, int z);
 
-    Want UpdateViewportCoord(Vertex2i coord) {
+    Want UpdateViewportCoord(Vertex2f coord) {
         viewport_.set_center_coord(coord);
         want_ = WantSibling();
         return want_;

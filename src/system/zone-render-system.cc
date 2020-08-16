@@ -65,14 +65,20 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+
+    //------------------------------------------------------------------------------------------------------------------
+    glDisable(GL_CULL_FACE);
+    //------------------------------------------------------------------------------------------------------------------
 }
 
 // Vertex3i pos{-n_cubes, -1, n_cubes};
 void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
     VertexBundle vertexs[24];  // Texture + vertex
     Vertex3f     p0;
-    p0.x = (-zone->viewport().bound().x/2 + i) * cube_size_;
-    p0.z = (zone->viewport().bound().y/2 - j) * cube_size_;
+    p0.x = (-zone->viewport().bound().x/2 + i - zone->viewport().adjust_center_x()) * cube_size_;
+    p0.z = (zone->viewport().bound().y/2 - j + zone->viewport().adjust_center_y()) * cube_size_;
+    // p0.x += zone->viewport().adjust_center_x();
+    // p0.z += zone->viewport().adjust_center_y();
 
     for (int z = kTerrainSurfaceLevel; z < kTerrainMaxLevels; z++) {
         com::CubeComponent *cube = zone->CubeAt(i, j, z);
@@ -100,13 +106,13 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
         points[7].z += cube_size_;
 
         // back
-        vertexs[0].tex = tt->coord(0);
+        vertexs[0].tex = et->coord(0);
         vertexs[0].vec = points[0];
-        vertexs[2].tex = tt->coord(1);
+        vertexs[2].tex = et->coord(1);
         vertexs[2].vec = points[2];
-        vertexs[3].tex = tt->coord(2);
+        vertexs[3].tex = et->coord(2);
         vertexs[3].vec = points[3];
-        vertexs[1].tex = tt->coord(3);
+        vertexs[1].tex = et->coord(3);
         vertexs[1].vec = points[1];
 
         // left

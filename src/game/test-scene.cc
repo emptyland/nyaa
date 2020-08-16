@@ -1,6 +1,7 @@
 #include "game/test-scene.h"
 #include "game/game.h"
 #include "resource/texture-library.h"
+#include "resource/font-library.h"
 #include "component/zone-component.h"
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
@@ -38,16 +39,36 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DelayDispose();
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
-        case GLFW_KEY_W:
+        case GLFW_KEY_W: {
+            Vertex2f center = zone_->viewport().center_coord();
+            center.y -= 0.14;
+            zone_->UpdateViewportCoord(center);
+        } break;
+        case GLFW_KEY_S: {
+            Vertex2f center = zone_->viewport().center_coord();
+            center.y += 0.14;
+            zone_->UpdateViewportCoord(center);
+        } break;
+        case GLFW_KEY_A: {
+            Vertex2f center = zone_->viewport().center_coord();
+            center.x -= 0.14;
+            zone_->UpdateViewportCoord(center);
+        } break;
+        case GLFW_KEY_D: {
+            Vertex2f center = zone_->viewport().center_coord();
+            center.x += 0.14;
+            zone_->UpdateViewportCoord(center);
+        } break;
+        case GLFW_KEY_UP:
             Game::This()->zone_render()->set_rotate_angle_y(Game::This()->zone_render()->rotate_angle_y() + 2);
             break;
-        case GLFW_KEY_S:
+        case GLFW_KEY_DOWN:
             Game::This()->zone_render()->set_rotate_angle_y(Game::This()->zone_render()->rotate_angle_y() - 2);
             break;
-        case GLFW_KEY_A:
+        case GLFW_KEY_LEFT:
             Game::This()->zone_render()->set_rotate_angle_z(Game::This()->zone_render()->rotate_angle_z() - 2);
             break;
-        case GLFW_KEY_D:
+        case GLFW_KEY_RIGHT:
             Game::This()->zone_render()->set_rotate_angle_z(Game::This()->zone_render()->rotate_angle_z() + 2);
             break;
         default: break;
@@ -57,6 +78,13 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
 void TestScene::Render(double delta) {
 
     Game::This()->zone_render()->Render(zone_.get());
+
+    {
+        char buf[128];
+        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f", zone_->viewport().center_coord().x,
+                   zone_->viewport().center_coord().y);
+        Game::This()->font_lib()->default_face()->Render(buf, 0, Game::This()->fb_h() - 128, {0,1,0});
+    }
 
     // TO 3D
     //------------------------------------------------------------------------------------------------------------------

@@ -122,7 +122,6 @@ void Game::Run() {
         if (properties()->show_fps()) {
             char fps_buf[120];
             ::snprintf(fps_buf, sizeof(fps_buf), "FPS: %0.2f", 1 / delta);
-            Projection2DScope scope(this);
             font_lib()->default_face()->Render(fps_buf, 0, fb_h() - properties()->default_font_size(), {1, 1, 1});
         }
 

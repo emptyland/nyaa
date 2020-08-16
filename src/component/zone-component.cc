@@ -22,7 +22,7 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
     const int dx = viewport_.bound().x / 2;
     const int dy = viewport_.bound().y / 2;
 
-    Vertex2i dest{viewport_.center_coord().x - dx, viewport_.center_coord().y - dy};
+    Vertex2i dest{viewport_.round_down_center_x() - dx, viewport_.round_down_center_y() - dy};
     DCHECK_GE(dest.x, 0);
     DCHECK_GE(dest.y, 0);
 
@@ -115,9 +115,10 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
 ZoneComponent::Want ZoneComponent::WantSibling() {
     Vertex4i region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
                     region_->global_coord().y + kRegionSize};
-    Vertex4i view{
-        viewport_.center_coord().x - viewport_.bound().x / 2, viewport_.center_coord().y - viewport_.bound().y / 2,
-        viewport_.center_coord().x + viewport_.bound().x / 2, viewport_.center_coord().y + viewport_.bound().y / 2};
+    Vertex4i view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
+                  viewport_.round_down_center_y() - viewport_.bound().y / 2,
+                  viewport_.round_down_center_x() + viewport_.bound().x / 2,
+                  viewport_.round_down_center_y() + viewport_.bound().y / 2};
 
     Want want = kNone;
     if (view.w > region.w) {
