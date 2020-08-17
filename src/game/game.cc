@@ -5,6 +5,7 @@
 #include "system/entity-allocation-system.h"
 #include "system/zone-render-system.h"
 #include "system/random-zone-system.h"
+#include "system/zone-loading-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -24,6 +25,7 @@ Game::Game()
     : boot_scene_(new BootScene(this))
     , entity_allocator_(new sys::EntityAllocationSystem())
     , zone_render_(new sys::ZoneRenderSystem())
+    , zone_loader_(new sys::ZoneLoadingSystem())
     , random_zone_(new sys::RandomZoneSystem())
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
@@ -175,10 +177,11 @@ void Game::EnterProjection2D() {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 1);
+    glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 10);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glDisable(GL_CULL_FACE);
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void Game::LeaveProjection2D() {

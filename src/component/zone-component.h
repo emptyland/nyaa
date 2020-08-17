@@ -15,6 +15,10 @@ public:
 
     DEF_VAL_PROP_RW(Vertex2i, global_coord);
 
+    bool GlobalCoordEqual(int x, int y) const { return global_coord().x == x && global_coord().y == y; }
+
+    bool AtEast(int x, int y);
+
     Floor *floor(int i) {
         DCHECK_GE(i, 0);
         DCHECK_LT(i, kTerrainMaxLevels);
@@ -55,9 +59,10 @@ public:
 
     Want UpdateViewportCoord(Vertex2f coord) {
         viewport_.set_center_coord(coord);
-        want_ = WantSibling();
-        return want_;
+        return WantSibling();
     }
+
+    Want UpdateViewportCoord() { return WantSibling(); }
 
     Want WantSibling();
 
@@ -80,7 +85,7 @@ public:
 
 private:
     com::ViewportComponent viewport_;
-    Want want_ = kNone;
+    Want                   want_   = kNone;
     com::RegionComponent * region_ = nullptr;
     com::RegionComponent * sibling_[4];
 };  // class Zone

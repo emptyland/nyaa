@@ -8,6 +8,7 @@
 #include "system/entity-allocation-system.h"
 #include "system/random-zone-system.h"
 #include "system/zone-render-system.h"
+#include "system/zone-loading-system.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -40,24 +41,20 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
         case GLFW_KEY_W: {
-            Vertex2f center = zone_->viewport().center_coord();
-            center.y -= 0.14;
-            zone_->UpdateViewportCoord(center);
+            zone_->mutable_viewport()->mutable_center_coord()->y -= 0.14;
+            Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_S: {
-            Vertex2f center = zone_->viewport().center_coord();
-            center.y += 0.14;
-            zone_->UpdateViewportCoord(center);
+            zone_->mutable_viewport()->mutable_center_coord()->y += 0.14;
+            Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_A: {
-            Vertex2f center = zone_->viewport().center_coord();
-            center.x -= 0.14;
-            zone_->UpdateViewportCoord(center);
+            zone_->mutable_viewport()->mutable_center_coord()->x -= 0.14;
+            Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_D: {
-            Vertex2f center = zone_->viewport().center_coord();
-            center.x += 0.14;
-            zone_->UpdateViewportCoord(center);
+            zone_->mutable_viewport()->mutable_center_coord()->x += 0.14;
+            Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_UP:
             Game::This()->zone_render()->set_rotate_angle_y(Game::This()->zone_render()->rotate_angle_y() + 2);
@@ -83,7 +80,7 @@ void TestScene::Render(double delta) {
         char buf[128];
         ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f", zone_->viewport().center_coord().x,
                    zone_->viewport().center_coord().y);
-        Game::This()->font_lib()->default_face()->Render(buf, 0, Game::This()->fb_h() - 128, {0,1,0});
+        Game::This()->font_lib()->default_face()->Render(buf, 0, 32, {1,1,0});
     }
 
     // TO 3D

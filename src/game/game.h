@@ -23,6 +23,7 @@ namespace sys {
 class EntityAllocationSystem;
 class ZoneRenderSystem;
 class RandomZoneSystem;
+class ZoneLoadingSystem;
 }  // namespace sys
 
 class Scene;
@@ -43,6 +44,7 @@ public:
     const Properties *           properties() const { return properties_.get(); }
     sys::EntityAllocationSystem *entity_allocator() const { return entity_allocator_.get(); }
     sys::ZoneRenderSystem *      zone_render() const { return zone_render_.get(); }
+    sys::ZoneLoadingSystem *     zone_loader() const { return zone_loader_.get(); }
     sys::RandomZoneSystem *      random_zone() const { return random_zone_.get(); }
     res::FontLibrary *           font_lib() const { return font_lib_.get(); }
     res::TextLibrary *           text_lib() const { return text_lib_.get(); }
@@ -87,6 +89,7 @@ private:
     std::unique_ptr<Scene>                       boot_scene_;
     std::unique_ptr<sys::EntityAllocationSystem> entity_allocator_;
     std::unique_ptr<sys::ZoneRenderSystem>       zone_render_;
+    std::unique_ptr<sys::ZoneLoadingSystem>      zone_loader_;
     std::unique_ptr<sys::RandomZoneSystem>       random_zone_;
     std::unique_ptr<res::FontLibrary>            font_lib_;
     std::unique_ptr<res::TextLibrary>            text_lib_;

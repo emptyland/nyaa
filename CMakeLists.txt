@@ -51,6 +51,7 @@ set(GAME_SRC
     src/component/zone-component.cc
     src/system/random-zone-system.cc
     src/system/zone-render-system.cc
+    src/system/zone-loading-system.cc
     src/system/avatar-render-system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
