@@ -17,7 +17,30 @@ public:
 
     bool GlobalCoordEqual(int x, int y) const { return global_coord().x == x && global_coord().y == y; }
 
-    bool AtEast(int x, int y);
+    bool AtEast(int x, int y) const {
+        return x >= global_coord().x + kRegionSize && y < global_coord().y + kRegionSize && y >= global_coord().y;
+    }
+    bool AtWest(int x, int y) const {
+        return x < global_coord().x && y < global_coord().y + kRegionSize && y >= global_coord().y;
+    }
+    bool AtSouth(int x, int y) const {
+        return y >= global_coord().y + kRegionSize && x >= global_coord().x && x < global_coord().x + kRegionSize;
+    }
+    bool AtNorth(int x, int y) const {
+        return y < global_coord().y && x >= global_coord().x && x < global_coord().x + kRegionSize;
+    }
+
+    bool AtSouthEast(int x, int y) const {
+        return x >= global_coord().x + kRegionSize && y >= global_coord().y + kRegionSize;
+    }
+    bool AtSouthWest(int x, int y) const { return x < global_coord().x && y >= global_coord().y + kRegionSize; }
+    bool AtNorthEast(int x, int y) const { return x >= global_coord().x + kRegionSize && y < global_coord().y; }
+    bool AtNorthWest(int x, int y) const { return x < global_coord().x && y < global_coord().y; }
+
+    bool AtBound(int x, int y) const {
+        return x >= global_coord().x && x < global_coord().x + kRegionSize && y >= global_coord().y &&
+               y < global_coord().y + kRegionSize;
+    }
 
     Floor *floor(int i) {
         DCHECK_GE(i, 0);
