@@ -16,7 +16,7 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
         zone->set_region(LoadRegion(viewport_center.x / kRegionSize, viewport_center.y / kRegionSize));
     }
 
-    com::ZoneComponent::Want want = zone->UpdateViewportCoord();
+    com::ZoneComponent::Direction want = zone->UpdateViewportCoord();
     switch (want) {
         case com::ZoneComponent::kE: {
             if (zone->region()->AtEast(viewport_center.x, viewport_center.y)) {
@@ -328,11 +328,13 @@ void ZoneLoadingSystem::ReplaceRegionIfNeeded(com::ZoneComponent *zone, com::Reg
     if (index < 0) {
         if (!zone->region() || !zone->region()->GlobalCoordEqual(x, y)) {
             delete zone->region();
+            DLOG(INFO) << "Load region (" << x << ", " << y << ") set region.";
             zone->set_region(LoadRegion(x, y));
         }
     } else {
         if (!zone->sibling(index) || !zone->sibling(index)->GlobalCoordEqual(x, y)) {
             delete zone->sibling(index);
+            DLOG(INFO) << "Load region (" << x << ", " << y << ") set sibling[" << index << "].";
             zone->set_sibling(index, LoadRegion(x, y));
         }
     }

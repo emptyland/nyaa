@@ -36,74 +36,102 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
     switch (want_) {
         case kNone: return &region_->floor(z)->cubes[lx][ly];
         case kE:
-            if (dest.x < limit_x) {
-                return &region_->floor(z)->cubes[lx][ly];
-            } else {
+            if (region()->AtEast(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
+            } else {
+                DCHECK(region()->AtBound(dest.x, dest.y));
+                return &region()->floor(z)->cubes[lx][ly];
             }
             break;
         case kS:
-            if (dest.y < limit_y) {
-                return &region_->floor(z)->cubes[lx][ly];
-            } else {
+            if (region()->AtSouth(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
+            } else {
+                DCHECK(region()->AtBound(dest.x, dest.y));
+                return &region()->floor(z)->cubes[lx][ly];
             }
             break;
         case kW:
-            if (dest.x >= region_->global_coord().x) {
-                return &region_->floor(z)->cubes[lx][ly];
-            } else {
+            if (region()->AtWest(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
+            } else {
+                DCHECK(region()->AtBound(dest.x, dest.y));
+                return &region()->floor(z)->cubes[lx][ly];
             }
             break;
         case kN:
-            if (dest.y >= region_->global_coord().y) {
-                return &region_->floor(z)->cubes[lx][ly];
-            } else {
+            if (region()->AtNorth(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
+            } else {
+                DCHECK(region()->AtBound(dest.x, dest.y));
+                return &region()->floor(z)->cubes[lx][ly];
             }
             break;
+
+        //
+        //   SE | [0]
+        // -----+-----
+        //  [2] | [1]
         case kSE:
-            if (dest.x < limit_x && dest.y < limit_y) {
-                return &region_->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= limit_x && dest.y < limit_y) {
+            if (region()->AtBound(dest.x, dest.y)) {
+                return &region()->floor(z)->cubes[lx][ly];
+            } else if (region()->AtEast(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= limit_x && dest.y >= limit_y) {
+            } else if (region()->AtSouthEast(dest.x, dest.y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
             } else {
+                DCHECK(region()->AtSouth(dest.x, dest.y));
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             }
             break;
+
+        //
+        //   [0] | [1]
+        // ------+-----
+        //    NE | [2]
         case kNE:
-            if (dest.x < limit_x && dest.y >= region_->global_coord().y) {
+            if (region()->AtNorth(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (dest.x < limit_x && dest.y < region_->global_coord().y) {
+            } else if (region()->AtNorthEast(dest.x, dest.y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= limit_x && dest.y < region_->global_coord().y) {
+            } else if (region()->AtEast(dest.x, dest.y)) {
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             } else {
-                return &region_->floor(z)->cubes[lx][ly];
+                DCHECK(region()->AtBound(dest.x, dest.y));
+                return &region()->floor(z)->cubes[lx][ly];
             }
             break;
+
+        //
+        //  [0] | SW
+        // -----+-----
+        //  [2] | [1]
         case kSW:
-            if (dest.x < region_->global_coord().x && dest.y < limit_y) {
+            if (region()->AtWest(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= region_->global_coord().x && dest.y < limit_y) {
-                return &region_->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= region_->global_coord().x && dest.y >= limit_y) {
+            } else if (region()->AtBound(dest.x, dest.y)) {
+                return &region()->floor(z)->cubes[lx][ly];
+            } else if (region()->AtSouth(dest.x, dest.y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
             } else {
+                DCHECK(region()->AtSouthWest(dest.x, dest.y));
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             }
             break;
+
+        //
+        //  [0] | [1]
+        // -----+-----
+        //  [2] | NW
         case kNW:
-            if (dest.x < region_->global_coord().x && dest.y < region_->global_coord().y) {
+            if (region()->AtNorthWest(dest.x, dest.y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= region_->global_coord().x && dest.y < region_->global_coord().y) {
+            } else if (region()->AtNorth(dest.x, dest.y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else if (dest.x >= region_->global_coord().x && dest.y >= region_->global_coord().y) {
-                return &region_->floor(z)->cubes[lx][ly];
+            } else if (region()->AtBound(dest.x, dest.y)) {
+                return &region()->floor(z)->cubes[lx][ly];
             } else {
+                DCHECK(region()->AtWest(dest.x, dest.y));
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             }
             break;
@@ -112,7 +140,7 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
     return nullptr;
 }
 
-ZoneComponent::Want ZoneComponent::WantSibling() {
+ZoneComponent::Direction ZoneComponent::WantSibling() {
     Vertex4i region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
                     region_->global_coord().y + kRegionSize};
     Vertex4i view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
@@ -120,7 +148,7 @@ ZoneComponent::Want ZoneComponent::WantSibling() {
                   viewport_.round_down_center_x() + viewport_.bound().x / 2,
                   viewport_.round_down_center_y() + viewport_.bound().y / 2};
 
-    Want want = kNone;
+    Direction want = kNone;
     if (view.w > region.w) {
         want = kE;
     } else if (view.x < region.x) {

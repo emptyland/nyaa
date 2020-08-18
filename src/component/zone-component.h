@@ -71,7 +71,7 @@ private:
 
 class ZoneComponent {
 public:
-    enum Want { kNone, kE, kS, kW, kN, kSE, kNE, kSW, kNW };
+    enum Direction { kNone, kE, kS, kW, kN, kSE, kNE, kSW, kNW };
 
     ZoneComponent();
     ~ZoneComponent();
@@ -80,18 +80,18 @@ public:
 
     CubeComponent *Cube(int x, int y, int z);
 
-    Want UpdateViewportCoord(Vertex2f coord) {
+    Direction UpdateViewportCoord(Vertex2f coord) {
         viewport_.set_center_coord(coord);
         return WantSibling();
     }
 
-    Want UpdateViewportCoord() { return WantSibling(); }
+    Direction UpdateViewportCoord() { return WantSibling(); }
 
-    Want WantSibling();
+    Direction WantSibling();
 
     DEF_VAL_PROP_RM(com::ViewportComponent, viewport);
     DEF_PTR_PROP_RW(com::RegionComponent, region);
-    DEF_VAL_GETTER(Want, want);
+    DEF_VAL_GETTER(Direction, want);
 
     com::RegionComponent *sibling(int i) {
         DCHECK_GE(i, 0);
@@ -109,7 +109,7 @@ public:
 
 private:
     com::ViewportComponent viewport_;
-    Want                   want_   = kNone;
+    Direction              want_   = kNone;
     com::RegionComponent * region_ = nullptr;
     com::RegionComponent * sibling_[4];
 };  // class Zone
