@@ -11,20 +11,7 @@ void RandomZoneSystem::Update(com::ZoneComponent *zone) {
         Update(zone->region());
     }
 
-    switch (zone->UpdateViewportCoord(zone->viewport().center_coord())) {
-        case com::ZoneComponent::kE:
-        case com::ZoneComponent::kS:
-        case com::ZoneComponent::kW:
-        case com::ZoneComponent::kN: break;
-
-        case com::ZoneComponent::kSE:
-        case com::ZoneComponent::kSW:
-        case com::ZoneComponent::kNE:
-        case com::ZoneComponent::kNW: break;
-
-        case com::ZoneComponent::kNone: break;
-        default: NOREACHED(); break;
-    }
+    zone->UpdateViewportCoord(zone->viewport().center_coord());
 }
 
 void RandomZoneSystem::Update(com::RegionComponent *region) {

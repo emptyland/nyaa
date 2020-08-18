@@ -80,18 +80,20 @@ public:
 
     CubeComponent *Cube(int x, int y, int z);
 
-    Direction UpdateViewportCoord(Vertex2f coord) {
+    void UpdateViewportCoord(Vertex2f coord) {
         viewport_.set_center_coord(coord);
-        return WantSibling();
+        want_ = WantSibling();
     }
 
-    Direction UpdateViewportCoord() { return WantSibling(); }
+    void UpdateViewportCoord() { want_ = WantSibling(); }
 
     Direction WantSibling();
 
     DEF_VAL_PROP_RM(com::ViewportComponent, viewport);
     DEF_PTR_PROP_RW(com::RegionComponent, region);
     DEF_VAL_GETTER(Direction, want);
+
+    const char *want_string() const { return kDirectionText[want()]; }
 
     com::RegionComponent *sibling(int i) {
         DCHECK_GE(i, 0);
@@ -112,6 +114,8 @@ private:
     Direction              want_   = kNone;
     com::RegionComponent * region_ = nullptr;
     com::RegionComponent * sibling_[4];
+
+    static const char *kDirectionText[];
 };  // class Zone
 
 }  // namespace com

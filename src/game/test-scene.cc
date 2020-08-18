@@ -41,19 +41,19 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
         case GLFW_KEY_W: {
-            zone_->mutable_viewport()->mutable_center_coord()->y -= 0.14;
+            zone_->mutable_viewport()->mutable_center_coord()->y -= 1;
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_S: {
-            zone_->mutable_viewport()->mutable_center_coord()->y += 0.14;
+            zone_->mutable_viewport()->mutable_center_coord()->y += 10;
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_A: {
-            zone_->mutable_viewport()->mutable_center_coord()->x -= 0.14;
+            zone_->mutable_viewport()->mutable_center_coord()->x -= 1;
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_D: {
-            zone_->mutable_viewport()->mutable_center_coord()->x += 0.14;
+            zone_->mutable_viewport()->mutable_center_coord()->x += 1;
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_UP:

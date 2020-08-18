@@ -16,8 +16,8 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
         zone->set_region(LoadRegion(viewport_center.x / kRegionSize, viewport_center.y / kRegionSize));
     }
 
-    com::ZoneComponent::Direction want = zone->UpdateViewportCoord();
-    switch (want) {
+    zone->UpdateViewportCoord();
+    switch (zone->want()) {
         case com::ZoneComponent::kE: {
             if (zone->region()->AtEast(viewport_center.x, viewport_center.y)) {
                 com::RegionComponent *east = zone->region();
@@ -29,7 +29,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kW, zone->want());
+            } else {
+                ReplaceRegionIfNeeded(zone, zone->region(), 0, 1, 0);
             }
+            zone->set_sibling(1, nullptr);
+            zone->set_sibling(2, nullptr);
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
         case com::ZoneComponent::kS: {
@@ -43,7 +47,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kN, zone->want());
+            } else {
+                ReplaceRegionIfNeeded(zone, zone->region(), 0, 0, 1);
             }
+            zone->set_sibling(1, nullptr);
+            zone->set_sibling(2, nullptr);
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
         case com::ZoneComponent::kW: {
@@ -57,7 +65,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kE, zone->want());
+            } else {
+                ReplaceRegionIfNeeded(zone, zone->region(), 0, -1, 0);
             }
+            zone->set_sibling(1, nullptr);
+            zone->set_sibling(2, nullptr);
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
         case com::ZoneComponent::kN: {
@@ -71,7 +83,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kS, zone->want());
+            } else {
+                ReplaceRegionIfNeeded(zone, zone->region(), 0, 0, -1);
             }
+            zone->set_sibling(1, nullptr);
+            zone->set_sibling(2, nullptr);
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
         //
@@ -133,6 +149,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kNW, zone->want());
+            } else {
+                com::RegionComponent *se = zone->region();
+                ReplaceRegionIfNeeded(zone, se, 0, 1, 0);
+                ReplaceRegionIfNeeded(zone, se, 1, 1, 1);
+                ReplaceRegionIfNeeded(zone, se, 2, 0, 1);
             }
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
@@ -193,6 +214,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kNE, zone->want());
+            } else {
+                com::RegionComponent *sw = zone->region();
+                ReplaceRegionIfNeeded(zone, sw, 0, -1, 0);
+                ReplaceRegionIfNeeded(zone, sw, 1, 0, 1);
+                ReplaceRegionIfNeeded(zone, sw, 2, -1, 1);
             }
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
@@ -253,6 +279,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kSW, zone->want());
+            } else {
+                com::RegionComponent *ne = zone->region();
+                ReplaceRegionIfNeeded(zone, ne, 0, 0, -1);
+                ReplaceRegionIfNeeded(zone, ne, 1, -1, -1);
+                ReplaceRegionIfNeeded(zone, ne, 2, 1, 0);
             }
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;
@@ -313,6 +344,11 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
 
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kSE, zone->want());
+            } else {
+                com::RegionComponent *nw = zone->region();
+                ReplaceRegionIfNeeded(zone, nw, 0, -1, -1);
+                ReplaceRegionIfNeeded(zone, nw, 1, 0, -1);
+                ReplaceRegionIfNeeded(zone, nw, 2, -1, 0);
             }
             DCHECK(zone->region()->AtBound(viewport_center.x, viewport_center.y));
         } break;

@@ -140,6 +140,10 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
     return nullptr;
 }
 
+const char *ZoneComponent::kDirectionText[] = {
+    "None", "East", "South", "West", "North", "SouthEast", "NorthEast", "SouthWest", "NorthWest",
+};
+
 ZoneComponent::Direction ZoneComponent::WantSibling() {
     Vertex4i region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
                     region_->global_coord().y + kRegionSize};
