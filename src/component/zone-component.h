@@ -91,6 +91,7 @@ public:
 
     DEF_VAL_PROP_RM(com::ViewportComponent, viewport);
     DEF_PTR_PROP_RW(com::RegionComponent, region);
+    DEF_VAL_GETTER(Want, want);
 
     com::RegionComponent *sibling(int i) {
         DCHECK_GE(i, 0);

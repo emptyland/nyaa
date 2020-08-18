@@ -21,7 +21,7 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(ZoneLoadingSystem);
 
 private:
-    void LoadRegionsIfNeeded(int x, int y);
+    void ReplaceRegionIfNeeded(com::ZoneComponent *zone, com::RegionComponent *region, int index, int dx, int dy);
     com::RegionComponent *LoadRegion(int x, int y);
 };  // class ZoneLoadingSystem
 
