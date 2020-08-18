@@ -6,6 +6,7 @@
 #include "system/zone-render-system.h"
 #include "system/random-zone-system.h"
 #include "system/zone-loading-system.h"
+#include "system/actor-movement-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -27,6 +28,7 @@ Game::Game()
     , zone_render_(new sys::ZoneRenderSystem())
     , zone_loader_(new sys::ZoneLoadingSystem())
     , random_zone_(new sys::RandomZoneSystem())
+    , actor_movement_(new sys::ActorMovementSystem())
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))

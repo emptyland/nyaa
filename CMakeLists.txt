@@ -53,6 +53,7 @@ set(GAME_SRC
     src/system/zone-render-system.cc
     src/system/zone-loading-system.cc
     src/system/avatar-render-system.cc
+    src/system/actor-movement-system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc

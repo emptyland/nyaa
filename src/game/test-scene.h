@@ -11,6 +11,10 @@ class ZoneComponent;
 class AvatarComponent;
 }  // namespace com
 
+namespace entity {
+class PlayerEntity;
+}  // namespace entity
+
 class Game;
 
 class TestScene : public Scene {
@@ -28,7 +32,7 @@ public:
 
 private:
     std::unique_ptr<com::ZoneComponent>   zone_;
-    std::unique_ptr<com::AvatarComponent> avatar_;
+    std::unique_ptr<entity::PlayerEntity> player_;
 };  // class TestScene
 
 }  // namespace nyaa

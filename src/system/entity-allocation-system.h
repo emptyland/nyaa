@@ -29,6 +29,12 @@ public:
         return new T();
     }
 
+    //_Args&&... __args
+    template <class T, class... Args, class = std::enable_if_t<std::is_base_of<entity::Entity, T>::value>>
+    T *New(Args&&... args) {
+        return new T(args...);
+    }
+
     template <class T, class = std::enable_if_t<std::is_base_of<entity::Entity, T>::value>>
     void Free(T *entity) {
         delete entity;

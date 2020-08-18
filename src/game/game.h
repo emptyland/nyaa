@@ -24,6 +24,7 @@ class EntityAllocationSystem;
 class ZoneRenderSystem;
 class RandomZoneSystem;
 class ZoneLoadingSystem;
+class ActorMovementSystem;
 }  // namespace sys
 
 class Scene;
@@ -46,6 +47,7 @@ public:
     sys::ZoneRenderSystem *      zone_render() const { return zone_render_.get(); }
     sys::ZoneLoadingSystem *     zone_loader() const { return zone_loader_.get(); }
     sys::RandomZoneSystem *      random_zone() const { return random_zone_.get(); }
+    sys::ActorMovementSystem *   actor_movement() const { return actor_movement_.get(); }
     res::FontLibrary *           font_lib() const { return font_lib_.get(); }
     res::TextLibrary *           text_lib() const { return text_lib_.get(); }
     res::AvatarLibrary *         avatar_lib() const { return avatar_lib_.get(); }
@@ -91,6 +93,7 @@ private:
     std::unique_ptr<sys::ZoneRenderSystem>       zone_render_;
     std::unique_ptr<sys::ZoneLoadingSystem>      zone_loader_;
     std::unique_ptr<sys::RandomZoneSystem>       random_zone_;
+    std::unique_ptr<sys::ActorMovementSystem>    actor_movement_;
     std::unique_ptr<res::FontLibrary>            font_lib_;
     std::unique_ptr<res::TextLibrary>            text_lib_;
     std::unique_ptr<res::TextureLibrary>         texture_lib_;

@@ -3,6 +3,7 @@
 #define NYAA_SYSETM_ZONE_LOADING_SYSTEM_H_
 
 #include "base/base.h"
+#include <unordered_map>
 
 namespace nyaa {
 namespace com {
@@ -23,6 +24,8 @@ public:
 private:
     void ReplaceRegionIfNeeded(com::ZoneComponent *zone, com::RegionComponent *region, int index, int dx, int dy);
     com::RegionComponent *LoadRegion(int x, int y);
+
+    std::unordered_map<int, com::RegionComponent *> cached_regions_;
 };  // class ZoneLoadingSystem
 
 }  // namespace sys

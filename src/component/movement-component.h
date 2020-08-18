@@ -18,7 +18,7 @@ public:
 
 private:
     PositionComponent coord_;
-    VelocityComponent speed_;
+    VelocityComponent speed_; // MPS
 }; // class MovementComponent
 
 }  // namespace com

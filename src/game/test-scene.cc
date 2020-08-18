@@ -2,6 +2,7 @@
 #include "game/game.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
+#include "entity/player-entity.h"
 #include "component/zone-component.h"
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
@@ -9,6 +10,7 @@
 #include "system/random-zone-system.h"
 #include "system/zone-render-system.h"
 #include "system/zone-loading-system.h"
+#include "system/actor-movement-system.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -26,11 +28,16 @@ void TestScene::Reset() {
     zone_->mutable_viewport()->set_center_coord({kRegionSize / 2, kRegionSize / 2});
     Game::This()->random_zone()->Update(zone_.get());
 
-    res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
-    DCHECK(def != nullptr);
-    avatar_.reset(new com::AvatarComponent(def));
-    avatar_->set_dir(res::Avatar::kRight);
-    avatar_->set_speed(0.9);
+    // res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
+    // DCHECK(def != nullptr);
+    // avatar_.reset(new com::AvatarComponent(def));
+    // avatar_->set_dir(res::Avatar::kRight);
+    // avatar_->set_speed(0.9);
+
+    game()->entity_allocator()->Register<entity::PlayerEntity>();
+    player_.reset(
+        game()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(100000)));
+    // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
 void TestScene::OnKeyInput(int key, int code, int action, int mods) {
@@ -41,19 +48,24 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
         case GLFW_KEY_W: {
-            zone_->mutable_viewport()->mutable_center_coord()->y -= 1;
+            player_->mutable_movement()->set_speed({0, 0.14, 0});
+            Game::This()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0 /*delta*/);
+            // TODO: zone_->mutable_viewport()->set_center_coord(player_->movement().coord());
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_S: {
-            zone_->mutable_viewport()->mutable_center_coord()->y += 10;
+            // zone_->mutable_viewport()->mutable_center_coord()->y += 10;
+            player_->mutable_movement()->set_speed({0, -0.14, 0});
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_A: {
-            zone_->mutable_viewport()->mutable_center_coord()->x -= 1;
+            // zone_->mutable_viewport()->mutable_center_coord()->x -= 1;
+            player_->mutable_movement()->set_speed({-0.14, 0, 0});
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_D: {
-            zone_->mutable_viewport()->mutable_center_coord()->x += 1;
+            // zone_->mutable_viewport()->mutable_center_coord()->x += 1;
+            player_->mutable_movement()->set_speed({0.14, 0, 0});
             Game::This()->zone_loader()->Update(zone_.get());
         } break;
         case GLFW_KEY_UP:
@@ -80,7 +92,7 @@ void TestScene::Render(double delta) {
         char buf[128];
         ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f", zone_->viewport().center_coord().x,
                    zone_->viewport().center_coord().y);
-        Game::This()->font_lib()->default_face()->Render(buf, 0, 32, {1,1,0});
+        Game::This()->font_lib()->default_face()->Render(buf, 0, 32, {1, 1, 0});
     }
 
     // TO 3D
