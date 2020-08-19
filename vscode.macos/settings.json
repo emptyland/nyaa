@@ -76,5 +76,6 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "python.linting.enabled": false,
     //"editor.formatOnSave": true,
-    "clang-format.executable": "/usr/local/bin/clang-format"
+    "clang-format.executable": "/usr/local/bin/clang-format",
+    "glsllint.glslangValidatorPath": "/usr/local/bin/glslangValidator"
 }

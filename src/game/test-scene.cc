@@ -11,6 +11,7 @@
 #include "system/zone-render-system.h"
 #include "system/zone-loading-system.h"
 #include "system/actor-movement-system.h"
+#include "system/avatar-render-system.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -24,23 +25,23 @@ void TestScene::Reset() {
     com::RegionComponent *region = new com::RegionComponent();
     region->set_global_coord({0, 0});
     zone_->set_region(region);
-    Game::This()->random_zone()->Update(region);
+    game()->random_zone()->Update(region);
     zone_->mutable_viewport()->set_center_coord({kRegionSize / 2, kRegionSize / 2});
-    Game::This()->random_zone()->Update(zone_.get());
-
-    // res::Avatar *def = game()->avatar_lib()->FindOrNull(ResourceId::Of(100000));
-    // DCHECK(def != nullptr);
-    // avatar_.reset(new com::AvatarComponent(def));
-    // avatar_->set_dir(res::Avatar::kRight);
-    // avatar_->set_speed(0.9);
+    game()->random_zone()->Update(zone_.get());
 
     game()->entity_allocator()->Register<entity::PlayerEntity>();
     player_.reset(
         game()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(100000)));
+    player_->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
+    player_->mutable_movement()->mutable_coord()->x = zone_->viewport().center_coord().x;
+    player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;
+
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
 void TestScene::OnKeyInput(int key, int code, int action, int mods) {
+    static constexpr float speed = 30;
+
     switch (key) {
         case GLFW_KEY_ESCAPE:
         case GLFW_KEY_R:
@@ -48,96 +49,60 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
         case GLFW_KEY_W: {
-            player_->mutable_movement()->set_speed({0, 0.14, 0});
-            Game::This()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0 /*delta*/);
-            // TODO: zone_->mutable_viewport()->set_center_coord(player_->movement().coord());
-            Game::This()->zone_loader()->Update(zone_.get());
+            player_->mutable_movement()->set_speed({0, -speed, 0});
+            UpdatePlayerMovement();
         } break;
         case GLFW_KEY_S: {
-            // zone_->mutable_viewport()->mutable_center_coord()->y += 10;
-            player_->mutable_movement()->set_speed({0, -0.14, 0});
-            Game::This()->zone_loader()->Update(zone_.get());
+            player_->mutable_movement()->set_speed({0, speed, 0});
+            UpdatePlayerMovement();
         } break;
         case GLFW_KEY_A: {
-            // zone_->mutable_viewport()->mutable_center_coord()->x -= 1;
-            player_->mutable_movement()->set_speed({-0.14, 0, 0});
-            Game::This()->zone_loader()->Update(zone_.get());
+            player_->mutable_movement()->set_speed({-speed, 0, 0});
+            UpdatePlayerMovement();
         } break;
         case GLFW_KEY_D: {
-            // zone_->mutable_viewport()->mutable_center_coord()->x += 1;
-            player_->mutable_movement()->set_speed({0.14, 0, 0});
-            Game::This()->zone_loader()->Update(zone_.get());
+            player_->mutable_movement()->set_speed({speed, 0, 0});
+            UpdatePlayerMovement();
+        } break;
+        case GLFW_KEY_SPACE: {
+            player_->mutable_movement()->set_speed({0.01, 70, 0});
+            UpdatePlayerMovement();
         } break;
         case GLFW_KEY_UP:
-            Game::This()->zone_render()->set_rotate_angle_y(Game::This()->zone_render()->rotate_angle_y() + 2);
+            // :format
+            game()->zone_render()->set_rotate_angle_y(game()->zone_render()->rotate_angle_y() + 2);
             break;
         case GLFW_KEY_DOWN:
-            Game::This()->zone_render()->set_rotate_angle_y(Game::This()->zone_render()->rotate_angle_y() - 2);
+            game()->zone_render()->set_rotate_angle_y(game()->zone_render()->rotate_angle_y() - 2);
             break;
         case GLFW_KEY_LEFT:
-            Game::This()->zone_render()->set_rotate_angle_z(Game::This()->zone_render()->rotate_angle_z() - 2);
+            game()->zone_render()->set_rotate_angle_z(game()->zone_render()->rotate_angle_z() - 2);
             break;
         case GLFW_KEY_RIGHT:
-            Game::This()->zone_render()->set_rotate_angle_z(Game::This()->zone_render()->rotate_angle_z() + 2);
+            game()->zone_render()->set_rotate_angle_z(game()->zone_render()->rotate_angle_z() + 2);
             break;
         default: break;
     }
 }
 
+void TestScene::UpdatePlayerMovement() {
+    game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 30,
+                                     game()->frame_delta_time() /*delta*/);
+    zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
+    game()->zone_loader()->Update(zone_.get());
+}
+
 void TestScene::Render(double delta) {
 
-    Game::This()->zone_render()->Render(zone_.get());
+    game()->zone_render()->Render(zone_.get());
+    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
 
     {
         char buf[128];
         ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f", zone_->viewport().center_coord().x,
                    zone_->viewport().center_coord().y);
-        Game::This()->font_lib()->default_face()->Render(buf, 0, 32, {1, 1, 0});
+        game()->font_lib()->default_face()->Render(buf, 0, 32, {1, 1, 0});
     }
-
-    // TO 3D
-    //------------------------------------------------------------------------------------------------------------------
-
-    // Game::This()->zone_render()->
-
-    // avatar_->AddTime(delta);
-    // res::Texture *tex = avatar_->GetFrame();
-
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glEnable(GL_TEXTURE_2D);
-    // glBindTexture(GL_TEXTURE_2D, tex->tex_id());
-    // glColor3f(1.0, 1.0, 1.0);
-    // glBegin(GL_QUADS);
-
-    // // glTexCoord2f(tex->coord(0).x, tex->coord(0).y);
-    // // glVertex3f(0, 1, 0);
-
-    // // glTexCoord2f(tex->coord(1).x, tex->coord(1).y);
-    // // glVertex3f(0.75, 1, 0);
-
-    // // glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
-    // // glVertex3f(0.75, 0, 0);
-
-    // // glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
-    // // glVertex3f(0, 0, 0);
-    // glTexCoord2f(tex->coord(0).x, tex->coord(0).y);
-    // glVertex3f(0, 2, 0);
-
-    // glTexCoord2f(tex->coord(1).x, tex->coord(1).y);
-    // glVertex3f(1.5, 2, 0);
-
-    // glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
-    // glVertex3f(1.5, 0, 0);
-
-    // glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
-    // glVertex3f(0, 0, 0);
-
-    // glEnd();
-    // glDisable(GL_TEXTURE_2D);
-    // glDisable(GL_BLEND);
-
-    //------------------------------------------------------------------------------------------------------------------
 }
 
 }  // namespace nyaa

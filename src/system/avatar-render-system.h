@@ -7,14 +7,16 @@
 namespace nyaa {
 namespace com {
 class AvatarComponent;
-class MoventComponent;
+class MovementComponent;
 } // namespace com
 
 namespace sys {
 
 class AvatarRenderSystem {
 public:
-    void Render(const com::MoventComponent &move, com::AvatarComponent *avatar, double time_delta);
+    AvatarRenderSystem() = default;
+
+    void Render(com::MovementComponent *move, com::AvatarComponent *avatar, double delta);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(AvatarRenderSystem);
 }; // class AvatarRenderSystem

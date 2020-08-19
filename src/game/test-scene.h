@@ -23,14 +23,13 @@ public:
     ~TestScene() final;
 
     const char *Name() const final { return "test-scene"; }
-
     void Reset() final;
-
     void OnKeyInput(int key, int code, int action, int mods) final;
-
     void Render(double delta) final;
 
 private:
+    void UpdatePlayerMovement();
+
     std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<entity::PlayerEntity> player_;
 };  // class TestScene

@@ -29,41 +29,46 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
     dest.x += i;
     dest.y += j;
 
-    const int limit_x = region_->global_coord().x + kRegionSize;
-    const int limit_y = region_->global_coord().y + kRegionSize;
-    const int lx      = dest.x % kRegionSize;
-    const int ly      = dest.y % kRegionSize;
-    switch (want_) {
-        case kNone: return &region_->floor(z)->cubes[lx][ly];
+    return Cube(dest.x, dest.y, z);
+}
+
+CubeComponent *ZoneComponent::Cube(int x, int y, int z) {
+
+    const int limit_x = region()->global_coord().x + kRegionSize;
+    const int limit_y = region()->global_coord().y + kRegionSize;
+    const int lx      = x % kRegionSize;
+    const int ly      = y % kRegionSize;
+    switch (want()) {
+        case kNone: return &region()->floor(z)->cubes[lx][ly];
         case kE:
-            if (region()->AtEast(dest.x, dest.y)) {
+            if (region()->AtEast(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtBound(dest.x, dest.y));
+                DCHECK(region()->AtBound(x, y));
                 return &region()->floor(z)->cubes[lx][ly];
             }
             break;
         case kS:
-            if (region()->AtSouth(dest.x, dest.y)) {
+            if (region()->AtSouth(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtBound(dest.x, dest.y));
+                DCHECK(region()->AtBound(x, y));
                 return &region()->floor(z)->cubes[lx][ly];
             }
             break;
         case kW:
-            if (region()->AtWest(dest.x, dest.y)) {
+            if (region()->AtWest(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtBound(dest.x, dest.y));
+                DCHECK(region()->AtBound(x, y));
                 return &region()->floor(z)->cubes[lx][ly];
             }
             break;
         case kN:
-            if (region()->AtNorth(dest.x, dest.y)) {
+            if (region()->AtNorth(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtBound(dest.x, dest.y));
+                DCHECK(region()->AtBound(x, y));
                 return &region()->floor(z)->cubes[lx][ly];
             }
             break;
@@ -73,14 +78,14 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
         // -----+-----
         //  [2] | [1]
         case kSE:
-            if (region()->AtBound(dest.x, dest.y)) {
+            if (region()->AtBound(x, y)) {
                 return &region()->floor(z)->cubes[lx][ly];
-            } else if (region()->AtEast(dest.x, dest.y)) {
+            } else if (region()->AtEast(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtSouthEast(dest.x, dest.y)) {
+            } else if (region()->AtSouthEast(x, y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtSouth(dest.x, dest.y));
+                DCHECK(region()->AtSouth(x, y));
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             }
             break;
@@ -90,14 +95,14 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
         // ------+-----
         //    NE | [2]
         case kNE:
-            if (region()->AtNorth(dest.x, dest.y)) {
+            if (region()->AtNorth(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtNorthEast(dest.x, dest.y)) {
+            } else if (region()->AtNorthEast(x, y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtEast(dest.x, dest.y)) {
+            } else if (region()->AtEast(x, y)) {
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtBound(dest.x, dest.y));
+                DCHECK(region()->AtBound(x, y));
                 return &region()->floor(z)->cubes[lx][ly];
             }
             break;
@@ -107,14 +112,14 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
         // -----+-----
         //  [2] | [1]
         case kSW:
-            if (region()->AtWest(dest.x, dest.y)) {
+            if (region()->AtWest(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtBound(dest.x, dest.y)) {
+            } else if (region()->AtBound(x, y)) {
                 return &region()->floor(z)->cubes[lx][ly];
-            } else if (region()->AtSouth(dest.x, dest.y)) {
+            } else if (region()->AtSouth(x, y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtSouthWest(dest.x, dest.y));
+                DCHECK(region()->AtSouthWest(x, y));
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             }
             break;
@@ -124,14 +129,14 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
         // -----+-----
         //  [2] | NW
         case kNW:
-            if (region()->AtNorthWest(dest.x, dest.y)) {
+            if (region()->AtNorthWest(x, y)) {
                 return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtNorth(dest.x, dest.y)) {
+            } else if (region()->AtNorth(x, y)) {
                 return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtBound(dest.x, dest.y)) {
+            } else if (region()->AtBound(x, y)) {
                 return &region()->floor(z)->cubes[lx][ly];
             } else {
-                DCHECK(region()->AtWest(dest.x, dest.y));
+                DCHECK(region()->AtWest(x, y));
                 return &sibling(2)->floor(z)->cubes[lx][ly];
             }
             break;

@@ -49,6 +49,7 @@ set(GAME_SRC
     src/entity/player-entity.cc
     src/component/cube-component.cc
     src/component/zone-component.cc
+    src/component/movement-component.cc
     src/system/random-zone-system.cc
     src/system/zone-render-system.cc
     src/system/zone-loading-system.cc

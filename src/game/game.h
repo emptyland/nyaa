@@ -25,6 +25,7 @@ class ZoneRenderSystem;
 class RandomZoneSystem;
 class ZoneLoadingSystem;
 class ActorMovementSystem;
+class AvatarRenderSystem;
 }  // namespace sys
 
 class Scene;
@@ -40,12 +41,14 @@ public:
     DEF_VAL_GETTER(int, window_w);
     DEF_VAL_GETTER(int, fb_h);
     DEF_VAL_GETTER(int, fb_w);
+    DEF_VAL_GETTER(double, frame_delta_time);
     DEF_PTR_PROP_RW(Scene, scene);
 
     const Properties *           properties() const { return properties_.get(); }
     sys::EntityAllocationSystem *entity_allocator() const { return entity_allocator_.get(); }
     sys::ZoneRenderSystem *      zone_render() const { return zone_render_.get(); }
     sys::ZoneLoadingSystem *     zone_loader() const { return zone_loader_.get(); }
+    sys::AvatarRenderSystem *    avatar_render() const { return avatar_render_.get(); }
     sys::RandomZoneSystem *      random_zone() const { return random_zone_.get(); }
     sys::ActorMovementSystem *   actor_movement() const { return actor_movement_.get(); }
     res::FontLibrary *           font_lib() const { return font_lib_.get(); }
@@ -86,30 +89,38 @@ private:
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
     static void OnMouseInput(GLFWwindow *window, double x, double y);
 
-    base::StandaloneArena                        arena_;
-    Scene *                                      scene_ = nullptr;
-    std::unique_ptr<Scene>                       boot_scene_;
+    base::StandaloneArena  arena_;
+    Scene *                scene_ = nullptr;
+    std::unique_ptr<Scene> boot_scene_;
+
+    // Systems
     std::unique_ptr<sys::EntityAllocationSystem> entity_allocator_;
     std::unique_ptr<sys::ZoneRenderSystem>       zone_render_;
     std::unique_ptr<sys::ZoneLoadingSystem>      zone_loader_;
     std::unique_ptr<sys::RandomZoneSystem>       random_zone_;
     std::unique_ptr<sys::ActorMovementSystem>    actor_movement_;
-    std::unique_ptr<res::FontLibrary>            font_lib_;
-    std::unique_ptr<res::TextLibrary>            text_lib_;
-    std::unique_ptr<res::TextureLibrary>         texture_lib_;
-    std::unique_ptr<res::AvatarLibrary>          avatar_lib_;
-    std::unique_ptr<res::CubeLibrary>            cube_lib_;
-    std::unique_ptr<Properties>                  properties_;
-    std::deque<Scene *>                          recycle_scenes_;
-    base::StdFilePrinter                         stdout_;
-    double                                       ts_       = 0;
-    GLFWwindow *                                 window_   = nullptr;
-    int                                          window_h_ = 0;
-    int                                          window_w_ = 0;
-    int                                          fb_h_     = 0;
-    int                                          fb_w_     = 0;
-    bool                                         exit_     = false;
-    IdGenerator                                  eid_generator_;
+    std::unique_ptr<sys::AvatarRenderSystem>     avatar_render_;
+
+    // Resource libraries
+    std::unique_ptr<res::FontLibrary>    font_lib_;
+    std::unique_ptr<res::TextLibrary>    text_lib_;
+    std::unique_ptr<res::TextureLibrary> texture_lib_;
+    std::unique_ptr<res::AvatarLibrary>  avatar_lib_;
+    std::unique_ptr<res::CubeLibrary>    cube_lib_;
+
+    std::unique_ptr<Properties> properties_;
+    std::deque<Scene *>         recycle_scenes_;
+    base::StdFilePrinter        stdout_;
+
+    double      ts_       = 0;
+    double      frame_delta_time_ = 0;
+    GLFWwindow *window_   = nullptr;
+    int         window_h_ = 0;
+    int         window_w_ = 0;
+    int         fb_h_     = 0;
+    int         fb_w_     = 0;
+    bool        exit_     = false;
+    IdGenerator eid_generator_;
 };  // class Game
 
 extern base::LazyInstance<Game> ThisGame;

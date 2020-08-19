@@ -7,6 +7,7 @@
 #include "system/random-zone-system.h"
 #include "system/zone-loading-system.h"
 #include "system/actor-movement-system.h"
+#include "system/avatar-render-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -27,6 +28,7 @@ Game::Game()
     , entity_allocator_(new sys::EntityAllocationSystem())
     , zone_render_(new sys::ZoneRenderSystem())
     , zone_loader_(new sys::ZoneLoadingSystem())
+    , avatar_render_(new sys::AvatarRenderSystem())
     , random_zone_(new sys::RandomZoneSystem())
     , actor_movement_(new sys::ActorMovementSystem())
     , font_lib_(new res::FontLibrary(&arena_))
@@ -121,6 +123,7 @@ void Game::Run() {
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 
+        frame_delta_time_ = delta;
         scene_->Render(delta);
 
         if (properties()->show_fps()) {
