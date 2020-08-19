@@ -14,11 +14,10 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
 
     if (movement->is_horizontal_stop()) {
-        avatar->set_time(0);
+        //avatar->set_time(0);
         avatar->set_speed(0);
     } else {
-        avatar->AddTime(delta);
-        avatar->set_speed(1);  // TODO
+        avatar->set_speed(0.9);  // TODO
 
         // [-π, π]
         // -π/2: North (Up)
@@ -37,6 +36,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
             avatar->set_dir(res::Avatar::kLeft);
         }
     }
+    avatar->AddTime(delta);
     res::Texture *frame = avatar->GetFrame();
 
     //------------------------------------------------------------------------------------------------------------------

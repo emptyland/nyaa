@@ -40,7 +40,7 @@ void TestScene::Reset() {
 }
 
 void TestScene::OnKeyInput(int key, int code, int action, int mods) {
-    static constexpr float speed = 30;
+    static constexpr float speed = 7;
 
     switch (key) {
         case GLFW_KEY_ESCAPE:
@@ -49,24 +49,26 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
         case GLFW_KEY_W: {
-            player_->mutable_movement()->set_speed({0, -speed, 0});
-            UpdatePlayerMovement();
+            player_->mutable_movement()->mutable_speed()->y = -speed;
+            // UpdatePlayerMovement();
         } break;
         case GLFW_KEY_S: {
-            player_->mutable_movement()->set_speed({0, speed, 0});
-            UpdatePlayerMovement();
+            player_->mutable_movement()->mutable_speed()->y = speed;
+            // UpdatePlayerMovement();
         } break;
         case GLFW_KEY_A: {
-            player_->mutable_movement()->set_speed({-speed, 0, 0});
-            UpdatePlayerMovement();
+            player_->mutable_movement()->mutable_speed()->x = -speed;
+            // UpdatePlayerMovement();
         } break;
         case GLFW_KEY_D: {
-            player_->mutable_movement()->set_speed({speed, 0, 0});
-            UpdatePlayerMovement();
+            player_->mutable_movement()->mutable_speed()->x = speed;
+            // UpdatePlayerMovement();
         } break;
         case GLFW_KEY_SPACE: {
-            player_->mutable_movement()->set_speed({0.01, 70, 0});
-            UpdatePlayerMovement();
+            if (player_->movement().speed().z == 0) {
+                player_->mutable_movement()->mutable_speed()->z = 20;
+            }
+            // UpdatePlayerMovement();
         } break;
         case GLFW_KEY_UP:
             // :format
@@ -85,22 +87,25 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
     }
 }
 
-void TestScene::UpdatePlayerMovement() {
-    game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 30,
-                                     game()->frame_delta_time() /*delta*/);
-    zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
-    game()->zone_loader()->Update(zone_.get());
-}
-
 void TestScene::Render(double delta) {
+    game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 1,
+                                     game()->frame_delta_time() /*delta*/, false);
+
+    if (player_->movement().is_moving()) {
+        zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
+        game()->zone_loader()->Update(zone_.get());
+    }
 
     game()->zone_render()->Render(zone_.get());
     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
 
+    player_->mutable_movement()->mutable_speed()->x = 0;
+    player_->mutable_movement()->mutable_speed()->y = 0;
+
     {
         char buf[128];
-        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f", zone_->viewport().center_coord().x,
-                   zone_->viewport().center_coord().y);
+        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f, z=%0.2f", zone_->viewport().center_coord().x,
+                   zone_->viewport().center_coord().y, player_->movement().coord().z);
         game()->font_lib()->default_face()->Render(buf, 0, 32, {1, 1, 0});
     }
 }
