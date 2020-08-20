@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 print('''#pragma once
-#ifndef NYAA_RESOURCE_TEXT_ID_H_
-#define NYAA_RESOURCE_TEXT_ID_H_
+#ifndef NYAA_RESOURCE_TEXT_IDS_INL_H_
+#define NYAA_RESOURCE_TEXT_IDS_INL_H_
 
 namespace nyaa {
 namespace res {
 
-enum TextID {''')
+#define DEFINE_TEXT_KINDS(V) \\''')
 
 f = open('assets/text/en_US.txt', 'r')
 for line in f.readlines():
@@ -15,13 +15,18 @@ for line in f.readlines():
         continue
     line = line.strip('\n')
     items = line.split('|')
-    print('    %s, // %s' % (items[0].strip(' '), items[1].strip(' ')))
-    #print(items[0].strip(' '), items[1].strip(' '))
+    print('    V(%s) \\' % (items[0].strip(' ')))
 
-print('''    MAX_TEXT_ID,
-}; // enum TextID
+print('''
+
+enum TextID {
+#define DEFINE_ENUM(name) name,
+    DEFINE_TEXT_KINDS(DEFINE_ENUM)
+#undef DEFINE_ENUM
+    MAX_TEXT_ID,
+};  // enum TextID
 
 } // namespace res
 } // namespace nyaa
 
-#endif // NYAA_RESOURCE_TEXT_ID_H_''')
+#endif // NYAA_RESOURCE_TEXT_IDS_INL_H_''')

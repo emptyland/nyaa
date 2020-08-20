@@ -2,7 +2,7 @@
 #ifndef NYAA_RESOURCE_FONT_SET_H_
 #define NYAA_RESOURCE_FONT_SET_H_
 
-#include "resource/text-id.h"
+#include "resource/text-ids-inl.h"
 #include "base/arena.h"
 #include <unordered_map>
 #include <string_view>

@@ -6,6 +6,20 @@ namespace nyaa {
 
 namespace res {
 
+const char *TextLibrary::kTextIDName[MAX_TEXT_ID] = {
+#define DEFINE_NAME(name) #name,
+    DEFINE_TEXT_KINDS(DEFINE_NAME)
+#undef DEFINE_NAME
+};
+
+TextLibrary::TextLibrary(base::Arena *arena)
+    : arena_(arena)
+    , text_name_to_id_(arena) {
+    for (int i = 0; i < MAX_TEXT_ID; i++) {
+        text_name_to_id_[std::string_view(kTextIDName[i])] = static_cast<TextID>(i);
+    }
+}
+
 bool TextLibrary::Prepare(const std::string &file_name) {
     FILE *fp = ::fopen(file_name.c_str(), "r");
     if (!fp) {

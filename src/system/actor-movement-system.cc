@@ -40,64 +40,15 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
     if (next.z < 0) { next.z = 0; }
     if (next.z >= kTerrainMaxLevels) { next.z = kTerrainMaxLevels - 1; }
 
-    int i = next.x + 1;
+    int i = next.x + 0.75;
     int j = next.y + 1;
     cube = zone->Cube(i, j, ceil(next.z) + 1);
     DLOG(INFO) << "next: (" << next.x << ", " << next.y << ", " << next.z << ")";
     DLOG(INFO) << "cube: " << cube->kind() << ":" << cube->hardness();
-    //if (cube->kind() == res::Cube::CUBE_AIR) {
+    if (cube->kind() == res::Cube::CUBE_AIR) {
         movement->set_coord(next);
-    //}
-
-    // bool near = false;
-    // float dx = (next.x - movement->coord().x), dy = next.y - movement->coord().y, dz = next.z - movement->coord().z;
-    // if (dx < 1 && dy < 1 && dz < 1) {
-    //     if (cube = zone->Cube(floorf(next.x) + 1, floorf(next.y) + 1, floorf(next.z) + 1);
-    //         cube->kind() == res::Cube::CUBE_AIR) {
-    //         //DLOG(INFO) << "Probe (" << x << ", " << y << ", " << z << ") ok dy = " << dy;
-    //         movement->set_coord(next);
-    //         near = true;
-    //     }
-    // }
-
-    // if (::fabsf(dx) > 0) {
-    //     float step = dx < 0 ? -0.1 : 0.1;
-    //     float ky = dy / dx, kz = dz / dx;
-    //     for (float i = 0; ::fabsf(i) < ::fabsf(dx); i += step) {
-    //         float x = movement->coord().x + i;
-    //         float y = movement->coord().y + i * ky;
-    //         float z = movement->coord().z + i * kz;
-
-    //         movement->set_coord({x, y, z});
-    //         DLOG(INFO) << "Probe... (" << x << ", " << y << ", " << z << ")";
-    //         if (cube = zone->Cube(FLOOR_XYZ); cube->kind() != res::Cube::CUBE_AIR) {
-    //             DLOG(INFO) << "Probe (" << x << ", " << y << ", " << z << ") ok dx = " << dx;
-    //             //movement->set_coord({x, y, z});
-    //             near = true;
-    //             break;
-    //         }
-    //     }
-    // } else if (::fabsf(dy) > 0) {
-    //     float step = dy < 0 ? -0.1 : 0.1;
-    //     float kx = dx / dy, kz = dz / dy;
-    //     for (float i = 0; ::fabsf(i) < ::fabsf(dy); i += step) {
-    //         float x = movement->coord().x + i * kx;
-    //         float y = movement->coord().y + i;
-    //         float z = movement->coord().z + i * kz;
-    //         movement->set_coord({x, y, z});
-    //         DLOG(INFO) << "Probe... (" << x << ", " << y << ", " << z << ")";
-    //         if (cube = zone->Cube(FLOOR_XYZ); cube->kind() != res::Cube::CUBE_AIR) {
-    //             DLOG(INFO) << "Probe (" << x << ", " << y << ", " << z << ") ok dy = " << dy;
-    //             //movement->set_coord({x, y, z});
-    //             near = true;
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // if (!near) { movement->set_coord(next); }
-
-    // TODO:
+    }
+    
     if (stop_after_move) {
         movement->mutable_speed()->x = 0;
         movement->mutable_speed()->y = 0;

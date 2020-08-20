@@ -2,8 +2,8 @@
 #ifndef NYAA_RESOURCE_TEXT_LIBRARY_H_
 #define NYAA_RESOURCE_TEXT_LIBRARY_H_
 
-#include "resource/text-id.h"
-#include "base/arena.h"
+#include "resource/text-ids-inl.h"
+#include "base/arena-utils.h"
 #include "glog/logging.h"
 
 namespace nyaa {
@@ -19,13 +19,18 @@ using NRStr = const char *;
 
 class TextLibrary final {
 public:
-    TextLibrary(base::Arena *arena) : arena_(arena) {}
+    TextLibrary(base::Arena *arena);
 
     std::string_view Load(TextID id) const {
         int index = static_cast<int>(id);
         DCHECK_GE(index, 0);
         DCHECK_LT(index, MAX_TEXT_ID);
         return From(text_[index]);
+    }
+
+    TextID FindID(std::string_view name) const {
+        auto iter = text_name_to_id_.find(name);
+        return iter == text_name_to_id_.end() ? MAX_TEXT_ID : iter->second;
     }
 
     bool Prepare(const std::string &file_name);
@@ -39,7 +44,10 @@ private:
     }
 
     base::Arena *const arena_;
+    base::ArenaUnorderedMap<std::string_view, TextID> text_name_to_id_;
     NRStr              text_[MAX_TEXT_ID];
+
+    static const char *kTextIDName[MAX_TEXT_ID];
 };  // class TextLibrary
 
 }  // namespace res
