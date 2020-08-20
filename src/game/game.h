@@ -26,6 +26,7 @@ class RandomZoneSystem;
 class ZoneLoadingSystem;
 class ActorMovementSystem;
 class AvatarRenderSystem;
+class GeometryTransformSystem;
 }  // namespace sys
 
 class Scene;
@@ -44,19 +45,22 @@ public:
     DEF_VAL_GETTER(double, frame_delta_time);
     DEF_PTR_PROP_RW(Scene, scene);
 
-    const Properties *           properties() const { return properties_.get(); }
-    sys::EntityAllocationSystem *entity_allocator() const { return entity_allocator_.get(); }
-    sys::ZoneRenderSystem *      zone_render() const { return zone_render_.get(); }
-    sys::ZoneLoadingSystem *     zone_loader() const { return zone_loader_.get(); }
-    sys::AvatarRenderSystem *    avatar_render() const { return avatar_render_.get(); }
-    sys::RandomZoneSystem *      random_zone() const { return random_zone_.get(); }
-    sys::ActorMovementSystem *   actor_movement() const { return actor_movement_.get(); }
-    res::FontLibrary *           font_lib() const { return font_lib_.get(); }
-    res::TextLibrary *           text_lib() const { return text_lib_.get(); }
-    res::AvatarLibrary *         avatar_lib() const { return avatar_lib_.get(); }
-    res::TextureLibrary *        texture_lib() const { return texture_lib_.get(); }
-    res::CubeLibrary *           cube_lib() const { return cube_lib_.get(); }
-    base::AbstractPrinter *      debug_out() { return &stdout_; }
+    const Properties *properties() const { return properties_.get(); }
+
+    sys::EntityAllocationSystem * entity_allocator() const { return entity_allocator_.get(); }
+    sys::ZoneRenderSystem *       zone_render() const { return zone_render_.get(); }
+    sys::ZoneLoadingSystem *      zone_loader() const { return zone_loader_.get(); }
+    sys::AvatarRenderSystem *     avatar_render() const { return avatar_render_.get(); }
+    sys::RandomZoneSystem *       random_zone() const { return random_zone_.get(); }
+    sys::ActorMovementSystem *    actor_movement() const { return actor_movement_.get(); }
+    sys::GeometryTransformSystem *transform() const { return transform_.get(); }
+
+    res::FontLibrary *     font_lib() const { return font_lib_.get(); }
+    res::TextLibrary *     text_lib() const { return text_lib_.get(); }
+    res::AvatarLibrary *   avatar_lib() const { return avatar_lib_.get(); }
+    res::TextureLibrary *  texture_lib() const { return texture_lib_.get(); }
+    res::CubeLibrary *     cube_lib() const { return cube_lib_.get(); }
+    base::AbstractPrinter *debug_out() { return &stdout_; }
 
     bool Prepare(const std::string &properties_file_name);
     void Run();
@@ -66,9 +70,6 @@ public:
 
     EntityId NewEntityId() { return EntityId::Of(eid_generator_.New()); }
     EntityId NextEntityId() { return EntityId::Of(eid_generator_.Next()); }
-
-    void EnterProjection2D();
-    void LeaveProjection2D();
 
     static inline Game *This();
 
@@ -94,12 +95,13 @@ private:
     std::unique_ptr<Scene> boot_scene_;
 
     // Systems
-    std::unique_ptr<sys::EntityAllocationSystem> entity_allocator_;
-    std::unique_ptr<sys::ZoneRenderSystem>       zone_render_;
-    std::unique_ptr<sys::ZoneLoadingSystem>      zone_loader_;
-    std::unique_ptr<sys::RandomZoneSystem>       random_zone_;
-    std::unique_ptr<sys::ActorMovementSystem>    actor_movement_;
-    std::unique_ptr<sys::AvatarRenderSystem>     avatar_render_;
+    std::unique_ptr<sys::EntityAllocationSystem>  entity_allocator_;
+    std::unique_ptr<sys::ZoneRenderSystem>        zone_render_;
+    std::unique_ptr<sys::ZoneLoadingSystem>       zone_loader_;
+    std::unique_ptr<sys::RandomZoneSystem>        random_zone_;
+    std::unique_ptr<sys::ActorMovementSystem>     actor_movement_;
+    std::unique_ptr<sys::AvatarRenderSystem>      avatar_render_;
+    std::unique_ptr<sys::GeometryTransformSystem> transform_;
 
     // Resource libraries
     std::unique_ptr<res::FontLibrary>    font_lib_;
@@ -112,31 +114,20 @@ private:
     std::deque<Scene *>         recycle_scenes_;
     base::StdFilePrinter        stdout_;
 
-    double      ts_       = 0;
+    double      ts_               = 0;
     double      frame_delta_time_ = 0;
-    GLFWwindow *window_   = nullptr;
-    int         window_h_ = 0;
-    int         window_w_ = 0;
-    int         fb_h_     = 0;
-    int         fb_w_     = 0;
-    bool        exit_     = false;
+    GLFWwindow *window_           = nullptr;
+    int         window_h_         = 0;
+    int         window_w_         = 0;
+    int         fb_h_             = 0;
+    int         fb_w_             = 0;
+    bool        exit_             = false;
     IdGenerator eid_generator_;
 };  // class Game
 
 extern base::LazyInstance<Game> ThisGame;
 
 /*static*/ inline Game *Game::This() { return ThisGame.Get(); }
-
-class Projection2DScope final {
-public:
-    Projection2DScope(Game *game) : owns_(game) { owns_->EnterProjection2D(); }
-    ~Projection2DScope() { owns_->LeaveProjection2D(); }
-
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Projection2DScope);
-
-private:
-    Game *const owns_;
-};
 
 }  // namespace nyaa
 

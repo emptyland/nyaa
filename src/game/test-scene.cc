@@ -7,6 +7,7 @@
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
 #include "system/entity-allocation-system.h"
+#include "system/geometry-transform-system.h"
 #include "system/random-zone-system.h"
 #include "system/zone-render-system.h"
 #include "system/zone-loading-system.h"
@@ -72,16 +73,16 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
         } break;
         case GLFW_KEY_UP:
             // :format
-            game()->zone_render()->set_rotate_angle_y(game()->zone_render()->rotate_angle_y() + 2);
+            game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() + 2);
             break;
         case GLFW_KEY_DOWN:
-            game()->zone_render()->set_rotate_angle_y(game()->zone_render()->rotate_angle_y() - 2);
+            game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() - 2);
             break;
         case GLFW_KEY_LEFT:
-            game()->zone_render()->set_rotate_angle_z(game()->zone_render()->rotate_angle_z() - 2);
+            game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() - 2);
             break;
         case GLFW_KEY_RIGHT:
-            game()->zone_render()->set_rotate_angle_z(game()->zone_render()->rotate_angle_z() + 2);
+            game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() + 2);
             break;
         default: break;
     }
@@ -96,8 +97,10 @@ void TestScene::Render(double delta) {
         game()->zone_loader()->Update(zone_.get());
     }
 
+    game()->transform()->EnterRotatedProjection();
     game()->zone_render()->Render(zone_.get());
     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
+    game()->transform()->ExitRotatedProjection();
 
     player_->mutable_movement()->mutable_speed()->x = 0;
     player_->mutable_movement()->mutable_speed()->y = 0;

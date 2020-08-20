@@ -4,6 +4,7 @@
 #include "game/game.h"
 #include "component/avatar-component.h"
 #include "component/cube-component.h"
+#include "system/geometry-transform-system.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/avatar-library.h"
@@ -46,7 +47,7 @@ void BootScene::Render(double d) {
     game()->font_lib()->default_face()->Render(res::TEST_STRING_1, 0, game()->fb_h() / 2 + 50);
     // game()->font_lib()->default_face()->Render(res::TEST_STRING_2, 0, game()->fb_h()/2, {0,1,0});
 
-    Projection2DScope p2d_scope(game());
+    game()->transform()->Enter2DProjection();
     // const res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(102080));
     // DCHECK(tex != nullptr);
     avatar1_->AddTime(d);
@@ -90,6 +91,8 @@ void BootScene::Render(double d) {
     glVertex2i(w, 0);
 
     glEnd();
+
+    game()->transform()->Exit2DProjection();
 #if 0
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

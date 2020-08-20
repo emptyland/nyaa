@@ -3,6 +3,7 @@
 #include "game/boot-scene.h"
 #include "game/scene.h"
 #include "system/entity-allocation-system.h"
+#include "system/geometry-transform-system.h"
 #include "system/zone-render-system.h"
 #include "system/random-zone-system.h"
 #include "system/zone-loading-system.h"
@@ -26,6 +27,7 @@ base::LazyInstance<Game> ThisGame;
 Game::Game()
     : boot_scene_(new BootScene(this))
     , entity_allocator_(new sys::EntityAllocationSystem())
+    , transform_(new sys::GeometryTransformSystem())
     , zone_render_(new sys::ZoneRenderSystem())
     , zone_loader_(new sys::ZoneLoadingSystem())
     , avatar_render_(new sys::AvatarRenderSystem())
@@ -176,23 +178,6 @@ uint64_t Game::IdGenerator::New() {
     uint64_t mills = time_val.tv_sec * 1000 + time_val.tv_usec / 1000;
     return (static_cast<uint64_t>(bucket_id_ & 0x3ff) << 54) | ((mills & 0x7ffffffffff) << 12) |
            (sequence_number_ & 0x1fff);
-}
-
-void Game::EnterProjection2D() {
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 10);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glDisable(GL_CULL_FACE);
-    glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void Game::LeaveProjection2D() {
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
 }
 
 }  // namespace nyaa

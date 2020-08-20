@@ -1,4 +1,5 @@
 #include "system/zone-render-system.h"
+#include "system/geometry-transform-system.h"
 #include "component/zone-component.h"
 #include "resource/texture-library.h"
 #include "game/game.h"
@@ -31,22 +32,6 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
     glEnable(GL_CULL_FACE);
     //------------------------------------------------------------------------------------------------------------------
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glFrustum(0, fb_size.x, 0, fb_size.y, -100.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glPushMatrix();
-    glRotated(rotate_angle_y(), -1, 0, 0);
-
-    glPushMatrix();
-    glRotated(rotate_angle_z(), 0.0, 1.0, 0.0);
-
-    glPushMatrix();
-    glScaled(scale(), scale(), scale());
-
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tile_tex_id());
     glColor3f(1.0, 1.0, 1.0);
@@ -57,14 +42,6 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
             RenderSurface(zone, i, j);
         }
     }
-
-    glPopMatrix();  // glScaled
-    glPopMatrix();  // glRotated
-    glPopMatrix();  // glRotated
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
 
     //------------------------------------------------------------------------------------------------------------------
     glDisable(GL_CULL_FACE);

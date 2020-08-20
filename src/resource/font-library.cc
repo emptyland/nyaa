@@ -1,5 +1,6 @@
 #include "resource/font-library.h"
 #include "resource/text-library.h"
+#include "system/geometry-transform-system.h"
 #include "game/game.h"
 #include "base/slice.h"
 #include "base/queue-macros.h"
@@ -70,7 +71,7 @@ void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
         chars.push_back(info);
     }
 
-    ThisGame->EnterProjection2D();
+    Game::This()->transform()->Enter2DProjection();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -112,7 +113,7 @@ void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
-    ThisGame->LeaveProjection2D();
+    Game::This()->transform()->Exit2DProjection();
 }
 
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {

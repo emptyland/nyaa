@@ -1,9 +1,9 @@
 #include "system/avatar-render-system.h"
-#include "system/zone-render-system.h"
 #include "component/avatar-component.h"
 #include "component/movement-component.h"
 #include "resource/texture-library.h"
 #include "game/game.h"
+#include "game/constants.h"
 #include <GL/glew.h>
 #include <math.h>
 
@@ -14,7 +14,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
 
     if (movement->is_horizontal_stop()) {
-        //avatar->set_time(0);
+        // avatar->set_time(0);
         avatar->set_speed(0);
     } else {
         avatar->set_speed(0.9);  // TODO
@@ -38,27 +38,6 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     }
     avatar->AddTime(delta);
     res::Texture *frame = avatar->GetFrame();
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glFrustum(0, fb_size.x, 0, fb_size.y, -100.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glPushMatrix();
-    glRotated(Game::This()->zone_render()->rotate_angle_y(), -1, 0, 0);
-
-    glPushMatrix();
-    glRotated(Game::This()->zone_render()->rotate_angle_z(), 0.0, 1.0, 0.0);
-
-    glPushMatrix();
-    glScaled(Game::This()->zone_render()->scale(), Game::This()->zone_render()->scale(),
-             Game::This()->zone_render()->scale());
-
-    //------------------------------------------------------------------------------------------------------------------
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -84,15 +63,6 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
-
-    //------------------------------------------------------------------------------------------------------------------
-    glPopMatrix();  // glScaled
-    glPopMatrix();  // glRotated
-    glPopMatrix();  // glRotated
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
 }
 
 }  // namespace sys
