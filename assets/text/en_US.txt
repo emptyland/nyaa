@@ -13,3 +13,11 @@ TITLE_ROLE_5              | Timmy∙Zhang
 CUBE_AIR                  | Air Cube
 CUBE_WALL_1               | Wall Cube 1
 CUBE_WOOD_1               | Wood Cube 1
+------------------------------------------------------------------------------------------------------------------------
+NICK_ONE_LINE_MAN         | One Line Man
+------------------------------------------------------------------------------------------------------------------------
+ACTOR_JACK_LI             | Jack∙Li
+ACTOR_NIKO_CHEN           | Niko∙Chen
+ACTOR_STEVE_WANG          | Steve∙Wang
+ACTOR_TOMMY_ZHANG         | Tommy∙Zhang
+ACTOR_TIMMY_ZHANG         | Timmy∙Zhang
