@@ -8,12 +8,6 @@ namespace nyaa {
 
 namespace sys {
 
-float Nearf(float n) {
-    float i = ceilf(n);
-    float j = floorf(n);
-    return fabsf(ceilf(n) - n) < fabsf(n - floorf(n)) ? i : j;
-}
-
 void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComponent *zone, float gravity,
                                  double delta, bool stop_after_move /*= true*/) {
     // if (movement->coord().z < 0) { movement->mutable_coord()->z = 0; }
@@ -29,10 +23,6 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
         if (movement->speed().z < 0) { movement->mutable_speed()->z = 0; }
     }
 
-    // DLOG(INFO) << "Speed: (" << movement->speed().x << ", " << movement->speed().y << ", " << movement->speed().z
-    //            << ")";
-
-    // :format
     Vertex3f next;
     next.x = movement->coord().x + movement->speed().x * delta;
     next.y = movement->coord().y + movement->speed().y * delta;
@@ -43,8 +33,8 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
     int i = next.x + 0.75;
     int j = next.y + 1;
     cube = zone->Cube(i, j, ceil(next.z) + 1);
-    DLOG(INFO) << "next: (" << next.x << ", " << next.y << ", " << next.z << ")";
-    DLOG(INFO) << "cube: " << cube->kind() << ":" << cube->hardness();
+    // DLOG(INFO) << "next: (" << next.x << ", " << next.y << ", " << next.z << ")";
+    // DLOG(INFO) << "cube: " << cube->kind() << ":" << cube->hardness();
     if (cube->kind() == res::Cube::CUBE_AIR) {
         movement->set_coord(next);
     }
