@@ -11,6 +11,7 @@ namespace sys {
 
 struct VertexBundle {
     Vertex2f tex;
+    Vertex3f nor;
     Vertex3f vec;
 };
 
@@ -19,6 +20,15 @@ static const GLuint vertex_index[][4] = {
     12, 14, 15, 13,                  // 0, 1, 5, 4
     4,  5,  7,  6,  16, 18, 19, 17,  // 1, 3, 7, 5
     20, 22, 23, 21,                  // 2, 6, 7, 3
+};
+
+static const Vertex3f vertex_normal[] = {
+    /* [0]  */ {0, 0, 1},   // back
+    /* [1]  */ {-1, 0, 0},  // left
+    /* [2]  */ {0, -1, 0},  // bottom
+    /* [3]  */ {0, 0, -1},  // front
+    /* [4]  */ {1, 0, 0},   // right
+    /* [5]  */ {0, 1, 0},   // top
 };
 
 void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
@@ -46,7 +56,6 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
     //------------------------------------------------------------------------------------------------------------------
     glDisable(GL_CULL_FACE);
     //------------------------------------------------------------------------------------------------------------------
-
 }
 
 // Vertex3i pos{-n_cubes, -1, n_cubes};
@@ -83,65 +92,89 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
 
         // back
         vertexs[0].tex = et->coord(0);
+        vertexs[0].nor = vertex_normal[0];
         vertexs[0].vec = points[0];
         vertexs[2].tex = et->coord(1);
+        vertexs[2].nor = vertex_normal[0];
         vertexs[2].vec = points[2];
         vertexs[3].tex = et->coord(2);
+        vertexs[3].nor = vertex_normal[0];
         vertexs[3].vec = points[3];
         vertexs[1].tex = et->coord(3);
+        vertexs[1].nor = vertex_normal[0];
         vertexs[1].vec = points[1];
 
         // left
         vertexs[8].tex  = et->coord(0);
+        vertexs[8].nor = vertex_normal[1];
         vertexs[8].vec  = points[0];
         vertexs[9].tex  = et->coord(1);
+        vertexs[9].nor = vertex_normal[1];
         vertexs[9].vec  = points[4];
         vertexs[10].tex = et->coord(2);
+        vertexs[10].nor = vertex_normal[1];
         vertexs[10].vec = points[6];
         vertexs[11].tex = et->coord(3);
+        vertexs[11].nor = vertex_normal[1];
         vertexs[11].vec = points[2];
 
         // bottom
         vertexs[12].tex = et->coord(0);
+        vertexs[12].nor = vertex_normal[2];
         vertexs[12].vec = points[0];
         vertexs[14].tex = et->coord(1);
+        vertexs[14].nor = vertex_normal[2];
         vertexs[14].vec = points[1];
         vertexs[15].tex = et->coord(2);
+        vertexs[15].nor = vertex_normal[2];
         vertexs[15].vec = points[5];
         vertexs[13].tex = et->coord(3);
+        vertexs[13].nor = vertex_normal[2];
         vertexs[13].vec = points[4];
 
         // front
         vertexs[4].tex = et->coord(0);
+        vertexs[4].nor = vertex_normal[3];
         vertexs[4].vec = points[4];
         vertexs[5].tex = et->coord(1);
+        vertexs[5].nor = vertex_normal[3];
         vertexs[5].vec = points[5];
         vertexs[7].tex = et->coord(2);
+        vertexs[7].nor = vertex_normal[3];
         vertexs[7].vec = points[7];
         vertexs[6].tex = et->coord(3);
+        vertexs[6].nor = vertex_normal[3];
         vertexs[6].vec = points[6];
 
         // right
         vertexs[16].tex = et->coord(0);
+        vertexs[16].nor = vertex_normal[4];
         vertexs[16].vec = points[1];
         vertexs[18].tex = et->coord(1);
+        vertexs[18].nor = vertex_normal[4];
         vertexs[18].vec = points[3];
         vertexs[19].tex = et->coord(2);
+        vertexs[19].nor = vertex_normal[4];
         vertexs[19].vec = points[7];
         vertexs[17].tex = et->coord(3);
+        vertexs[17].nor = vertex_normal[4];
         vertexs[17].vec = points[5];
 
         // top
         vertexs[20].tex = tt->coord(0);
+        vertexs[20].nor = vertex_normal[5];
         vertexs[20].vec = points[2];
         vertexs[22].tex = tt->coord(1);
+        vertexs[22].nor = vertex_normal[5];
         vertexs[22].vec = points[6];
         vertexs[23].tex = tt->coord(2);
+        vertexs[23].nor = vertex_normal[5];
         vertexs[23].vec = points[7];
         vertexs[21].tex = tt->coord(3);
+        vertexs[21].nor = vertex_normal[5];
         vertexs[21].vec = points[3];
 
-        glInterleavedArrays(GL_T2F_V3F, 0, vertexs);
+        glInterleavedArrays(GL_T2F_N3F_V3F, 0, vertexs);  // GL_T2F_N3F_V3F
         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_INT, vertex_index);
     }
 }
