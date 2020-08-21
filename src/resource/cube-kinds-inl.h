@@ -9,5 +9,8 @@
     V(CUBE_GRASS_1) \
     V(CUBE_GRASS_2) \
     V(CUBE_STONE_1) \
+    V(CUBE_TREE_1) \
+    V(CUBE_TREE_2) \
+    V(CUBE_TREE_STUB) \
 
 #endif // NYAA_RESOURCE_CUBE_KINDS_INL_H_

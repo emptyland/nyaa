@@ -9,6 +9,9 @@ namespace nyaa {
 namespace com {
 class ZoneComponent;
 }  // namespace com
+namespace res {
+class Texture;
+}  // namespace res
 
 namespace sys {
 
@@ -22,10 +25,12 @@ public:
     void Render(com::ZoneComponent *zone);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ZoneRenderSystem);
+
 private:
     void RenderSurface(com::ZoneComponent *zone, int i, int j);
+    void RenderPlant(Vertex3f p0, res::Texture *tex);
 
-    float cube_size_ = 1;
+    float    cube_size_   = 1;
     uint32_t tile_tex_id_ = -1;
 };  // class ZoneRenderSystem
 

@@ -36,12 +36,6 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
 
     glViewport(0, 0, fb_size.x, fb_size.y);
 
-    //------------------------------------------------------------------------------------------------------------------
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
-    //------------------------------------------------------------------------------------------------------------------
-
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tile_tex_id());
     glColor3f(1.0, 1.0, 1.0);
@@ -52,10 +46,6 @@ void ZoneRenderSystem::Render(com::ZoneComponent *zone) {
             RenderSurface(zone, i, j);
         }
     }
-
-    //------------------------------------------------------------------------------------------------------------------
-    glDisable(GL_CULL_FACE);
-    //------------------------------------------------------------------------------------------------------------------
 }
 
 // Vertex3i pos{-n_cubes, -1, n_cubes};
@@ -67,7 +57,7 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
 
     for (int z = kTerrainSurfaceLevel; z < kTerrainMaxLevels; z++) {
         com::CubeComponent *cube = zone->CubeAt(i, j, z);
-        if (cube->kind() == res::Cube::CUBE_AIR) { continue; }
+        if (cube->IsTransparent()) { continue; }
 
         res::Cube *def = DCHECK_NOTNULL(Game::This()->cube_lib()->cube(cube->kind()));
 
@@ -75,6 +65,11 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
         res::Texture *et = def->edge_tex();
 
         p0.y = (-1 + (z - kTerrainSurfaceLevel)) * cube_size_;
+
+        if (cube->IsPlant()) {
+            RenderPlant(p0, tt);
+            continue;
+        }
 
         Vertex3f points[8] = {p0, p0, p0, p0, p0, p0, p0, p0};
         points[1].x += cube_size_;
@@ -177,6 +172,43 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
         glInterleavedArrays(GL_T2F_N3F_V3F, 0, vertexs);  // GL_T2F_N3F_V3F
         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_INT, vertex_index);
     }
+}
+
+void ZoneRenderSystem::RenderPlant(Vertex3f p0, res::Texture *tex) {
+    // //------------------------------------------------------------------------------------------------------------------
+    // glDisable(GL_CULL_FACE);
+    // //------------------------------------------------------------------------------------------------------------------
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
+    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_QUADS);
+
+    glTexCoord2f(tex->coord(0).x, tex->coord(0).y);
+    glVertex3f(p0.x, p0.y + 3 * cube_size_ * tex->aspect_ratio(), p0.z + 0.5 * cube_size_);
+
+    glTexCoord2f(tex->coord(1).x, tex->coord(1).y);
+    glVertex3f(p0.x + 1.5 * cube_size_, p0.y + 3 * cube_size_ * tex->aspect_ratio(), p0.z + 0.5 * cube_size_);
+
+    glTexCoord2f(tex->coord(2).x, tex->coord(2).y);
+    glVertex3f(p0.x + 1.5 * cube_size_, p0.y, p0.z + 0.5 * cube_size_);
+
+    glTexCoord2f(tex->coord(3).x, tex->coord(3).y);
+    glVertex3f(p0.x, p0.y, p0.z + 0.5 * cube_size_);
+
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // Restore
+    glBindTexture(GL_TEXTURE_2D, tile_tex_id());
+    glColor3f(1.0, 1.0, 1.0);
+
+    // //------------------------------------------------------------------------------------------------------------------
+    // glFrontFace(GL_CW);
+    // glCullFace(GL_BACK);
+    // glEnable(GL_CULL_FACE);
+    // //------------------------------------------------------------------------------------------------------------------
 }
 
 }  // namespace sys

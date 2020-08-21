@@ -68,7 +68,9 @@ bool TextureLibrary::Prepare(const std::string &file_name) {
         // LB
         Vertex2f p3{row.bound().x / last_tex_size.x, (row.bound().y + row.bound().h) / last_tex_size.y};
 
-        Texture *tex = new (arena_) Texture(row.id(), last_tex_id, row.index(), p0, p1, p2, p3);
+        float aspect_ratio = static_cast<float>(row.bound().h) / static_cast<float>(row.bound().w);
+
+        Texture *tex = new (arena_) Texture(row.id(), last_tex_id, row.index(), aspect_ratio, p0, p1, p2, p3);
         if (textures_.find(row.id()) != textures_.end()) {
             DLOG(ERROR) << "Duplicated tex id: " << row.id().value();
             return false;
@@ -97,8 +99,8 @@ uint32_t TextureLibrary::LoadPictureFile(const std::string &name, Vertex2f *size
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 

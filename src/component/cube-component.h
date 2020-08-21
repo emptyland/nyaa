@@ -18,15 +18,19 @@ public:
     res::Texture *GetTopTexture() const;
     res::Texture *GetEdgeTexture() const;
 
+    bool IsTransparent() const { return IsAir() || kind() == res::Cube::CUBE_TREE_STUB; }
+    bool IsAir() const { return kind() == res::Cube::CUBE_AIR; }
+    bool IsPlant() const { return kind() >= res::Cube::CUBE_TREE_1 && kind() < res::Cube::CUBE_TREE_STUB; }
+
 private:
     Kind kind_     = res::Cube::CUBE_AIR;
     int  hardness_ = 0;
 };  // class CubeComponent
 
-template<int W, int H>
+template <int W, int H>
 struct FloorComponent {
     CubeComponent cubes[W][H];
-}; // struct FloorComponent
+};  // struct FloorComponent
 
 }  // namespace com
 

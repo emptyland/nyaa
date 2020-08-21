@@ -13,8 +13,9 @@ namespace res {
 
 class Texture : public base::ArenaObject {
 public:
-    Texture(ResourceId id, uint32_t tex_id, int index, Vertex2f p0, Vertex2f p1, Vertex2f p2, Vertex2f p3)
-        : id_(id), tex_id_(tex_id), index_(index) {
+    Texture(ResourceId id, uint32_t tex_id, int index, float aspect_ratio, Vertex2f p0, Vertex2f p1, Vertex2f p2,
+            Vertex2f p3)
+        : id_(id), tex_id_(tex_id), index_(index), aspect_ratio_(aspect_ratio) {
         coord_[0] = p0;
         coord_[1] = p1;
         coord_[2] = p2;
@@ -24,6 +25,8 @@ public:
     DEF_VAL_GETTER(ResourceId, id);
     DEF_VAL_GETTER(uint32_t, tex_id);
     DEF_VAL_GETTER(int, index);
+    DEF_VAL_GETTER(float, aspect_ratio);
+
     const Vertex2f &coord(int i) const {
         DCHECK_GE(i, 0);
         DCHECK_LT(i, 4);
@@ -34,6 +37,7 @@ private:
     ResourceId id_;
     uint32_t   tex_id_;
     int        index_;
+    float      aspect_ratio_; // h/w ratio
     Vertex2f   coord_[4];
 };  // class Texture
 
