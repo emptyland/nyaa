@@ -19,6 +19,8 @@ static constexpr double kDefaultZoneRotateAngleZ = 45;
 
 static constexpr double kDefaultZoneScale = 0.08;
 
+//enum Direction { kNone, kE, kS, kW, kN, kSE, kNE, kSW, kNW };
+
 }  // namespace nyaa
 
 #endif  // NYAA_GAME_CONSTANTS_H_
