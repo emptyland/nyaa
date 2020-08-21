@@ -35,6 +35,9 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kW, zone->want());
             } else {
+                if (listener()) {
+                    listener()->OnScrollRegion(zone->region(), com::ZoneComponent::kE, com::ZoneComponent::kE);
+                }
                 ReplaceRegionIfNeeded(zone, zone->region(), 0, 1, 0);
             }
             zone->set_sibling(1, nullptr);
@@ -56,6 +59,9 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kN, zone->want());
             } else {
+                if (listener()) {
+                    listener()->OnScrollRegion(zone->region(), com::ZoneComponent::kS, com::ZoneComponent::kS);
+                }
                 ReplaceRegionIfNeeded(zone, zone->region(), 0, 0, 1);
             }
             zone->set_sibling(1, nullptr);
@@ -77,6 +83,9 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kE, zone->want());
             } else {
+                if (listener()) {
+                    listener()->OnScrollRegion(zone->region(), com::ZoneComponent::kW, com::ZoneComponent::kW);
+                }
                 ReplaceRegionIfNeeded(zone, zone->region(), 0, -1, 0);
             }
             zone->set_sibling(1, nullptr);
@@ -98,6 +107,9 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kS, zone->want());
             } else {
+                if (listener()) {
+                    listener()->OnScrollRegion(zone->region(), com::ZoneComponent::kN, com::ZoneComponent::kN);
+                }
                 ReplaceRegionIfNeeded(zone, zone->region(), 0, 0, -1);
             }
             zone->set_sibling(1, nullptr);
@@ -173,6 +185,10 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kNW, zone->want());
             } else {
+                if (listener()) {
+                    listener()->OnScrollRegion(zone->region(), com::ZoneComponent::kSE, com::ZoneComponent::kSE);
+                }
+
                 com::RegionComponent *se = zone->region();
                 ReplaceRegionIfNeeded(zone, se, 0, 1, 0);
                 ReplaceRegionIfNeeded(zone, se, 1, 1, 1);
@@ -247,6 +263,10 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
                 zone->UpdateViewportCoord();
                 DCHECK_EQ(com::ZoneComponent::kNE, zone->want());
             } else {
+                if (listener()) {
+                    listener()->OnScrollRegion(zone->region(), com::ZoneComponent::kSW, com::ZoneComponent::kSW);
+                }
+
                 com::RegionComponent *sw = zone->region();
                 ReplaceRegionIfNeeded(zone, sw, 0, -1, 0);
                 ReplaceRegionIfNeeded(zone, sw, 1, 0, 1);

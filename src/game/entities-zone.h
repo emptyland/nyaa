@@ -28,6 +28,7 @@ public:
     }
 
     friend class EntitiesRegion;
+
 private:
     entity::Entity *dummy() { return &entities_dummy_; }
 
@@ -60,13 +61,102 @@ public:
     void DidFreeRegion(int index);
 
     void ScrollEastToWest(Vertex2i coord);
+
+    void ScrollEast(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x + kRegionSize, coord.y});
+        FreeIfNeeded(1);
+        FreeIfNeeded(2);
+    }
+
     void ScrollWestToEast(Vertex2i coord);
+
+    void ScrollWest(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x - kRegionSize, coord.y});
+        FreeIfNeeded(1);
+        FreeIfNeeded(2);
+    }
+
     void ScrollNorthToSouth(Vertex2i coord);
+
+    void ScrollNorth(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x, coord.y - kRegionSize});
+        FreeIfNeeded(1);
+        FreeIfNeeded(2);
+    }
+
     void ScrollSouthToNorth(Vertex2i coord);
+
+    void ScrollSouth(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x, coord.y + kRegionSize});
+        FreeIfNeeded(1);
+        FreeIfNeeded(2);
+    }
+
+    void ScrollSEToSW(Vertex2i coord);
+    void ScrollSEToNE(Vertex2i coord);
+    void ScrollSEToNW(Vertex2i coord);
+
+    //  SE | 0
+    //  ---+---
+    //   2 | 1
+    void ScrollSE(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x + kRegionSize, coord.y});
+        ReAllocateIfNeeded(1, {coord.x + kRegionSize, coord.y + kRegionSize});
+        ReAllocateIfNeeded(2, {coord.x, coord.y + kRegionSize});
+    }
+
+    void ScrollSWToNW(Vertex2i coord);
+    void ScrollSWToSE(Vertex2i coord);
+    void ScrollSWToNE(Vertex2i coord);
+
+    //   2 | SW
+    //  ---+---
+    //   1 | 0
+    void ScrollSW(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x, coord.y + kRegionSize});
+        ReAllocateIfNeeded(1, {coord.x - kRegionSize, coord.y + kRegionSize});
+        ReAllocateIfNeeded(2, {coord.x - kRegionSize, coord.y});
+    }
+
+    void ScrollNEToSE(Vertex2i coord);
+    void ScrollNEToNW(Vertex2i coord);
+    void ScrollNEToSW(Vertex2i coord);
+
+    //    0 | 1
+    //   ---+---
+    //   NE | 2
+    void ScrollNE(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x, coord.y - kRegionSize});
+        ReAllocateIfNeeded(1, {coord.x + kRegionSize, coord.y - kRegionSize});
+        ReAllocateIfNeeded(2, {coord.x + kRegionSize, coord.y});
+    }
+
+    void ScrollNWToSW(Vertex2i coord);
+    void ScrollNWToNE(Vertex2i coord);
+    void ScrollNWToSE(Vertex2i coord);
+
+    //    0 | 1
+    //   ---+---
+    //    2 | NW
+    void ScrollNW(Vertex2i coord) {
+        ReAllocateIfNeeded(0, {coord.x - kRegionSize, coord.y - kRegionSize});
+        ReAllocateIfNeeded(1, {coord.x, coord.y - kRegionSize});
+        ReAllocateIfNeeded(2, {coord.x - kRegionSize, coord.y});
+    }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(EntitiesZone);
 
 private:
+    void ReAllocateIfNeeded(int index, Vertex2i coord) {
+        EntitiesRegion *region = *address(index);
+        if (!region) {
+            *address(index) = AllocateRegion(coord);
+        } else if (coord.x != region->global_coord_.x && coord.y != region->global_coord_.y) {
+            Finalize(region);
+            region->global_coord_ = coord;
+        }
+    }
+
     EntitiesRegion *AllocateRegion(Vertex2i coord) {
         DCHECK(!free_regions_.empty());
         EntitiesRegion *region = free_regions_.front();
@@ -75,9 +165,23 @@ private:
         return region;
     }
 
+    void FreeIfNeeded(int index) {
+        EntitiesRegion *region = *address(index);
+        if (region) {
+            Finalize(region);
+            free_regions_.push_back(region);
+            *address(index) = nullptr;
+        }
+    }
+
+    void Finalize(EntitiesRegion *region) { /*TODO*/
+    }
+
+    EntitiesRegion **address(int index) { return index < 0 ? &region_ : &sibling_[index]; }
+
     std::list<EntitiesRegion *> free_regions_;
-    EntitiesRegion *region_ = nullptr;
-    EntitiesRegion *sibling_[4];
+    EntitiesRegion *            region_ = nullptr;
+    EntitiesRegion *            sibling_[4];
 };  // class EntitiesZone
 
 }  // namespace nyaa
