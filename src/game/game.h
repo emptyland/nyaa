@@ -44,6 +44,7 @@ public:
     DEF_VAL_GETTER(int, fb_w);
     DEF_VAL_GETTER(double, frame_delta_time);
     DEF_PTR_PROP_RW(Scene, scene);
+    DEF_PTR_GETTER(GLFWwindow, window);
 
     const Properties *properties() const { return properties_.get(); }
 

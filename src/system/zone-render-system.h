@@ -23,7 +23,8 @@ public:
     DEF_VAL_PROP_RW(float, cube_size);
     DEF_VAL_PROP_RW(uint32_t, tile_tex_id);
 
-    void Render(com::ZoneComponent *zone);
+    void RenderTerrain(com::ZoneComponent *zone);
+    void RenderPlantLayout(com::ZoneComponent *zone, int layout);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ZoneRenderSystem);
 

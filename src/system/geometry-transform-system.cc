@@ -24,9 +24,9 @@ void GeometryTransformSystem::Exit2DProjection() {
 
 void GeometryTransformSystem::EnterRotatedProjection() {
     //------------------------------------------------------------------------------------------------------------------
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
+    // glFrontFace(GL_CW);
+    // glCullFace(GL_BACK);
+    // glEnable(GL_CULL_FACE);
     //------------------------------------------------------------------------------------------------------------------
 
     glMatrixMode(GL_PROJECTION);
@@ -56,7 +56,7 @@ void GeometryTransformSystem::ExitRotatedProjection() {
     glMatrixMode(GL_MODELVIEW);
 
     //------------------------------------------------------------------------------------------------------------------
-    glDisable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE);
     //------------------------------------------------------------------------------------------------------------------
 }
 

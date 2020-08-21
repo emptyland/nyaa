@@ -40,8 +40,9 @@ void TestScene::Reset() {
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
+static constexpr float speed = 10;
+
 void TestScene::OnKeyInput(int key, int code, int action, int mods) {
-    static constexpr float speed = 7;
 
     switch (key) {
         case GLFW_KEY_ESCAPE:
@@ -49,48 +50,74 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
             DelayDispose();
             DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
             break;
-        case GLFW_KEY_W: {
-            player_->mutable_movement()->mutable_speed()->y = -speed;
-            // UpdatePlayerMovement();
-        } break;
-        case GLFW_KEY_S: {
-            player_->mutable_movement()->mutable_speed()->y = speed;
-            // UpdatePlayerMovement();
-        } break;
-        case GLFW_KEY_A: {
-            player_->mutable_movement()->mutable_speed()->x = -speed;
-            // UpdatePlayerMovement();
-        } break;
-        case GLFW_KEY_D: {
-            player_->mutable_movement()->mutable_speed()->x = speed;
-            // UpdatePlayerMovement();
-        } break;
+        // case GLFW_KEY_W: {
+        //     player_->mutable_movement()->mutable_speed()->y = -speed;
+        // } break;
+        // case GLFW_KEY_S: {
+        //     player_->mutable_movement()->mutable_speed()->y = speed;
+        //     // UpdatePlayerMovement();
+        // } break;
+        // case GLFW_KEY_A: {
+        //     player_->mutable_movement()->mutable_speed()->x = -speed;
+        //     // UpdatePlayerMovement();
+        // } break;
+        // case GLFW_KEY_D: {
+        //     player_->mutable_movement()->mutable_speed()->x = speed;
+        //     // UpdatePlayerMovement();
+        // } break;
         case GLFW_KEY_SPACE: {
-            if (player_->movement().speed().z == 0) {
-                player_->mutable_movement()->mutable_speed()->z = 20;
-            }
+            if (player_->movement().speed().z == 0) { player_->mutable_movement()->mutable_speed()->z = 10; }
             // UpdatePlayerMovement();
         } break;
         case GLFW_KEY_UP:
             // :format
             game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() + 2);
             break;
-        case GLFW_KEY_DOWN:
-            game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() - 2);
-            break;
-        case GLFW_KEY_LEFT:
-            game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() - 2);
-            break;
-        case GLFW_KEY_RIGHT:
-            game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() + 2);
-            break;
+        case GLFW_KEY_DOWN: game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() - 2); break;
+        case GLFW_KEY_LEFT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() - 2); break;
+        case GLFW_KEY_RIGHT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() + 2); break;
         default: break;
     }
 }
 
 void TestScene::Render(double delta) {
-    game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 1,
-                                     game()->frame_delta_time() /*delta*/, false);
+    int action = 0, command = 0;
+    if (action = glfwGetKey(game()->window(), GLFW_KEY_W); action == GLFW_PRESS) {
+        player_->mutable_movement()->mutable_speed()->y = -speed;
+        command++;
+    } else {
+        player_->mutable_movement()->mutable_speed()->y = 0;
+    }
+    if (action = glfwGetKey(game()->window(), GLFW_KEY_S); action == GLFW_PRESS) {
+        player_->mutable_movement()->mutable_speed()->y = speed;
+        command++;
+    } else {
+        if (player_->mutable_movement()->mutable_speed()->y > 0) {
+            player_->mutable_movement()->mutable_speed()->y = 0;
+        }
+    }
+    if (action = glfwGetKey(game()->window(), GLFW_KEY_A); action == GLFW_PRESS) {
+        player_->mutable_movement()->mutable_speed()->x = -speed;
+        command++;
+    } else {
+        player_->mutable_movement()->mutable_speed()->x = 0;
+    }
+    if (action = glfwGetKey(game()->window(), GLFW_KEY_D); action == GLFW_PRESS) {
+        player_->mutable_movement()->mutable_speed()->x = speed;
+        command++;
+    } else {
+        if (player_->mutable_movement()->mutable_speed()->x > 0) {
+            player_->mutable_movement()->mutable_speed()->x = 0;
+        }
+    }
+
+    if (command == 0) {
+        player_->mutable_movement()->mutable_speed()->x = 0;
+        player_->mutable_movement()->mutable_speed()->y = 0;
+    }
+
+    game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3, game()->frame_delta_time() /*delta*/,
+                                     false);
 
     if (player_->movement().is_moving()) {
         zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
@@ -98,12 +125,18 @@ void TestScene::Render(double delta) {
     }
 
     game()->transform()->EnterRotatedProjection();
-    game()->zone_render()->Render(zone_.get());
-    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
+    game()->zone_render()->RenderTerrain(zone_.get());
+    for (int i = 0; i < zone_->viewport().bound().y; i++) {
+        game()->zone_render()->RenderPlantLayout(zone_.get(), i);
+        if (i == zone_->viewport().bound().y / 2) {
+            game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
+        }
+    }
+    // game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
     game()->transform()->ExitRotatedProjection();
 
-    player_->mutable_movement()->mutable_speed()->x = 0;
-    player_->mutable_movement()->mutable_speed()->y = 0;
+    // player_->mutable_movement()->mutable_speed()->x = 0;
+    // player_->mutable_movement()->mutable_speed()->y = 0;
 
     {
         char buf[128];
