@@ -1,5 +1,7 @@
 #include "system/random-zone-system.h"
 #include "component/zone-component.h"
+#include "resource/cube-library.h"
+#include "game/game.h"
 
 namespace nyaa {
 
@@ -41,12 +43,25 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
             int seed = ::rand() & 0x1f;
             switch (seed) {
                 // case 0: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
-                case 1: surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1); break;
-                case 2: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
-                case 0: surface->cubes[x][y].set_kind(res::Cube::CUBE_TREE_1); break;
+                case 0: {
+                    res::Cube *cube = Game::This()->cube_lib()->cube(res::Cube::CUBE_TREE_1);
+                    surface->cubes[x][y].set_kind(cube->kind());
+                    for (int i = 0; i < cube->vh(); i++) {
+                        region->floor(kTerrainSurfaceLevel + 2 + i)->cubes[x][y].set_kind(res::Cube::CUBE_TREE_STUB);
+                    }
+                } break;
+                case 1: {
+                    res::Cube *cube = Game::This()->cube_lib()->cube(res::Cube::CUBE_TREE_2);
+                    surface->cubes[x][y].set_kind(cube->kind());
+                    for (int i = 0; i < cube->vh(); i++) {
+                        region->floor(kTerrainSurfaceLevel + 2 + i)->cubes[x][y].set_kind(res::Cube::CUBE_TREE_STUB);
+                    }
+                } break;
+                case 2: surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1); break;
+                case 3: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
                 default: surface->cubes[x][y].set_kind(res::Cube::CUBE_AIR); break;
             }
-            surface->cubes[x][y].set_hardness(4);
+            if (surface->cubes[x][y].kind() != res::Cube::CUBE_AIR) { surface->cubes[x][y].set_hardness(4); }
         }
     }
 

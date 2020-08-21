@@ -28,7 +28,7 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
     next.y = movement->coord().y + movement->speed().y * delta;
     next.z = movement->coord().z + movement->speed().z * delta;
     if (next.z < 0) { next.z = 0; }
-    if (next.z >= kTerrainMaxLevels) { next.z = kTerrainMaxLevels - 1; }
+    if (next.z >= kTerrainMaxLevels - 1) { next.z = kTerrainMaxLevels - 2; }
 
     int i = next.x + 0.75;
     int j = next.y + 1;

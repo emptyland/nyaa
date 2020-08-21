@@ -27,6 +27,8 @@ public:
     DEF_VAL_GETTER(ResourceId, id);
     DEF_PTR_GETTER(Texture, top_tex);
     DEF_PTR_GETTER(Texture, edge_tex);
+    DEF_VAL_GETTER(int, vw);
+    DEF_VAL_GETTER(int, vh);
     DEF_VAL_GETTER(std::string_view, name);
 
     friend class CubeLibrary;
@@ -38,6 +40,8 @@ private:
     ResourceId       id_;
     Texture *        top_tex_;
     Texture *        edge_tex_;
+    int              vw_;
+    int              vh_;
     std::string_view name_;
 };  // class Cube
 

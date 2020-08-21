@@ -12,12 +12,17 @@ public:
     DEF_VAL_GETTER(std::string, name);
     DEF_VAL_GETTER(ResourceId, top_tex_id);
     DEF_VAL_GETTER(ResourceId, edge_tex_id);
+    DEF_VAL_GETTER(int, vw);
+    DEF_VAL_GETTER(int, vh);
 
     void Parse(const std::vector<std::string_view> &items) {
         ParseValue<DefValType::ID>(items[0], &id_);
         ParseValue<DefValType::STRING>(items[1], &name_);
         ParseValue<DefValType::ID>(items[2], &top_tex_id_);
         ParseValue<DefValType::ID>(items[3], &edge_tex_id_);
+        // items[4]: env
+        ParseValue<DefValType::I32>(items[5], &vw_);
+        ParseValue<DefValType::I32>(items[6], &vh_);
     }
 
 private:
@@ -25,6 +30,9 @@ private:
     std::string name_;
     ResourceId  top_tex_id_;
     ResourceId  edge_tex_id_;
+    // std::string env_;
+    int vw_;
+    int vh_;
     // TODO:
 };  // class CubeDef
 
@@ -43,9 +51,10 @@ bool CubeLibrary::Prepare(const std::string &file_name) {
         return false;
     }
 
-    int              kind = 0;
+    int     kind = 0;
+    CubeDef row;
+
     DefinitionReader rd(fp, true /*ownership*/);
-    CubeDef          row;
     while (row.Read(&rd) != EOF) {
         if (id_to_cubes_.find(row.id()) != id_to_cubes_.end()) {
             DLOG(ERROR) << "Duplicated cube id: " << row.id().value();
@@ -67,6 +76,8 @@ bool CubeLibrary::Prepare(const std::string &file_name) {
             DLOG(ERROR) << "Texture id " << row.edge_tex_id().value() << " not found for cube definition.";
             return false;
         }
+        cube->vw_ = row.vw();
+        cube->vh_ = row.vh();
 
         cubes_[cube->kind()] = cube;
     }
