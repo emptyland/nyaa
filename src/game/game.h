@@ -17,6 +17,7 @@ class TextLibrary;
 class TextureLibrary;
 class AvatarLibrary;
 class CubeLibrary;
+class ShaderLibrary;
 }  // namespace res
 
 namespace sys {
@@ -56,11 +57,13 @@ public:
     sys::ActorMovementSystem *    actor_movement() const { return actor_movement_.get(); }
     sys::GeometryTransformSystem *transform() const { return transform_.get(); }
 
-    res::FontLibrary *     font_lib() const { return font_lib_.get(); }
-    res::TextLibrary *     text_lib() const { return text_lib_.get(); }
-    res::AvatarLibrary *   avatar_lib() const { return avatar_lib_.get(); }
-    res::TextureLibrary *  texture_lib() const { return texture_lib_.get(); }
-    res::CubeLibrary *     cube_lib() const { return cube_lib_.get(); }
+    res::FontLibrary *   font_lib() const { return font_lib_.get(); }
+    res::TextLibrary *   text_lib() const { return text_lib_.get(); }
+    res::AvatarLibrary * avatar_lib() const { return avatar_lib_.get(); }
+    res::TextureLibrary *texture_lib() const { return texture_lib_.get(); }
+    res::CubeLibrary *   cube_lib() const { return cube_lib_.get(); }
+    res::ShaderLibrary * shader_lib() const { return shader_lib_.get(); }
+
     base::AbstractPrinter *debug_out() { return &stdout_; }
 
     bool Prepare(const std::string &properties_file_name);
@@ -110,6 +113,7 @@ private:
     std::unique_ptr<res::TextureLibrary> texture_lib_;
     std::unique_ptr<res::AvatarLibrary>  avatar_lib_;
     std::unique_ptr<res::CubeLibrary>    cube_lib_;
+    std::unique_ptr<res::ShaderLibrary>  shader_lib_;
 
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;

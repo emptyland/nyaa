@@ -15,6 +15,7 @@
 #include "resource/texture-library.h"
 #include "resource/avatar-library.h"
 #include "resource/cube-library.h"
+#include "resource/shader-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -38,6 +39,7 @@ Game::Game()
     , texture_lib_(new res::TextureLibrary(&arena_))
     , avatar_lib_(new res::AvatarLibrary(texture_lib_.get(), &arena_))
     , cube_lib_(new res::CubeLibrary(texture_lib_.get(), &arena_))
+    , shader_lib_(new res::ShaderLibrary())
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
@@ -85,6 +87,12 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwSetCursorPosCallback(window_, OnMouseInput);
     // glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
 
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        DLOG(ERROR) << "glew init fail! detail :\n  " << glewGetErrorString(err);
+        return false;
+    }
+
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glShadeModel(GL_FLAT);
@@ -103,7 +111,14 @@ bool Game::Prepare(const std::string &properties_file_name) {
     if (!avatar_lib_->Prepare(properties()->assets_dir() + "/" + res::AvatarLibrary::kAvatarDefFileName)) {
         return false;
     }
-    if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) { return false; }
+    if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) {
+        // :format
+        return false;
+    }
+    if (!shader_lib_->Prepare(properties()->assets_dir() + "/" + res::ShaderLibrary::kShaderDir)) {
+        // :format
+        return false;
+    }
 
     // Initial tiles texture id
     res::Texture *tex = DCHECK_NOTNULL(texture_lib_->FindOrNull(ResourceId::Of(200000)));

@@ -62,6 +62,7 @@ set(GAME_SRC
     src/resource/texture-library.cc
     src/resource/cube-library.cc
     src/resource/avatar-library.cc
+    src/resource/shader-library.cc
     src/resource/definition.cc
     src/base/arena-utils.cc
     src/base/arenas.cc

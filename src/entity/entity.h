@@ -19,6 +19,8 @@ public:
     DEF_PTR_PROP_RW(Entity, prev);
     DEF_PTR_PROP_RW(EntitiesGrid, grid);
 
+    virtual float ZOrder() { return 0; }
+
     friend class ::nyaa::EntitiesGrid;
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(Entity);
