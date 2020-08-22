@@ -13,11 +13,28 @@ const char ShaderLibrary::kShaderDefFileName[] = "shader/def.txt";
 const char kSimpleLightFSFileName[] = "simple-light.fs";
 const char kSimpleLightVSFileName[] = "simple-light.vs";
 
+/*
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
+
+attribute vec2 tex2d;
+attribute vec3 normal;
+attribute vec3 position;
+ */
+struct SimpleLightParams {
+    GLuint projection_matrix;
+    GLuint modelView_matrix;
+    GLuint tex2d;
+    GLuint normal;
+    GLuint position;
+};
+
 bool ShaderLibrary::Prepare(const std::string &dir) {
     uint32_t vs, fs, program;
     if (!MakeShader(dir + "/" + kSimpleLightVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
-    if (!MakeShader(dir + "/" + kSimpleLightFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
+    //if (!MakeShader(dir + "/" + kSimpleLightFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
     if (!MakeProgram(vs, fs, &program)) { return false; }
+    simple_light_program_ = program;
 
     return true;
 }
@@ -25,7 +42,7 @@ bool ShaderLibrary::Prepare(const std::string &dir) {
 bool ShaderLibrary::MakeProgram(uint32_t shader1, uint32_t shader2, uint32_t *handle) {
     GLuint program = glCreateProgram();
     glAttachShader(program, shader1);
-    glAttachShader(program, shader2);
+    //glAttachShader(program, shader2);
     glLinkProgram(program);
 
     bool  ok = true;
@@ -40,9 +57,10 @@ bool ShaderLibrary::MakeProgram(uint32_t shader1, uint32_t shader2, uint32_t *ha
         ok = false;
     }
     glDetachShader(program, shader1);
-    glDetachShader(program, shader2);
+    //glDetachShader(program, shader2);
     glDeleteShader(shader1);
-    glDeleteShader(shader2);
+    //glDeleteShader(shader2);
+    if (ok) { *handle = program; }
     return ok;
 }
 

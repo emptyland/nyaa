@@ -33,6 +33,7 @@ void GeometryTransformSystem::EnterRotatedProjection() {
     glPushMatrix();
     glLoadIdentity();
     glFrustum(0, Game::This()->fb_w(), 0, Game::This()->fb_h(), -100.0, 100.0);
+    glGetFloatv(GL_PROJECTION, projection_mat());
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -44,6 +45,8 @@ void GeometryTransformSystem::EnterRotatedProjection() {
 
     glPushMatrix();
     glScaled(scale(), scale(), scale());
+
+    glGetFloatv(GL_MODELVIEW, modelview_mat());
 }
 
 void GeometryTransformSystem::ExitRotatedProjection() {

@@ -22,8 +22,7 @@ public:
     void Render(double delta) final;
 
 private:
-    std::unique_ptr<com::AvatarComponent> avatar1_;
-    std::unique_ptr<com::AvatarComponent> avatar2_;
+    uint32_t vbo_[2];
 };  // class BootScene
 
 }  // namespace nyaa

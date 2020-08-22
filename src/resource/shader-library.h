@@ -16,6 +16,8 @@ public:
 
     ShaderLibrary() = default;
 
+    DEF_VAL_GETTER(uint32_t, simple_light_program);
+
     bool Prepare(const std::string &dir);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ShaderLibrary);
@@ -25,6 +27,7 @@ private:
     bool MakeShader(const std::string &file_name, int type, uint32_t *handle);
     bool ReadAll(const std::string &file_name, std::string *content);
 
+    uint32_t simple_light_program_;
 };  // class ShaderLibrary
 
 }  // namespace res
