@@ -126,17 +126,8 @@ void TestScene::Render(double delta) {
 
     game()->transform()->EnterRotatedProjection();
     game()->zone_render()->RenderTerrain(zone_.get());
-    for (int i = 0; i < zone_->viewport().bound().y; i++) {
-        game()->zone_render()->RenderPlantLayout(zone_.get(), i);
-        if (i == zone_->viewport().bound().y / 2) {
-            game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
-        }
-    }
-    // game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
+    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
     game()->transform()->ExitRotatedProjection();
-
-    // player_->mutable_movement()->mutable_speed()->x = 0;
-    // player_->mutable_movement()->mutable_speed()->y = 0;
 
     {
         char buf[128];
