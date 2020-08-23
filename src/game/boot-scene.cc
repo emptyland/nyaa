@@ -103,10 +103,10 @@ void BootScene::Render(double d) {
 
     Matrix mat1;
     // mat.Identity();
-    mat1.Rotate(-1, 0, 0, 45);
+    mat1.Rotate(0, 1, 0, 45);
 
     Matrix mat;
-    mat.Rotate(0, 1, 0, 45);
+    mat.Rotate(-1, 0, 0, 45);
     mat.Multiply(mat1);
 
     glUniformMatrix4fv(matrix, 1, GL_FALSE, mat.values());

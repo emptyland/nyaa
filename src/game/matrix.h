@@ -97,14 +97,44 @@ public:
         value_[15] = 1;
     }
 
+    void Frustum(T left, T right, T bottom, T top, T znear, T zfar) {
+        T temp  = 2.0 * znear;
+        T temp2 = right - left;
+        T temp3 = top - bottom;
+        T temp4 = zfar - znear;
+
+        value_[0]  = temp / temp2;
+        value_[1]  = 0.0;
+        value_[2]  = 0.0;
+        value_[3]  = 0.0;
+        value_[4]  = 0.0;
+        value_[5]  = temp / temp3;
+        value_[6]  = 0.0;
+        value_[7]  = 0.0;
+        value_[8]  = (right + left) / temp2;
+        value_[9]  = (top + bottom) / temp3;
+        value_[10] = (-zfar - znear) / temp4;
+        value_[11] = -1.0;
+        value_[12] = 0.0;
+        value_[13] = 0.0;
+        value_[14] = (-temp * zfar) / temp4;
+        value_[15] = 0.0;
+    }
+
+    void Perspective(T fov, T aspect, T znear, T zfar) {
+        T ymax = znear * tanf(fov * PI / 360.0);
+        T xmax = ymax * aspect;
+        Frustum(-xmax, xmax, -ymax, ymax, znear, zfar);
+    }
+
     void Multiply(const Matrix &b) { Multiply(*this, b, this); }
 
     static void Multiply(const Matrix &a, const Matrix &b, Matrix *matrix) {
-        float result[16];
+        T result[16];
         for (int c = 0; c < kDimX; c++) {
             for (int r = 0; r < kDimY; r++) {
-                int   index = c * 4 + r;
-                float total = 0;
+                int index = c * 4 + r;
+                T   total = 0;
                 for (int i = 0; i < 4; i++) {
                     int p = i * 4 + r;
                     int q = c * 4 + i;
