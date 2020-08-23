@@ -86,7 +86,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwSetKeyCallback(window_, OnKeyInput);
     glfwSetCursorPosCallback(window_, OnMouseInput);
     // glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
-
+    glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (err != GLEW_OK) {
         DLOG(ERROR) << "glew init fail! detail :\n  " << glewGetErrorString(err);

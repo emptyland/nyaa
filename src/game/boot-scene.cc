@@ -14,38 +14,6 @@
 
 namespace nyaa {
 
-BootScene::BootScene(Game *game) : Scene(game) {}
-
-BootScene::~BootScene() {}
-
-void BootScene::Reset() {
-    glGenBuffers(1, &vbo_[0]);
-    glGenBuffers(1, &vbo_[1]);
-}
-
-void BootScene::OnKeyInput(int key, int code, int action, int mods) {
-    switch (key) {
-        case GLFW_KEY_ESCAPE: game()->Exit(); break;
-
-        case GLFW_KEY_T: {
-            TestScene *test_scene = new TestScene(game());
-            test_scene->SwitchTo(this);
-        } break;
-
-        case GLFW_KEY_UP:
-            // :format
-            game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() + 2);
-            break;
-        case GLFW_KEY_DOWN: game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() - 2); break;
-        case GLFW_KEY_LEFT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() - 2); break;
-        case GLFW_KEY_RIGHT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() + 2); break;
-
-        default: break;
-    }
-}
-
-void BootScene::OnMouseInput(double x, double y) {}
-
 static const float positions[6][4][3] = {
     // :format
     {{-1, -1, -1}, {-1, -1, +1}, {-1, +1, -1}, {-1, +1, +1}},
@@ -73,7 +41,63 @@ static const float normals[6][3] = {
     // :format
     {0, 0, +1}};
 
+static const float vertices[] = {
+    0.0f,  0.5f,  0.0f,  // :format
+    0.5f,  -0.5f, 0.0f,  // :format
+    -0.5f, -0.5f, 0.0f,  // :format
+};
+
+BootScene::BootScene(Game *game) : Scene(game) {}
+
+BootScene::~BootScene() {}
+
+void BootScene::Reset() {
+    GLuint pid = game()->shader_lib()->demo_program();
+    GLint position = glGetAttribLocation(pid, "position");
+    glUseProgram(pid);
+
+    glGenVertexArrays(1, &vao_);
+    glGenBuffers(1, &vbo_);
+
+    glBindVertexArray(vao_);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    glEnableVertexAttribArray(position);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void BootScene::OnKeyInput(int key, int code, int action, int mods) {
+    switch (key) {
+        case GLFW_KEY_ESCAPE: game()->Exit(); break;
+
+        case GLFW_KEY_T: {
+            TestScene *test_scene = new TestScene(game());
+            test_scene->SwitchTo(this);
+        } break;
+
+        case GLFW_KEY_UP:
+            // :format
+            game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() + 2);
+            break;
+        case GLFW_KEY_DOWN: game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() - 2); break;
+        case GLFW_KEY_LEFT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() - 2); break;
+        case GLFW_KEY_RIGHT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() + 2); break;
+
+        default: break;
+    }
+}
+
+void BootScene::OnMouseInput(double x, double y) {}
+
 void BootScene::Render(double d) {
+
+    //glClearColor(0.2, 0.3, 0.3, 1.0);
+    glBindVertexArray(vao_);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
     // const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
     // glViewport(0, 0, fb_size.x, fb_size.y);
 

@@ -17,6 +17,7 @@ public:
     ShaderLibrary() = default;
 
     DEF_VAL_GETTER(uint32_t, simple_light_program);
+    DEF_VAL_GETTER(uint32_t, demo_program);
 
     bool Prepare(const std::string &dir);
 
@@ -28,6 +29,7 @@ private:
     bool ReadAll(const std::string &file_name, std::string *content);
 
     uint32_t simple_light_program_;
+    uint32_t demo_program_;
 };  // class ShaderLibrary
 
 }  // namespace res

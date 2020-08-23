@@ -22,7 +22,8 @@ public:
     void Render(double delta) final;
 
 private:
-    uint32_t vbo_[2];
+    uint32_t vao_;
+    uint32_t vbo_;
 };  // class BootScene
 
 }  // namespace nyaa
