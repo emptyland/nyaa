@@ -8,8 +8,8 @@ namespace nyaa {
 
 namespace com {
 
-using PositionComponent = Vertex3f;
-using VelocityComponent = Vertex3f;
+using PositionComponent = Vector3f;
+using VelocityComponent = Vector3f;
 
 class MovementComponent {
 public:

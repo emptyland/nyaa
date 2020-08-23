@@ -8,7 +8,7 @@ namespace nyaa {
 namespace sys {
 
 void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
-    Vertex2i viewport_center{
+    Vector2i viewport_center{
         zone->viewport().round_down_center_x(),
         zone->viewport().round_down_center_y(),
     };

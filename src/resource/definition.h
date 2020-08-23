@@ -22,8 +22,8 @@ enum class DefValType {
     F32,
     F64,
     ID,
-    VERTEX2I,
-    VERTEX4I,
+    VECTOR2I,
+    VECTOR4I,
     ARRAY_I32,
     ARRAY_U32,
 };  // enum class DefValType
@@ -149,15 +149,15 @@ int ParseVertex_Ni(std::string_view input, T *vec) {
 int ParseArray_i32(std::string_view input, int32_t *receive);
 
 template <>
-struct DefValParser<DefValType::VERTEX2I> {
-    using Type = Vertex2i;
-    int Parse(std::string_view input, Vertex2i *receive) { return ParseVertex_Ni(input, receive); }
+struct DefValParser<DefValType::VECTOR2I> {
+    using Type = Vector2i;
+    int Parse(std::string_view input, Vector2i *receive) { return ParseVertex_Ni(input, receive); }
 };
 
 template <>
-struct DefValParser<DefValType::VERTEX4I> {
-    using Type = Vertex4i;
-    int Parse(std::string_view input, Vertex4i *receive) { return ParseVertex_Ni(input, receive); }
+struct DefValParser<DefValType::VECTOR4I> {
+    using Type = Vector4i;
+    int Parse(std::string_view input, Vector4i *receive) { return ParseVertex_Ni(input, receive); }
 };
 
 template <>
@@ -209,10 +209,10 @@ int Definition<T>::ParseValue(std::string_view input, DefValType type, void *rec
         case DefValType::F32: return DefValParser<DefValType::F32>{}.Parse(input, static_cast<float *>(receiver));
         case DefValType::F64: return DefValParser<DefValType::F64>{}.Parse(input, static_cast<double *>(receiver));
         case DefValType::ID: return DefValParser<DefValType::ID>{}.Parse(input, static_cast<ResourceId *>(receiver));
-        case DefValType::VERTEX2I:
-            return DefValParser<DefValType::VERTEX2I>{}.Parse(input, static_cast<Vertex2i *>(receiver));
-        case DefValType::VERTEX4I:
-            return DefValParser<DefValType::VERTEX4I>{}.Parse(input, static_cast<Vertex4i *>(receiver));
+        case DefValType::VECTOR2I:
+            return DefValParser<DefValType::VECTOR2I>{}.Parse(input, static_cast<Vector2i *>(receiver));
+        case DefValType::VECTOR4I:
+            return DefValParser<DefValType::VECTOR4I>{}.Parse(input, static_cast<Vector4i *>(receiver));
         case DefValType::ARRAY_I32:
             return DefValParser<DefValType::ARRAY_I32>{}.Parse(input, static_cast<int32_t *>(receiver));
         case DefValType::ARRAY_U32:

@@ -55,15 +55,15 @@ public:
 
     DEF_VAL_GETTER(uint32_t, buffered_tex);
 
-    void Render(std::string_view text, float x, float y, Vertex3f color = {1, 1, 1});
-    void Render(TextID id, float x, float y, Vertex3f color = {1, 1, 1});
+    void Render(std::string_view text, float x, float y, Vector3f color = {1, 1, 1});
+    void Render(TextID id, float x, float y, Vector3f color = {1, 1, 1});
 
     struct Character : public base::ArenaObject {
         Character *next_ = nullptr;
         Character *prev_ = nullptr;
         uint32_t   code_point;
-        Vertex4i   glyph;
-        Vertex2i   bearing;
+        Vector4i   glyph;
+        Vector2i   bearing;
         long       advance;
     };
 

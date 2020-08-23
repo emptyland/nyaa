@@ -13,8 +13,8 @@ namespace res {
 
 class Texture : public base::ArenaObject {
 public:
-    Texture(ResourceId id, uint32_t tex_id, int index, float aspect_ratio, Vertex2f p0, Vertex2f p1, Vertex2f p2,
-            Vertex2f p3)
+    Texture(ResourceId id, uint32_t tex_id, int index, float aspect_ratio, Vector2f p0, Vector2f p1, Vector2f p2,
+            Vector2f p3)
         : id_(id), tex_id_(tex_id), index_(index), aspect_ratio_(aspect_ratio) {
         coord_[0] = p0;
         coord_[1] = p1;
@@ -27,7 +27,7 @@ public:
     DEF_VAL_GETTER(int, index);
     DEF_VAL_GETTER(float, aspect_ratio);
 
-    const Vertex2f &coord(int i) const {
+    const Vector2f &coord(int i) const {
         DCHECK_GE(i, 0);
         DCHECK_LT(i, 4);
         return coord_[i];
@@ -38,7 +38,7 @@ private:
     uint32_t   tex_id_;
     int        index_;
     float      aspect_ratio_; // h/w ratio
-    Vertex2f   coord_[4];
+    Vector2f   coord_[4];
 };  // class Texture
 
 class TextureLibrary final {
@@ -60,7 +60,7 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(TextureLibrary);
 
 private:
-    uint32_t LoadPictureFile(const std::string &name, Vertex2f *size);
+    uint32_t LoadPictureFile(const std::string &name, Vector2f *size);
 
     base::Arena *const                             arena_;
     base::ArenaUnorderedMap<ResourceId, Texture *> textures_;

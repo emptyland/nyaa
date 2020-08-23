@@ -32,7 +32,7 @@ public:
 private:
     entity::Entity *dummy() { return &entities_dummy_; }
 
-    Vertex2i       local_coord_;
+    Vector2i       local_coord_;
     entity::Entity entities_dummy_;
 };  // class EntitiesGrid
 
@@ -45,7 +45,7 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(EntitiesRegion);
 
 private:
-    Vertex2i global_coord_;
+    Vector2i global_coord_;
     // std::vector<entity::Entity *> entities_;
     std::map<EntityId, entity::Entity *> entities_;
     // :format
@@ -57,88 +57,88 @@ public:
     EntitiesZone();
     ~EntitiesZone();
 
-    void DidLoadRegion(int index, Vertex2i coord);
+    void DidLoadRegion(int index, Vector2i coord);
     void DidFreeRegion(int index);
 
-    void ScrollEastToWest(Vertex2i coord);
+    void ScrollEastToWest(Vector2i coord);
 
-    void ScrollEast(Vertex2i coord) {
+    void ScrollEast(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x + kRegionSize, coord.y});
         FreeIfNeeded(1);
         FreeIfNeeded(2);
     }
 
-    void ScrollWestToEast(Vertex2i coord);
+    void ScrollWestToEast(Vector2i coord);
 
-    void ScrollWest(Vertex2i coord) {
+    void ScrollWest(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x - kRegionSize, coord.y});
         FreeIfNeeded(1);
         FreeIfNeeded(2);
     }
 
-    void ScrollNorthToSouth(Vertex2i coord);
+    void ScrollNorthToSouth(Vector2i coord);
 
-    void ScrollNorth(Vertex2i coord) {
+    void ScrollNorth(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x, coord.y - kRegionSize});
         FreeIfNeeded(1);
         FreeIfNeeded(2);
     }
 
-    void ScrollSouthToNorth(Vertex2i coord);
+    void ScrollSouthToNorth(Vector2i coord);
 
-    void ScrollSouth(Vertex2i coord) {
+    void ScrollSouth(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x, coord.y + kRegionSize});
         FreeIfNeeded(1);
         FreeIfNeeded(2);
     }
 
-    void ScrollSEToSW(Vertex2i coord);
-    void ScrollSEToNE(Vertex2i coord);
-    void ScrollSEToNW(Vertex2i coord);
+    void ScrollSEToSW(Vector2i coord);
+    void ScrollSEToNE(Vector2i coord);
+    void ScrollSEToNW(Vector2i coord);
 
     //  SE | 0
     //  ---+---
     //   2 | 1
-    void ScrollSE(Vertex2i coord) {
+    void ScrollSE(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x + kRegionSize, coord.y});
         ReAllocateIfNeeded(1, {coord.x + kRegionSize, coord.y + kRegionSize});
         ReAllocateIfNeeded(2, {coord.x, coord.y + kRegionSize});
     }
 
-    void ScrollSWToNW(Vertex2i coord);
-    void ScrollSWToSE(Vertex2i coord);
-    void ScrollSWToNE(Vertex2i coord);
+    void ScrollSWToNW(Vector2i coord);
+    void ScrollSWToSE(Vector2i coord);
+    void ScrollSWToNE(Vector2i coord);
 
     //   2 | SW
     //  ---+---
     //   1 | 0
-    void ScrollSW(Vertex2i coord) {
+    void ScrollSW(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x, coord.y + kRegionSize});
         ReAllocateIfNeeded(1, {coord.x - kRegionSize, coord.y + kRegionSize});
         ReAllocateIfNeeded(2, {coord.x - kRegionSize, coord.y});
     }
 
-    void ScrollNEToSE(Vertex2i coord);
-    void ScrollNEToNW(Vertex2i coord);
-    void ScrollNEToSW(Vertex2i coord);
+    void ScrollNEToSE(Vector2i coord);
+    void ScrollNEToNW(Vector2i coord);
+    void ScrollNEToSW(Vector2i coord);
 
     //    0 | 1
     //   ---+---
     //   NE | 2
-    void ScrollNE(Vertex2i coord) {
+    void ScrollNE(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x, coord.y - kRegionSize});
         ReAllocateIfNeeded(1, {coord.x + kRegionSize, coord.y - kRegionSize});
         ReAllocateIfNeeded(2, {coord.x + kRegionSize, coord.y});
     }
 
-    void ScrollNWToSW(Vertex2i coord);
-    void ScrollNWToNE(Vertex2i coord);
-    void ScrollNWToSE(Vertex2i coord);
+    void ScrollNWToSW(Vector2i coord);
+    void ScrollNWToNE(Vector2i coord);
+    void ScrollNWToSE(Vector2i coord);
 
     //    0 | 1
     //   ---+---
     //    2 | NW
-    void ScrollNW(Vertex2i coord) {
+    void ScrollNW(Vector2i coord) {
         ReAllocateIfNeeded(0, {coord.x - kRegionSize, coord.y - kRegionSize});
         ReAllocateIfNeeded(1, {coord.x, coord.y - kRegionSize});
         ReAllocateIfNeeded(2, {coord.x - kRegionSize, coord.y});
@@ -147,7 +147,7 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(EntitiesZone);
 
 private:
-    void ReAllocateIfNeeded(int index, Vertex2i coord) {
+    void ReAllocateIfNeeded(int index, Vector2i coord) {
         EntitiesRegion *region = *address(index);
         if (!region) {
             *address(index) = AllocateRegion(coord);
@@ -157,7 +157,7 @@ private:
         }
     }
 
-    EntitiesRegion *AllocateRegion(Vertex2i coord) {
+    EntitiesRegion *AllocateRegion(Vector2i coord) {
         DCHECK(!free_regions_.empty());
         EntitiesRegion *region = free_regions_.front();
         free_regions_.pop_front();

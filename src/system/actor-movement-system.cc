@@ -23,7 +23,7 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
         if (movement->speed().z < 0) { movement->mutable_speed()->z = 0; }
     }
 
-    Vertex3f next;
+    Vector3f next;
     next.x = movement->coord().x + movement->speed().x * delta;
     next.y = movement->coord().y + movement->speed().y * delta;
     next.z = movement->coord().z + movement->speed().z * delta;

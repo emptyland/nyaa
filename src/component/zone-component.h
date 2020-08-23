@@ -13,7 +13,7 @@ class RegionComponent {
 public:
     using Floor = com::FloorComponent<kRegionSize, kRegionSize>;
 
-    DEF_VAL_PROP_RW(Vertex2i, global_coord);
+    DEF_VAL_PROP_RW(Vector2i, global_coord);
 
     bool GlobalCoordEqual(int x, int y) const { return global_coord().x == x && global_coord().y == y; }
 
@@ -49,14 +49,14 @@ public:
     }
 
 private:
-    Vertex2i global_coord_ = {0, 0};
+    Vector2i global_coord_ = {0, 0};
     Floor    terrain_[kTerrainMaxLevels];
 };  // class RegionComponent
 
 class ViewportComponent {
 public:
-    DEF_VAL_PROP_RMW(Vertex2f, center_coord);
-    DEF_VAL_PROP_RW(Vertex2i, bound);
+    DEF_VAL_PROP_RMW(Vector2f, center_coord);
+    DEF_VAL_PROP_RW(Vector2i, bound);
 
     int round_down_center_x() const { return static_cast<int>(center_coord().x); }
     int round_down_center_y() const { return static_cast<int>(center_coord().y); }
@@ -65,8 +65,8 @@ public:
     float adjust_center_y() const { return center_coord().y - round_down_center_y(); }
 
 private:
-    Vertex2f center_coord_ = {0, 0};
-    Vertex2i bound_        = {kDefaultViewportSize, kDefaultViewportSize};
+    Vector2f center_coord_ = {0, 0};
+    Vector2i bound_        = {kDefaultViewportSize, kDefaultViewportSize};
 };  // class ViewportComponent
 
 class ZoneComponent {
@@ -80,7 +80,7 @@ public:
 
     CubeComponent *Cube(int x, int y, int z);
 
-    void UpdateViewportCoord(Vertex2f coord) {
+    void UpdateViewportCoord(Vector2f coord) {
         viewport_.set_center_coord(coord);
         want_ = WantSibling();
     }

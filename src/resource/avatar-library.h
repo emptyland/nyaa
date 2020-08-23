@@ -25,12 +25,12 @@ public:
     };
     static constexpr int kMaxFrames = 8;
 
-    Avatar(ResourceId id, Vertex2f size, float speed, int frame_count);
+    Avatar(ResourceId id, Vector2f size, float speed, int frame_count);
 
     DEF_VAL_GETTER(ResourceId, id);
     DEF_VAL_GETTER(int, frames_count);
     DEF_VAL_GETTER(float, speed);
-    DEF_VAL_GETTER(Vertex2f, size);
+    DEF_VAL_GETTER(Vector2f, size);
 
     Texture *key_frame(Direction dir) const { return frame(dir, 0); }
 
@@ -47,7 +47,7 @@ private:
     ResourceId id_;
     int        frames_count_;
     float      speed_;
-    Vertex2f   size_;
+    Vector2f   size_;
     int        key_frame_[kMaxDir];
     Texture *  textures_[kMaxDir][kMaxFrames];
 };  // class Avatar

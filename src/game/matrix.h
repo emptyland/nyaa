@@ -21,13 +21,13 @@ public:
 
     T *values() { return &value_[0]; }
 
-    T value(int i) {
+    T value(int i) const {
         DCHECK_GE(i, 0);
         DCHECK_LT(i, kMaxValues);
         return value_[i];
     }
 
-    T value(int x, int y) {
+    T value(int x, int y) const {
         DCHECK_GE(x, 0);
         DCHECK_LT(x, kDimX);
         DCHECK_GE(y, 0);
@@ -95,6 +95,25 @@ public:
         value_[13] = 0;
         value_[14] = 0;
         value_[15] = 1;
+    }
+
+    void Multiply(const Matrix &b) { Multiply(*this, b, this); }
+
+    static void Multiply(const Matrix &a, const Matrix &b, Matrix *matrix) {
+        float result[16];
+        for (int c = 0; c < kDimX; c++) {
+            for (int r = 0; r < kDimY; r++) {
+                int   index = c * 4 + r;
+                float total = 0;
+                for (int i = 0; i < 4; i++) {
+                    int p = i * 4 + r;
+                    int q = c * 4 + i;
+                    total += a.value(p) * b.value(q);
+                }
+                result[index] = total;
+            }
+        }
+        for (int i = 0; i < 16; i++) { matrix->value_[i] = result[i]; }
     }
 
     static void Normalize(T *x, T *y, T *z) {

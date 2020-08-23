@@ -10,9 +10,9 @@ namespace nyaa {
 namespace sys {
 
 struct VertexBundle {
-    Vertex2f tex;
-    Vertex3f nor;
-    Vertex3f vec;
+    Vector2f tex;
+    Vector3f nor;
+    Vector3f vec;
 };
 
 static const GLuint vertex_index[][4] = {
@@ -22,7 +22,7 @@ static const GLuint vertex_index[][4] = {
     20, 22, 23, 21,                  // 2, 6, 7, 3
 };
 
-static const Vertex3f vertex_normal[] = {
+static const Vector3f vertex_normal[] = {
     /* [0]  */ {0, 0, 1},   // back
     /* [1]  */ {-1, 0, 0},  // left
     /* [2]  */ {0, -1, 0},  // bottom
@@ -32,7 +32,7 @@ static const Vertex3f vertex_normal[] = {
 };
 
 void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
-    const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
+    const Vector2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
 
     glViewport(0, 0, fb_size.x, fb_size.y);
 
@@ -63,7 +63,7 @@ void ZoneRenderSystem::RenderPlantLayout(com::ZoneComponent *zone, int layout) {
 
     for (int i = 0; i < zone->viewport().bound().x; i++) {
         // :format
-        Vertex3f p0;
+        Vector3f p0;
         p0.x = (-zone->viewport().bound().x / 2 + i - zone->viewport().adjust_center_x()) * cube_size_;
         p0.z = (zone->viewport().bound().y / 2 - layout + zone->viewport().adjust_center_y()) * cube_size_;
 
@@ -88,7 +88,7 @@ void ZoneRenderSystem::RenderPlantLayout(com::ZoneComponent *zone, int layout) {
 // Vertex3i pos{-n_cubes, -1, n_cubes};
 void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
     VertexBundle vertexs[24];  // Texture + vertex
-    Vertex3f     p0;
+    Vector3f     p0;
     p0.x = (-zone->viewport().bound().x / 2 + i - zone->viewport().adjust_center_x()) * cube_size_;
     p0.z = (zone->viewport().bound().y / 2 - j + zone->viewport().adjust_center_y()) * cube_size_;
 
@@ -104,7 +104,7 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
 
         p0.y = (-1 + (z - kTerrainSurfaceLevel)) * cube_size_;
 
-        Vertex3f points[8] = {p0, p0, p0, p0, p0, p0, p0, p0};
+        Vector3f points[8] = {p0, p0, p0, p0, p0, p0, p0, p0};
         points[1].x += cube_size_;
         points[2].y += cube_size_;
         points[3].x += cube_size_;
@@ -207,7 +207,7 @@ void ZoneRenderSystem::RenderSurface(com::ZoneComponent *zone, int i, int j) {
     }
 }
 
-void ZoneRenderSystem::RenderPlant(res::Cube *def, Vertex3f p0, res::Texture *tex) {
+void ZoneRenderSystem::RenderPlant(res::Cube *def, Vector3f p0, res::Texture *tex) {
     glBindTexture(GL_TEXTURE_2D, tex->tex_id());
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_QUADS);

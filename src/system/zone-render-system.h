@@ -30,7 +30,7 @@ public:
 
 private:
     void RenderSurface(com::ZoneComponent *zone, int i, int j);
-    void RenderPlant(res::Cube *def, Vertex3f p0, res::Texture *tex);
+    void RenderPlant(res::Cube *def, Vector3f p0, res::Texture *tex);
 
     float    cube_size_   = 1;
     uint32_t tile_tex_id_ = -1;

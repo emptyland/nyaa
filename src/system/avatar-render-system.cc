@@ -11,7 +11,7 @@ namespace nyaa {
 namespace sys {
 
 void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarComponent *avatar, double delta) {
-    const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
+    const Vector2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
 
     if (movement->is_horizontal_stop()) {
         // avatar->set_time(0);

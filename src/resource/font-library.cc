@@ -57,12 +57,12 @@ void FontFace::Prepare() {
     }
 }
 
-void FontFace::Render(TextID id, float x, float y, Vertex3f color) {
+void FontFace::Render(TextID id, float x, float y, Vector3f color) {
     std::string_view text = ThisGame->text_lib()->Load(id);
     Render(text, x, y, color);
 }
 
-void FontFace::Render(std::string_view text, float x, float y, Vertex3f color) {
+void FontFace::Render(std::string_view text, float x, float y, Vector3f color) {
     std::vector<const Character *> chars;
     glBindTexture(GL_TEXTURE_2D, buffered_tex_);
     base::CodePointIteratorUtf8 iter(text);

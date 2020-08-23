@@ -15,20 +15,20 @@ public:
 
     DEF_VAL_GETTER(std::string, file_name);
     DEF_VAL_GETTER(ResourceId, id);
-    DEF_VAL_GETTER(Vertex4i, bound);
+    DEF_VAL_GETTER(Vector4i, bound);
     DEF_VAL_GETTER(int, index);
 
     void Parse(const std::vector<std::string_view> &items) {
         ParseValue<DefValType::STRING>(items[0], &file_name_);
         ParseValue<DefValType::ID>(items[1], &id_);
-        ParseValue<DefValType::VERTEX4I>(items[2], &bound_);
+        ParseValue<DefValType::VECTOR4I>(items[2], &bound_);
         ParseValue<DefValType::I32>(items[3], &index_);
     }
 
 private:
     std::string file_name_;
     ResourceId  id_ = ResourceId::Of(0);
-    Vertex4i    bound_;
+    Vector4i    bound_;
     int         index_;
 };  // class TextureDef
 
@@ -47,7 +47,7 @@ bool TextureLibrary::Prepare(const std::string &file_name) {
     }
     std::string last_file_name;
     GLuint      last_tex_id = -1;
-    Vertex2f    last_tex_size;
+    Vector2f    last_tex_size;
 
     DefinitionReader rd(fp, true /*ownership*/);
     TextureDef       row;
@@ -59,14 +59,14 @@ bool TextureLibrary::Prepare(const std::string &file_name) {
         }
 
         // LT
-        Vertex2f p0{row.bound().x / last_tex_size.x, row.bound().y / last_tex_size.y};
+        Vector2f p0{row.bound().x / last_tex_size.x, row.bound().y / last_tex_size.y};
         // RT
-        Vertex2f p1{(row.bound().x + row.bound().w) / last_tex_size.x, row.bound().y / last_tex_size.y};
+        Vector2f p1{(row.bound().x + row.bound().w) / last_tex_size.x, row.bound().y / last_tex_size.y};
         // RB
-        Vertex2f p2{(row.bound().x + row.bound().w) / last_tex_size.x,
+        Vector2f p2{(row.bound().x + row.bound().w) / last_tex_size.x,
                     (row.bound().y + row.bound().h) / last_tex_size.y};
         // LB
-        Vertex2f p3{row.bound().x / last_tex_size.x, (row.bound().y + row.bound().h) / last_tex_size.y};
+        Vector2f p3{row.bound().x / last_tex_size.x, (row.bound().y + row.bound().h) / last_tex_size.y};
 
         float aspect_ratio = static_cast<float>(row.bound().h) / static_cast<float>(row.bound().w);
 
@@ -80,7 +80,7 @@ bool TextureLibrary::Prepare(const std::string &file_name) {
     return true;
 }
 
-uint32_t TextureLibrary::LoadPictureFile(const std::string &name, Vertex2f *size) {
+uint32_t TextureLibrary::LoadPictureFile(const std::string &name, Vector2f *size) {
     std::string full_name(ThisGame->properties()->assets_dir());
     full_name.append("/").append(kTextureDir).append("/").append(name);
 

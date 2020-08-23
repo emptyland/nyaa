@@ -22,7 +22,7 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
     const int dx = viewport_.bound().x / 2;
     const int dy = viewport_.bound().y / 2;
 
-    Vertex2i dest{viewport_.round_down_center_x() - dx, viewport_.round_down_center_y() - dy};
+    Vector2i dest{viewport_.round_down_center_x() - dx, viewport_.round_down_center_y() - dy};
     DCHECK_GE(dest.x, 0);
     DCHECK_GE(dest.y, 0);
 
@@ -150,9 +150,9 @@ const char *ZoneComponent::kDirectionText[] = {
 };
 
 ZoneComponent::Direction ZoneComponent::WantSibling() {
-    Vertex4i region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
+    Vector4i region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
                     region_->global_coord().y + kRegionSize};
-    Vertex4i view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
+    Vector4i view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
                   viewport_.round_down_center_y() - viewport_.bound().y / 2,
                   viewport_.round_down_center_x() + viewport_.bound().x / 2,
                   viewport_.round_down_center_y() + viewport_.bound().y / 2};

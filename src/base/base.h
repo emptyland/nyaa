@@ -141,40 +141,40 @@ inline MutView<T> MakeMutView(T *z, size_t n) {
 }
 
 template <class T>
-struct Vertex2 {
+struct Vector2 {
     T x;
     T y;
-};  // template<class T> struct Vertex2
+};  // template<class T> struct Vector2
 
 template <class T>
-struct Vertex3 {
+struct Vector3 {
     T x;
     T y;
     T z;
-};  // template<class T> struct Vertex3
+};  // template<class T> struct Vector3
 
 template <class T>
-struct Vertex4 {
+struct Vector4 {
     T x;
     T y;
     T w;
     T h;
-};  // // template<class T> struct Vertex4
+};  // // template<class T> struct Vector4
 
 template <class T>
 struct Bundle2 {
-    Vertex2<T> p1;
-    Vertex2<T> p2;
+    Vector2<T> p1;
+    Vector2<T> p2;
 };  // template<class T> struct Bundle2
 
-using Vertex2i = Vertex2<int>;
-using Vertex2f = Vertex2<float>;
+using Vector2i = Vector2<int>;
+using Vector2f = Vector2<float>;
 
-using Vertex3i = Vertex3<int>;
-using Vertex3f = Vertex3<float>;
+using Vector3i = Vector3<int>;
+using Vector3f = Vector3<float>;
 
-using Vertex4i = Vertex4<int>;
-using Vertex4f = Vertex4<float>;
+using Vector4i = Vector4<int>;
+using Vector4f = Vector4<float>;
 
 /**
  * define getter/mutable_getter/setter

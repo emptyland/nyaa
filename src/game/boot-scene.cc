@@ -1,6 +1,7 @@
 #include "game/boot-scene.h"
 #include "game/test-scene.h"
 #include "game/identifiers.h"
+#include "game/matrix.h"
 #include "game/game.h"
 #include "component/avatar-component.h"
 #include "component/cube-component.h"
@@ -42,9 +43,13 @@ static const float normals[6][3] = {
     {0, 0, +1}};
 
 static const float vertices[] = {
-    0.0f,  0.5f,  0.0f,  // :format
-    0.5f,  -0.5f, 0.0f,  // :format
-    -0.5f, -0.5f, 0.0f,  // :format
+    // 0.0f,  0.5f,  0.0f,  // :format
+    // 0.5f,  -0.5f, 0.0f,  // :format
+    // -0.5f, -0.5f, 0.0f,  // :format
+    0.0, 0.0, 0.0,  // :format
+    0.0, 0.5, 0.0,  // :format
+    0.5, 0.5, 0.0,  // :format
+    0.5, 0.0, 0.0,  // :format
 };
 
 BootScene::BootScene(Game *game) : Scene(game) {}
@@ -52,8 +57,8 @@ BootScene::BootScene(Game *game) : Scene(game) {}
 BootScene::~BootScene() {}
 
 void BootScene::Reset() {
-    GLuint pid = game()->shader_lib()->demo_program();
-    GLint position = glGetAttribLocation(pid, "position");
+    GLuint pid      = game()->shader_lib()->demo_program();
+    GLint  position = glGetAttribLocation(pid, "position");
     glUseProgram(pid);
 
     glGenVertexArrays(1, &vao_);
@@ -62,7 +67,7 @@ void BootScene::Reset() {
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(position, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(position);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -93,10 +98,22 @@ void BootScene::OnKeyInput(int key, int code, int action, int mods) {
 void BootScene::OnMouseInput(double x, double y) {}
 
 void BootScene::Render(double d) {
+    GLuint pid    = game()->shader_lib()->demo_program();
+    GLint  matrix = glGetUniformLocation(pid, "matrix");
 
-    //glClearColor(0.2, 0.3, 0.3, 1.0);
+    Matrix mat1;
+    // mat.Identity();
+    mat1.Rotate(-1, 0, 0, 45);
+
+    Matrix mat;
+    mat.Rotate(0, 1, 0, 45);
+    mat.Multiply(mat1);
+
+    glUniformMatrix4fv(matrix, 1, GL_FALSE, mat.values());
+
+    // glClearColor(0.2, 0.3, 0.3, 1.0);
     glBindVertexArray(vao_);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_QUADS, 0, 4);
 
     // const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
     // glViewport(0, 0, fb_size.x, fb_size.y);

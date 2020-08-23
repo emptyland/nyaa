@@ -24,7 +24,7 @@ EntitiesZone::~EntitiesZone() {
     for (int i = 0; i < arraysize(sibling_); i++) { delete sibling_[i]; }
 }
 
-void EntitiesZone::ScrollEastToWest(Vertex2i coord) {
+void EntitiesZone::ScrollEastToWest(Vector2i coord) {
     EntitiesRegion *east = region_;
     region_              = sibling_[0];
     ReAllocateIfNeeded(-1, {coord.x + kRegionSize, coord.y});
@@ -36,7 +36,7 @@ void EntitiesZone::ScrollEastToWest(Vertex2i coord) {
     FreeIfNeeded(2);
 }
 
-void EntitiesZone::ScrollWestToEast(Vertex2i coord) {
+void EntitiesZone::ScrollWestToEast(Vector2i coord) {
     EntitiesRegion *west = region_;
     region_              = sibling_[0];
     ReAllocateIfNeeded(-1, {coord.x - kRegionSize, coord.y});
@@ -48,7 +48,7 @@ void EntitiesZone::ScrollWestToEast(Vertex2i coord) {
     FreeIfNeeded(2);
 }
 
-void EntitiesZone::ScrollNorthToSouth(Vertex2i coord) {
+void EntitiesZone::ScrollNorthToSouth(Vector2i coord) {
     EntitiesRegion *north = region_;
     region_               = sibling_[0];
     ReAllocateIfNeeded(-1, {coord.x, coord.y + kRegionSize});
@@ -60,7 +60,7 @@ void EntitiesZone::ScrollNorthToSouth(Vertex2i coord) {
     FreeIfNeeded(2);
 }
 
-void EntitiesZone::ScrollSouthToNorth(Vertex2i coord) {
+void EntitiesZone::ScrollSouthToNorth(Vector2i coord) {
     EntitiesRegion *south = region_;
 
     region_ = sibling_[0];
@@ -73,7 +73,7 @@ void EntitiesZone::ScrollSouthToNorth(Vertex2i coord) {
     FreeIfNeeded(2);
 }
 
-void EntitiesZone::ScrollSEToSW(Vertex2i coord) {
+void EntitiesZone::ScrollSEToSW(Vector2i coord) {
     //    [SE->0] | [0->SW]
     // -----------+---------
     //        [2] | [1]
@@ -90,7 +90,7 @@ void EntitiesZone::ScrollSEToSW(Vertex2i coord) {
     ReAllocateIfNeeded(2, {coord.x, coord.y + kRegionSize});
 }
 
-void EntitiesZone::ScrollSEToNE(Vertex2i coord) {
+void EntitiesZone::ScrollSEToNE(Vector2i coord) {
     //    [SE->0]  | [0->1]
     // ------------+------
     //    [2->NE]  | [1->2]
@@ -109,7 +109,7 @@ void EntitiesZone::ScrollSEToNE(Vertex2i coord) {
     ReAllocateIfNeeded(0, {coord.x, coord.y});
 }
 
-void EntitiesZone::ScrollSEToNW(Vertex2i coord) {
+void EntitiesZone::ScrollSEToNW(Vector2i coord) {
     //    [SE->0] | [0->1]
     // -----------+---------
     //        [2] | [1->NW]
@@ -127,7 +127,7 @@ void EntitiesZone::ScrollSEToNW(Vertex2i coord) {
     ReAllocateIfNeeded(0, coord);
 }
 
-void EntitiesZone::ScrollNEToSE(Vertex2i coord) {
+void EntitiesZone::ScrollNEToSE(Vector2i coord) {
     //     [0->SE] | [1->0]
     // ------------+--------
     //     [NE->2] | [2->1]
@@ -146,7 +146,7 @@ void EntitiesZone::ScrollNEToSE(Vertex2i coord) {
     ReAllocateIfNeeded(1, coord);
 }
 
-void EntitiesZone::ScrollNEToNW(Vertex2i coord) {
+void EntitiesZone::ScrollNEToNW(Vector2i coord) {
     //        [0] | [1]
     // -----------+---------
     //    [NE->2] | [2->NW]
@@ -163,7 +163,7 @@ void EntitiesZone::ScrollNEToNW(Vertex2i coord) {
     ReAllocateIfNeeded(1, {coord.x + kRegionSize, coord.y - kRegionSize});
 }
 
-void EntitiesZone::ScrollNEToSW(Vertex2i coord) {
+void EntitiesZone::ScrollNEToSW(Vector2i coord) {
     //        [0] | [1->SW]
     // -----------+---------
     //    [NE->2] | [2->1]
@@ -181,7 +181,7 @@ void EntitiesZone::ScrollNEToSW(Vertex2i coord) {
     ReAllocateIfNeeded(0, {coord.x, coord.y - kRegionSize});
 }
 
-void EntitiesZone::ScrollNWToSW(Vertex2i coord) {
+void EntitiesZone::ScrollNWToSW(Vector2i coord) {
     //   [0] | [1->SW]
     // ------+---------
     //   [2] | [NW->1]
@@ -198,7 +198,7 @@ void EntitiesZone::ScrollNWToSW(Vertex2i coord) {
     ReAllocateIfNeeded(2, {coord.x - kRegionSize, coord.y});
 }
 
-void EntitiesZone::ScrollNWToNE(Vertex2i coord) {
+void EntitiesZone::ScrollNWToNE(Vector2i coord) {
     //       [0] | [1]
     // ----------+------
     //   [2->NE] | [NW->2]
@@ -215,7 +215,7 @@ void EntitiesZone::ScrollNWToNE(Vertex2i coord) {
     ReAllocateIfNeeded(1, {coord.x, coord.y - kRegionSize});
 }
 
-void EntitiesZone::ScrollNWToSE(Vertex2i coord) {
+void EntitiesZone::ScrollNWToSE(Vector2i coord) {
     //   [0->SE] | [1->0]
     // ----------+---------
     //       [2] | [NW->1]
