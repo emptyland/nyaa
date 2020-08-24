@@ -3,11 +3,11 @@ precision mediump float;
 #endif
 
 uniform sampler2D sampler;
-const vec3        ambientMaterial  = vec3(0.3, 0.3, 0.3);
+const vec3        ambientMaterial  = vec3(0.7, 0.7, 0.7);
 const vec3        ambientLight     = vec3(1.0, 1.0, 1.0);
 const vec3        diffuseMaterial  = vec3(1.0, 1.0, 1.0);
-const vec3        diffuseLight     = vec3(0.1, 0.1, 0.1);
-const vec3        directionalLight = vec3(0, 0, -1.0);
+const vec3        diffuseLight     = vec3(1.0, 1.0, 1.0);
+const vec3        directionalLight = vec3(0, 1.0, 1.0);
 
 varying vec2 fragmentUV;
 varying vec3 worldPosition;

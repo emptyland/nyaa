@@ -146,13 +146,13 @@ void BootScene::Render(double d) {
     glClearColor(0.2, 0.2, 0.4, 0.0);
 
     if (glfwGetKey(game()->window(), GLFW_KEY_UP) == GLFW_PRESS) {
-        y_rolated_ -= 0.5;
-    } else if (glfwGetKey(game()->window(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-        y_rolated_ += 0.5;
-    } else if (glfwGetKey(game()->window(), GLFW_KEY_LEFT) == GLFW_PRESS) {
         z_rolated_ -= 0.5;
-    } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_DOWN) == GLFW_PRESS) {
         z_rolated_ += 0.5;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+        y_rolated_ -= 0.5;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        y_rolated_ += 0.5;
     }
 
     GLuint pid          = game()->shader_lib()->demo_program();
@@ -166,13 +166,13 @@ void BootScene::Render(double d) {
 
     Matrix view_mat;
     view_mat.Translate(0, 0, -1);
-    mat.Rotate(0, 1, 0, y_rolated_);
-    view_mat.Multiply(mat);
-    mat.Rotate(0, 0, 1, z_rolated_);
-    view_mat.Multiply(mat);
 
     Matrix model_mat;
-    model_mat.Scale(0.1, 0.1, 0.1);
+    model_mat.Rotate(0, 1, 0, y_rolated_);
+    mat.Rotate(0, 0, 1, z_rolated_);
+    model_mat.Multiply(mat);
+    mat.Scale(0.1, 0.1, 0.1);
+    model_mat.Multiply(mat);
 
     Matrix proj_mat;
     proj_mat.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
