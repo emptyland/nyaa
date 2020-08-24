@@ -42,14 +42,37 @@ static const float normals[6][3] = {
     // :format
     {0, 0, +1}};
 
-static const float vertices[] = {
-    // 0.0f,  0.5f,  0.0f,  // :format
-    // 0.5f,  -0.5f, 0.0f,  // :format
-    // -0.5f, -0.5f, 0.0f,  // :format
-    0.0, 0.0, 0.0,  // :format
-    0.0, 0.5, 0.0,  // :format
-    0.5, 0.5, 0.0,  // :format
-    0.5, 0.0, 0.0,  // :format
+static float vertices[] = {
+    // top
+    -1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
+    -1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
+    +1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
+    +1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
+    // bottom
+    -1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
+    -1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
+    +1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
+    +1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
+    // :front
+    -1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
+    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
+    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
+    -1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
+    // :back
+    -1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
+    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
+    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
+    +1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
+    // :left
+    -1, -1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
+    -1, -1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
+    -1, +1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
+    -1, +1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
+    // :right
+    +1, -1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
+    +1, -1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
+    +1, +1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
+    +1, +1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
 };
 
 BootScene::BootScene(Game *game) : Scene(game) {}
@@ -57,8 +80,23 @@ BootScene::BootScene(Game *game) : Scene(game) {}
 BootScene::~BootScene() {}
 
 void BootScene::Reset() {
+    res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
+
+    for (int i = 0; i < 6; i++) {
+        vertices[i * 32 + 6]  = tex->coord(0).x;
+        vertices[i * 32 + 7]  = tex->coord(0).y;
+        vertices[i * 32 + 14] = tex->coord(1).x;
+        vertices[i * 32 + 15] = tex->coord(1).y;
+        vertices[i * 32 + 22] = tex->coord(2).x;
+        vertices[i * 32 + 23] = tex->coord(2).y;
+        vertices[i * 32 + 30] = tex->coord(3).x;
+        vertices[i * 32 + 31] = tex->coord(3).y;
+    }
+
     GLuint pid      = game()->shader_lib()->demo_program();
     GLint  position = glGetAttribLocation(pid, "position");
+    GLint  normal   = glGetAttribLocation(pid, "normal");
+    GLint  uv       = glGetAttribLocation(pid, "uv");
     glUseProgram(pid);
 
     glGenVertexArrays(1, &vao_);
@@ -67,8 +105,14 @@ void BootScene::Reset() {
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(position, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(position, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(normal, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+                          reinterpret_cast<void *>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(uv, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+                          reinterpret_cast<void *>(6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(position);
+    glEnableVertexAttribArray(normal);
+    glEnableVertexAttribArray(uv);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -98,62 +142,56 @@ void BootScene::OnKeyInput(int key, int code, int action, int mods) {
 void BootScene::OnMouseInput(double x, double y) {}
 
 void BootScene::Render(double d) {
-    GLuint pid    = game()->shader_lib()->demo_program();
-    GLint  matrix = glGetUniformLocation(pid, "matrix");
+    glViewport(0, 0, game()->fb_w(), game()->fb_w());
+    glClearColor(0.2, 0.2, 0.4, 0.0);
 
-    Matrix mat1;
-    // mat.Identity();
-    mat1.Rotate(0, 1, 0, 45);
+    if (glfwGetKey(game()->window(), GLFW_KEY_UP) == GLFW_PRESS) {
+        y_rolated_ -= 0.5;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+        y_rolated_ += 0.5;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+        z_rolated_ -= 0.5;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        z_rolated_ += 0.5;
+    }
+
+    GLuint pid          = game()->shader_lib()->demo_program();
+    GLint  proj_matrix  = glGetUniformLocation(pid, "projectionMatrix");
+    GLint  view_matrix  = glGetUniformLocation(pid, "viewMatrix");
+    GLint  model_matrix = glGetUniformLocation(pid, "modelMatrix");
+    GLint  sampler      = glGetUniformLocation(pid, "sampler");
 
     Matrix mat;
-    mat.Rotate(-1, 0, 0, 45);
-    mat.Multiply(mat1);
+    mat.Identity();
 
-    glUniformMatrix4fv(matrix, 1, GL_FALSE, mat.values());
+    Matrix view_mat;
+    view_mat.Translate(0, 0, -1);
+    mat.Rotate(0, 1, 0, y_rolated_);
+    view_mat.Multiply(mat);
+    mat.Rotate(0, 0, 1, z_rolated_);
+    view_mat.Multiply(mat);
 
-    // glClearColor(0.2, 0.3, 0.3, 1.0);
+    Matrix model_mat;
+    model_mat.Scale(0.1, 0.1, 0.1);
+
+    Matrix proj_mat;
+    proj_mat.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
+
+    // proj_mat.Identity();
+    // mat.Identity();
+    // proj_mat.Multiply(mat);
+    // proj_mat.Frustum(0, game()->fb_w(), 0, Game::This()->fb_h(), -100.0, 100.0);
+    // proj_mat.Perspective(0, static_cast<float>(game()->fb_w())/game()->fb_h(), -100, 100);
+
+    glUniformMatrix4fv(model_matrix, 1, GL_FALSE, model_mat.values());
+    glUniformMatrix4fv(view_matrix, 1, GL_FALSE, view_mat.values());
+    glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, proj_mat.values());
+
+    res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
+    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
     glBindVertexArray(vao_);
-    glDrawArrays(GL_QUADS, 0, 4);
-
-    // const Vertex2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
-    // glViewport(0, 0, fb_size.x, fb_size.y);
-
-    // game()->transform()->EnterRotatedProjection();
-
-    // GLuint pid = game()->shader_lib()->simple_light_program();
-    // glUseProgram(pid);
-
-    // //glEnableClientState(GL_VERTEX_ARRAY);
-    // GLint position = glGetAttribLocation(pid, "position");
-    // GLint normal = glGetAttribLocation(pid, "normal");
-    // GLint projection_matrix = glGetUniformLocation(pid, "projectionMatrix");
-    // GLint modelview_matrix = glGetUniformLocation(pid, "modelViewMatrix");
-
-    // float pmat[16] = {0};
-    // glGetFloatv(GL_PROJECTION, pmat);
-    // float mvmat[16] = {0};
-    // glGetFloatv(GL_MODELVIEW, mvmat);
-
-    // //glUniformMatrix4fv(projection_matrix, 1, GL_FALSE, pmat);
-    // glUniformMatrix4fv(modelview_matrix, 1, GL_FALSE, mvmat);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo_[0]);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-    // glEnableVertexAttribArray(position);
-    // glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo_[1]);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
-    // glEnableVertexAttribArray(normal);
-    // glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    // //glUseProgram(game()->shader_lib()->simple_light_program());
-
-    // glColor3f(1,1,1);
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    // glUseProgram(0);
-    // game()->transform()->ExitRotatedProjection();
+    glDrawArrays(GL_QUADS, 0, 24);
+    glBindVertexArray(0);
 }
 
 }  // namespace nyaa

@@ -3,8 +3,8 @@
 name              | demo,demo,demo
 assets_dir        | assets
 show_fps          | 1
-window_width      | 1024
-window_height     | 768
+window_width      | 300
+window_height     | 300
 language          | text/en_US.txt
 default_font_file | PingFang.ttc
 default_font_size | 48

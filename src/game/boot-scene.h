@@ -24,6 +24,8 @@ public:
 private:
     uint32_t vao_;
     uint32_t vbo_;
+    float y_rolated_ = 45;
+    float z_rolated_ = 45;
 };  // class BootScene
 
 }  // namespace nyaa

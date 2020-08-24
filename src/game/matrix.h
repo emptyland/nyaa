@@ -75,8 +75,8 @@ public:
 
     void Rotate(T x, T y, T z, T angle) {
         Normalize(&x, &y, &z);
-        T s = sinf(angle);
-        T c = cosf(angle);
+        T s = sinf(angle * M_PI / 180.0);
+        T c = cosf(angle * M_PI / 180.0);
         T m = 1 - c;
 
         value_[0]  = m * x * x + c;
@@ -90,6 +90,25 @@ public:
         value_[8]  = m * z * x - y * s;
         value_[9]  = m * y * z + x * s;
         value_[10] = m * z * z + c;
+        value_[11] = 0;
+        value_[12] = 0;
+        value_[13] = 0;
+        value_[14] = 0;
+        value_[15] = 1;
+    }
+
+    void Scale(T sx, T sy, T sz) {
+        value_[0]  = sx;
+        value_[1]  = 0;
+        value_[2]  = 0;
+        value_[3]  = 0;
+        value_[4]  = 0;
+        value_[5]  = sy;
+        value_[6]  = 0;
+        value_[7]  = 0;
+        value_[8]  = 0;
+        value_[9]  = 0;
+        value_[10] = sz;
         value_[11] = 0;
         value_[12] = 0;
         value_[13] = 0;
@@ -118,11 +137,11 @@ public:
         value_[12] = 0.0;
         value_[13] = 0.0;
         value_[14] = (-temp * zfar) / temp4;
-        value_[15] = 0.0;
+        value_[15] = 0;
     }
 
     void Perspective(T fov, T aspect, T znear, T zfar) {
-        T ymax = znear * tanf(fov * PI / 360.0);
+        T ymax = znear * tanf(fov * M_PI / 360.0);
         T xmax = ymax * aspect;
         Frustum(-xmax, xmax, -ymax, ymax, znear, zfar);
     }
