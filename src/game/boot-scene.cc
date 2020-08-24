@@ -80,7 +80,7 @@ BootScene::BootScene(Game *game) : Scene(game) {}
 BootScene::~BootScene() {}
 
 void BootScene::Reset() {
-    res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
+    res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200140));
 
     for (int i = 0; i < 6; i++) {
         vertices[i * 32 + 6]  = tex->coord(0).x;
@@ -146,13 +146,13 @@ void BootScene::Render(double d) {
     glClearColor(0.2, 0.2, 0.4, 0.0);
 
     if (glfwGetKey(game()->window(), GLFW_KEY_UP) == GLFW_PRESS) {
-        z_rolated_ -= 0.5;
+        z_rolated_ -= 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-        z_rolated_ += 0.5;
+        z_rolated_ += 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-        y_rolated_ -= 0.5;
+        y_rolated_ -= 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        y_rolated_ += 0.5;
+        y_rolated_ += 2;
     }
 
     GLuint pid          = game()->shader_lib()->demo_program();
@@ -165,7 +165,7 @@ void BootScene::Render(double d) {
     mat.Identity();
 
     Matrix view_mat;
-    view_mat.Translate(0, 0, -1);
+    view_mat.Translate(0, 0, -2);
 
     Matrix model_mat;
     model_mat.Rotate(0, 1, 0, y_rolated_);
