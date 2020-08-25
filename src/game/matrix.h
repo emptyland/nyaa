@@ -19,7 +19,7 @@ public:
         for (int i = 0; i < arraysize(value_); i++) { value_[i] = initial; }
     }
 
-    T *values() { return &value_[0]; }
+    T const *values() const { return &value_[0]; }
 
     T value(int i) const {
         DCHECK_GE(i, 0);

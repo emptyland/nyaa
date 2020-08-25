@@ -4,12 +4,12 @@ precision mediump float;
 
 uniform sampler2D sampler;
 
-const vec3 ambientMaterial  = vec3(1.0, 1.0, 1.0);
-const vec3 ambientLight     = vec3(1.0, 1.0, 1.0);
-const vec3 diffuseMaterial  = vec3(1.0, 1.0, 1.0);
+const vec3 ambientMaterial  = vec3(0.4, 0.4, 0.4);
+const vec3 ambientLight     = vec3(0.4, 0.4, 0.4);
+const vec3 diffuseMaterial  = vec3(0.4, 0.4, 0.4);
 const vec3 diffuseLight     = vec3(1.0, 1.0, 1.0);
-const vec3 specularMaterial = vec3(0.4, 0.4, 0.4);
-const vec3 specularLight    = vec3(1.0, 1.0, 1.0);
+const vec3 specularMaterial = vec3(0.1, 0.1, 0.1);
+const vec3 specularLight    = vec3(0.4, 0.4, 0.4);
 const vec3 directionalLight = vec3(0, 1.0, 1.0);
 const vec3 cameraPosition   = vec3(0, 0, 2);
 
@@ -36,5 +36,5 @@ void main() {
     }
 
     vec4 color   = texture2D(sampler, fragmentUV);
-    gl_FragColor = ambientColor * diffuseColor * color + specularColor;
+    gl_FragColor = (ambientColor + diffuseColor + specularColor) * color;
 }

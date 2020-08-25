@@ -16,33 +16,71 @@ const char kDemoVSFileName[] = "demo.vs";
 const char kSimpleLightFSFileName[] = "simple-light.fs";
 const char kSimpleLightVSFileName[] = "simple-light.vs";
 
-/*
-uniform mat4 projectionMatrix;
-uniform mat4 modelViewMatrix;
+void ShaderProgram::Use() { glUseProgram(handle()); }
+void ShaderProgram::Unuse() { glUseProgram(0); }
 
-attribute vec2 tex2d;
-attribute vec3 normal;
-attribute vec3 position;
- */
-struct SimpleLightParams {
-    GLuint projection_matrix;
-    GLuint modelView_matrix;
-    GLuint tex2d;
-    GLuint normal;
-    GLuint position;
-};
+UniversalShaderProgram::UniversalShaderProgram(uint32_t program) : ShaderProgram(program) {
+    projection_matrix_ = glGetUniformLocation(handle_, "projectionMatrix");
+    view_matrix_       = glGetUniformLocation(handle_, "viewMatrix");
+    model_matrix_      = glGetUniformLocation(handle_, "modelMatrix");
+    position_          = glGetAttribLocation(handle_, "position");
+    normal_            = glGetAttribLocation(handle_, "normal");
+    uv_                = glGetAttribLocation(handle_, "uv");
+}
+
+void UniversalShaderProgram::SetProjectionMatrix(const Matrix<float> &mat) {
+    DCHECK_NE(-1, projection_matrix());
+    glUniformMatrix4fv(projection_matrix(), 1, GL_FALSE, mat.values());
+}
+
+void UniversalShaderProgram::SetViewMatrix(const Matrix<float> &mat) {
+    DCHECK_NE(-1, view_matrix());
+    glUniformMatrix4fv(view_matrix(), 1, GL_FALSE, mat.values());
+}
+
+void UniversalShaderProgram::SetModelMatrix(const Matrix<float> &mat) {
+    DCHECK_NE(-1, model_matrix());
+    glUniformMatrix4fv(model_matrix(), 1, GL_FALSE, mat.values());
+}
+
+void UniversalShaderProgram::SetPositionAttribute(int size, int stride, int offset) {
+    DCHECK_NE(-1, position());
+    glVertexAttribPointer(position(), size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
+                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
+}
+
+void UniversalShaderProgram::SetNormalAttribute(int size, int stride, int offset) {
+    DCHECK_NE(-1, normal());
+    glVertexAttribPointer(normal(), size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
+                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
+}
+
+void UniversalShaderProgram::SetUVAttribute(int size, int stride, int offset) {
+    DCHECK_NE(-1, uv());
+    glVertexAttribPointer(uv(), size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
+                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
+}
+
+void UniversalShaderProgram::Enable() /*override*/ {
+    glEnableVertexAttribArray(position());
+    glEnableVertexAttribArray(normal());
+    glEnableVertexAttribArray(uv());
+}
+
+void UniversalShaderProgram::Disable() /*override*/ {
+    glDisableVertexAttribArray(position());
+    glDisableVertexAttribArray(normal());
+    glDisableVertexAttribArray(uv());
+}
+
+DemoShaderProgram::DemoShaderProgram(uint32_t program) : UniversalShaderProgram(program) {}
 
 bool ShaderLibrary::Prepare(const std::string &dir) {
     uint32_t vs, fs, program;
-    if (!MakeShader(dir + "/" + kSimpleLightVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
-    if (!MakeShader(dir + "/" + kSimpleLightFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
-    if (!MakeProgram(vs, fs, &program)) { return false; }
-    simple_light_program_ = program;
-
     if (!MakeShader(dir + "/" + kDemoVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
     if (!MakeShader(dir + "/" + kDemoFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
     if (!MakeProgram(vs, fs, &program)) { return false; }
-    demo_program_ = program;
+    demo_program_ = new (arena_) DemoShaderProgram(program);
 
     return true;
 }

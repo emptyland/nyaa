@@ -44,35 +44,35 @@ static const float normals[6][3] = {
 
 static float vertices[] = {
     // top
-    -1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
-    -1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
-    +1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
-    +1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0, // :format
+    -1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
+    -1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
+    +1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
+    +1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
     // bottom
-    -1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
-    -1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
-    +1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
-    +1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0, // :format
+    -1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    -1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    +1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    +1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
     // :front
-    -1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
-    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
-    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
-    -1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0, // :format
+    -1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    -1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
     // :back
-    -1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
-    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
-    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
-    +1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0, // :format
+    -1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
     // :left
-    -1, -1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
-    -1, -1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
-    -1, +1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
-    -1, +1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0, // :format
+    -1, -1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -1, -1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -1, +1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -1, +1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
     // :right
-    +1, -1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
-    +1, -1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
-    +1, +1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
-    +1, +1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0, // :format
+    +1, -1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
 };
 
 BootScene::BootScene(Game *game) : Scene(game) {}
@@ -93,11 +93,10 @@ void BootScene::Reset() {
         vertices[i * 32 + 31] = tex->coord(3).y;
     }
 
-    GLuint pid      = game()->shader_lib()->demo_program();
-    GLint  position = glGetAttribLocation(pid, "position");
-    GLint  normal   = glGetAttribLocation(pid, "normal");
-    GLint  uv       = glGetAttribLocation(pid, "uv");
-    glUseProgram(pid);
+    res::DemoShaderProgram *program = game()->shader_lib()->demo_program();
+    GLint  position = program->position();
+    GLint  normal   = program->normal();
+    GLint  uv       = program->uv();
 
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
@@ -105,15 +104,9 @@ void BootScene::Reset() {
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(position, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
-    glVertexAttribPointer(normal, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
-                          reinterpret_cast<void *>(3 * sizeof(GLfloat)));
-    glVertexAttribPointer(uv, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
-                          reinterpret_cast<void *>(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(position);
-    glEnableVertexAttribArray(normal);
-    glEnableVertexAttribArray(uv);
-
+    program->SetPositionAttribute(4, 8, 0);
+    program->SetNormalAttribute(4, 8, 3);
+    program->SetUVAttribute(4, 8, 6);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
@@ -155,12 +148,6 @@ void BootScene::Render(double d) {
         y_rolated_ += 2;
     }
 
-    GLuint pid          = game()->shader_lib()->demo_program();
-    GLint  proj_matrix  = glGetUniformLocation(pid, "projectionMatrix");
-    GLint  view_matrix  = glGetUniformLocation(pid, "viewMatrix");
-    GLint  model_matrix = glGetUniformLocation(pid, "modelMatrix");
-    GLint  sampler      = glGetUniformLocation(pid, "sampler");
-
     Matrix mat;
     mat.Identity();
 
@@ -177,15 +164,11 @@ void BootScene::Render(double d) {
     Matrix proj_mat;
     proj_mat.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
 
-    // proj_mat.Identity();
-    // mat.Identity();
-    // proj_mat.Multiply(mat);
-    // proj_mat.Frustum(0, game()->fb_w(), 0, Game::This()->fb_h(), -100.0, 100.0);
-    // proj_mat.Perspective(0, static_cast<float>(game()->fb_w())/game()->fb_h(), -100, 100);
+    res::ShaderProgramScope<res::DemoShaderProgram> program(game()->shader_lib()->demo_program());
 
-    glUniformMatrix4fv(model_matrix, 1, GL_FALSE, model_mat.values());
-    glUniformMatrix4fv(view_matrix, 1, GL_FALSE, view_mat.values());
-    glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, proj_mat.values());
+    program->SetProjectionMatrix(proj_mat);
+    program->SetViewMatrix(view_mat);
+    program->SetModelMatrix(model_mat);
 
     res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
     glBindTexture(GL_TEXTURE_2D, tex->tex_id());

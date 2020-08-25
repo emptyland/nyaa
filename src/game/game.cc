@@ -39,7 +39,7 @@ Game::Game()
     , texture_lib_(new res::TextureLibrary(&arena_))
     , avatar_lib_(new res::AvatarLibrary(texture_lib_.get(), &arena_))
     , cube_lib_(new res::CubeLibrary(texture_lib_.get(), &arena_))
-    , shader_lib_(new res::ShaderLibrary())
+    , shader_lib_(new res::ShaderLibrary(&arena_))
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
