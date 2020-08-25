@@ -13,8 +13,8 @@ const char ShaderLibrary::kShaderDefFileName[] = "shader/def.txt";
 const char kDemoFSFileName[] = "demo.fs";
 const char kDemoVSFileName[] = "demo.vs";
 
-const char kSimpleLightFSFileName[] = "simple-light.fs";
-const char kSimpleLightVSFileName[] = "simple-light.vs";
+const char kBlockFSFileName[] = "block.fs";
+const char kBlockVSFileName[] = "block.vs";
 
 void ShaderProgram::Use() { glUseProgram(handle()); }
 void ShaderProgram::Unuse() { glUseProgram(0); }
@@ -75,6 +75,57 @@ void UniversalShaderProgram::Disable() /*override*/ {
 
 DemoShaderProgram::DemoShaderProgram(uint32_t program) : UniversalShaderProgram(program) {}
 
+BlockShaderProgram::BlockShaderProgram(uint32_t program)
+    : UniversalShaderProgram(program)
+    , directional_light_(glGetUniformLocation(program, "directionalLight"))
+    , camera_position_(glGetUniformLocation(program, "cameraPosition"))
+    , ambient_material_(glGetUniformLocation(program, "ambientMaterial"))
+    , ambient_light_(glGetUniformLocation(program, "ambientLight"))
+    , diffuse_material_(glGetUniformLocation(program, "diffuseMaterial"))
+    , diffuse_light_(glGetUniformLocation(program, "diffuseLight"))
+    , specular_material_(glGetUniformLocation(program, "specularMaterial"))
+    , specular_light_(glGetUniformLocation(program, "specularLight")) {}
+
+void BlockShaderProgram::SetDirectionalLight(const Vector3f &value) {
+    DCHECK_NE(-1, directional_light());
+    glUniform3f(directional_light(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetCameraPosition(const Vector3f &value) {
+    DCHECK_NE(-1, camera_position());
+    glUniform3f(camera_position(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetAmbientMaterial(const Vector3f &value) {
+    DCHECK_NE(-1, ambient_material());
+    glUniform3f(ambient_material(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetAmbientLight(const Vector3f &value) {
+    DCHECK_NE(-1, ambient_light());
+    glUniform3f(ambient_light(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetDiffuseMaterial(const Vector3f &value) {
+    DCHECK_NE(-1, diffuse_material());
+    glUniform3f(diffuse_material(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetDiffuseLight(const Vector3f &value) {
+    DCHECK_NE(-1, diffuse_light());
+    glUniform3f(diffuse_light(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetSpecularMaterial(const Vector3f &value) {
+    DCHECK_NE(-1, specular_material());
+    glUniform3f(specular_material(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetSpecularLight(const Vector3f &value) {
+    DCHECK_NE(-1, specular_light());
+    glUniform3f(specular_light(), value.x, value.y, value.z);
+}
+
 bool ShaderLibrary::Prepare(const std::string &dir) {
     uint32_t vs, fs, program;
     if (!MakeShader(dir + "/" + kDemoVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
@@ -82,6 +133,10 @@ bool ShaderLibrary::Prepare(const std::string &dir) {
     if (!MakeProgram(vs, fs, &program)) { return false; }
     demo_program_ = new (arena_) DemoShaderProgram(program);
 
+    if (!MakeShader(dir + "/" + kBlockVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
+    if (!MakeShader(dir + "/" + kBlockFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
+    if (!MakeProgram(vs, fs, &program)) { return false; }
+    block_program_ = new (arena_) BlockShaderProgram(program);
     return true;
 }
 

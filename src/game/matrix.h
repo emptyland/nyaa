@@ -146,6 +146,25 @@ public:
         Frustum(-xmax, xmax, -ymax, ymax, znear, zfar);
     }
 
+    void Ortho(T left, T right, T bottom, T top, T near, T far) {
+        value_[0]  = 2 / (right - left);
+        value_[1]  = 0;
+        value_[2]  = 0;
+        value_[3]  = 0;
+        value_[4]  = 0;
+        value_[5]  = 2 / (top - bottom);
+        value_[6]  = 0;
+        value_[7]  = 0;
+        value_[8]  = 0;
+        value_[9]  = 0;
+        value_[10] = -2 / (far - near);
+        value_[11] = 0;
+        value_[12] = -(right + left) / (right - left);
+        value_[13] = -(top + bottom) / (top - bottom);
+        value_[14] = -(far + near) / (far - near);
+        value_[15] = 1;
+    }
+
     void Multiply(const Matrix &b) { Multiply(*this, b, this); }
 
     static void Multiply(const Matrix &a, const Matrix &b, Matrix *matrix) {

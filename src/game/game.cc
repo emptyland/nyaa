@@ -101,6 +101,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
 
     ts_ = glfwGetTime();
 
+    // Resource Prepare
     res::FontLibrary::Options options;
     options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
     options.default_font_size = properties()->default_font_size();
@@ -120,6 +121,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
         return false;
     }
 
+    // System Prepare
     // Initial tiles texture id
     res::Texture *tex = DCHECK_NOTNULL(texture_lib_->FindOrNull(ResourceId::Of(200000)));
     zone_render()->set_tile_tex_id(tex->tex_id());

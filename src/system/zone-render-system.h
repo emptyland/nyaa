@@ -23,17 +23,29 @@ public:
     DEF_VAL_PROP_RW(float, cube_size);
     DEF_VAL_PROP_RW(uint32_t, tile_tex_id);
 
+    void Prepare();
+
     void RenderTerrain(com::ZoneComponent *zone);
-    void RenderPlantLayout(com::ZoneComponent *zone, int layout);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ZoneRenderSystem);
 
 private:
     void RenderSurface(com::ZoneComponent *zone, int i, int j);
-    void RenderPlant(res::Cube *def, Vector3f p0, res::Texture *tex);
+
+    void MakeCube(const Vector3f &p0);
+
+    struct Bundle {
+        Vector3f vertex;
+        Vector3f normal;
+        Vector2f uv;
+    };
+    static_assert(sizeof(Bundle) == 8 * sizeof(float), "Incorrect bundle size");
 
     float    cube_size_   = 1;
     uint32_t tile_tex_id_ = -1;
+    uint32_t vao_ = 0;
+    uint32_t vbo_ = 0;
+    Bundle vertices_[24];
 };  // class ZoneRenderSystem
 
 }  // namespace sys

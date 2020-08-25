@@ -15,33 +15,6 @@
 
 namespace nyaa {
 
-static const float positions[6][4][3] = {
-    // :format
-    {{-1, -1, -1}, {-1, -1, +1}, {-1, +1, -1}, {-1, +1, +1}},
-    // :format
-    {{+1, -1, -1}, {+1, -1, +1}, {+1, +1, -1}, {+1, +1, +1}},
-    // :format
-    {{-1, +1, -1}, {-1, +1, +1}, {+1, +1, -1}, {+1, +1, +1}},
-    // :format
-    {{-1, -1, -1}, {-1, -1, +1}, {+1, -1, -1}, {+1, -1, +1}},
-    // :format
-    {{-1, -1, -1}, {-1, +1, -1}, {+1, -1, -1}, {+1, +1, -1}},
-    // :format
-    {{-1, -1, +1}, {-1, +1, +1}, {+1, -1, +1}, {+1, +1, +1}}};
-static const float normals[6][3] = {
-    // :format
-    {-1, 0, 0},
-    // :format
-    {+1, 0, 0},
-    // :format
-    {0, +1, 0},
-    // :format
-    {0, -1, 0},
-    // :format
-    {0, 0, -1},
-    // :format
-    {0, 0, +1}};
-
 static float vertices[] = {
     // top
     -1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
@@ -94,10 +67,6 @@ void BootScene::Reset() {
     }
 
     res::DemoShaderProgram *program = game()->shader_lib()->demo_program();
-    GLint  position = program->position();
-    GLint  normal   = program->normal();
-    GLint  uv       = program->uv();
-
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 
@@ -175,6 +144,8 @@ void BootScene::Render(double d) {
     glBindVertexArray(vao_);
     glDrawArrays(GL_QUADS, 0, 24);
     glBindVertexArray(0);
+
+    //glDisable(GL_CULL_FACE);
 }
 
 }  // namespace nyaa

@@ -12,6 +12,7 @@ namespace nyaa {
 namespace res {
 
 class DemoShaderProgram;
+class BlockShaderProgram;
 
 class ShaderLibrary final {
 public:
@@ -21,6 +22,7 @@ public:
     ShaderLibrary(base::Arena *arena) : arena_(arena) {}
 
     DEF_PTR_GETTER(DemoShaderProgram, demo_program);
+    DEF_PTR_GETTER(BlockShaderProgram, block_program);
 
     bool Prepare(const std::string &dir);
 
@@ -31,8 +33,9 @@ private:
     bool MakeShader(const std::string &file_name, int type, uint32_t *handle);
     bool ReadAll(const std::string &file_name, std::string *content);
 
-    base::Arena *const arena_;
-    DemoShaderProgram *demo_program_;
+    base::Arena *const  arena_;
+    DemoShaderProgram * demo_program_;
+    BlockShaderProgram *block_program_;
 };  // class ShaderLibrary
 
 class ShaderProgram : public base::ArenaObject {
@@ -72,7 +75,7 @@ public:
 
 private:
     T *const program_;
-}; // class ShaderProgramScope
+};  // class ShaderProgramScope
 
 class UniversalShaderProgram : public ShaderProgram {
 public:
@@ -117,6 +120,53 @@ public:
 private:
     DemoShaderProgram(uint32_t program);
 
+};  // class BlockShaderProgram
+
+class BlockShaderProgram : public UniversalShaderProgram {
+public:
+    DEF_VAL_GETTER(int, directional_light);
+    DEF_VAL_GETTER(int, camera_position);
+    DEF_VAL_GETTER(int, ambient_material);
+    DEF_VAL_GETTER(int, ambient_light);
+    DEF_VAL_GETTER(int, diffuse_material);
+    DEF_VAL_GETTER(int, diffuse_light);
+    DEF_VAL_GETTER(int, specular_material);
+    DEF_VAL_GETTER(int, specular_light);
+
+    void SetDirectionalLight(const Vector3f &value);
+    void SetCameraPosition(const Vector3f &value);
+
+    void SetAmbientMaterial(const Vector3f &value);
+    void SetAmbientLight(const Vector3f &value);
+
+    void SetDiffuseMaterial(const Vector3f &value);
+    void SetDiffuseLight(const Vector3f &value);
+
+    void SetSpecularMaterial(const Vector3f &value);
+    void SetSpecularLight(const Vector3f &value);
+
+    friend class ShaderLibrary;
+    DISALLOW_IMPLICIT_CONSTRUCTORS(BlockShaderProgram);
+
+private:
+    BlockShaderProgram(uint32_t program);
+    // uniform vec3 ambientMaterial;
+    // uniform vec3 ambientLight;
+    // uniform vec3 diffuseMaterial;
+    // uniform vec3 diffuseLight;
+    // uniform vec3 specularMaterial;
+    // uniform vec3 specularLight;
+    // uniform vec3 directionalLight;
+    // uniform vec3 cameraPosition;
+    int directional_light_;
+    int camera_position_;
+
+    int ambient_material_;
+    int ambient_light_;
+    int diffuse_material_;
+    int diffuse_light_;
+    int specular_material_;
+    int specular_light_;
 };  // class BlockShaderProgram
 
 }  // namespace res
