@@ -24,19 +24,19 @@ static const float kVertices[] = {
     +1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
     // :front
     -1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
     -1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
     // :back
     -1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
-    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
-    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
     +1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
     // :left
     -1, -1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    -1, -1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    -1, +1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
     -1, +1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -1, +1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -1, -1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
     // :right
     +1, -1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
     +1, -1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
@@ -62,9 +62,9 @@ void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // glFrontFace(GL_CW);
-    // glCullFace(GL_BACK);
-    // glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
     //------------------------------------------------------------------------------------------------------------------
 
     glEnable(GL_TEXTURE_2D);
@@ -83,7 +83,8 @@ void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
     glDrawArrays(GL_QUADS, 0, vbo_[1][1].count);
     shader->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //glDisable(GL_CULL_FACE);
+
+    glDisable(GL_CULL_FACE);
 }
 
 void ZoneRenderSystem::GenBuffer(com::RegionComponent *region, int i, int j) {
