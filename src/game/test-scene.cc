@@ -105,6 +105,14 @@ void TestScene::Render(double delta) {
         z_rolated_ -= 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
         z_rolated_ += 2;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_H) == GLFW_PRESS) {
+        if (ambient_light_ < 1) {
+            ambient_light_ += 0.01;
+        }
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_J) == GLFW_PRESS) {
+        if (ambient_light_ > 0) {
+            ambient_light_ -= 0.01;
+        }
     }
 
 
@@ -119,8 +127,8 @@ void TestScene::Render(double delta) {
     res::ShaderProgramScope shader(game()->shader_lib()->block_program());
     shader->SetDiffuseMaterial({0.6, 0.6, 0.6});
     shader->SetDiffuseLight({0.7, 0.7, 0.7});
-    shader->SetAmbientMaterial({0.7, 0.7, 0.7});
-    shader->SetAmbientLight({1.0, 1.0, 1.0});
+    shader->SetAmbientMaterial({0.8, 0.8, 0.8});
+    shader->SetAmbientLight({ambient_light_, ambient_light_, ambient_light_});
     shader->SetSpecularMaterial({0.4, 0.4, 0.4});
     shader->SetSpecularLight({0.4, 0.4, 0.4});
 
@@ -136,6 +144,8 @@ void TestScene::Render(double delta) {
     mat.Scale(0.1, 0.1, 0.1);
     view_mat.Multiply(mat);
 
+    Vector4f camera{0, 0, -2, 1};
+
     Matrix model_mat;
     model_mat.Identity();
 
@@ -145,8 +155,8 @@ void TestScene::Render(double delta) {
     shader->SetViewMatrix(view_mat);
     shader->SetProjectionMatrix(proj_mat);
     shader->SetModelMatrix(model_mat);
-    shader->SetDirectionalLight({.0, 2.0, 2.0});
-    shader->SetCameraPosition({.0, 10.0, 10.0});
+    shader->SetDirectionalLight({.0, .0, 1.0});
+    shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
     // const vec3 directionalLight = vec3(0, 1.0, 1.0);
     // const vec3 cameraPosition   = vec3(0, 0, 2);

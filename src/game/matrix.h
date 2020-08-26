@@ -167,6 +167,25 @@ public:
 
     void Multiply(const Matrix &b) { Multiply(*this, b, this); }
 
+    // a[1] * b[1][1] + a[2] * b[2][1] + a[3] * b[3][1] + a[4] * b[4][1]
+    // a[1] * b[1][2] + a[2] * b[2][2] + a[3] * b[3][2] + a[4] * b[4][2]
+    // a[1] * b[1][3] + a[2] * b[2][3] + a[3] * b[3][3] + a[4] * b[4][3]
+    // a[1] * b[1][4] + a[2] * b[2][4] + a[3] * b[3][4] + a[4] * b[4][4]
+    static void Multiply(const Vector4<T> &a, const Matrix &b, Vector4<T> *vec) {
+        T result[4];
+
+        T const *f = &a.x;
+        for (int c = 0; c < kDimX; c++) {
+            T total = 0;
+            for (int i = 0; i < 4; i++) { total += f[i] * b.value(i, c); }
+            result[c] = total;
+        }
+        vec->x = result[0];
+        vec->y = result[1];
+        vec->z = result[2];
+        vec->w = result[3];
+    }
+
     static void Multiply(const Matrix &a, const Matrix &b, Matrix *matrix) {
         T result[16];
         for (int c = 0; c < kDimX; c++) {

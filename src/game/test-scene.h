@@ -34,8 +34,9 @@ private:
     std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<entity::PlayerEntity> player_;
 
-    float y_rolated_ = 0;
-    float z_rolated_ = 0;
+    float y_rolated_ = 45;
+    float z_rolated_ = 45;
+    float ambient_light_ = 1.0;
 };  // class TestScene
 
 }  // namespace nyaa
