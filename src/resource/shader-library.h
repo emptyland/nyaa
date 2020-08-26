@@ -61,11 +61,11 @@ class ShaderProgramScope {
 public:
     explicit ShaderProgramScope(T *program) : program_(program) {
         program_->Use();
-        program_->Enable();
+        //program_->Enable();
     }
 
     ~ShaderProgramScope() {
-        program_->Disable();
+        //program_->Disable();
         program_->Unuse();
     }
 

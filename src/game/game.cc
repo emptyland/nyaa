@@ -125,6 +125,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     // Initial tiles texture id
     res::Texture *tex = DCHECK_NOTNULL(texture_lib_->FindOrNull(ResourceId::Of(200000)));
     zone_render()->set_tile_tex_id(tex->tex_id());
+    //zone_render()->Prepare();
 
     scene_ = boot_scene_.get();
     boot_scene_->Reset();

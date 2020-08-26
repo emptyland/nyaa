@@ -18,5 +18,5 @@ void main () {
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
     fragmentUV = uv;
     worldPosition = vec3(modelMatrix * vec4(position, 1.0));
-    fragmentNormal = vec3(modelMatrix * vec4(normal, 1.0));
+    fragmentNormal = vec3(projectionMatrix * viewMatrix * modelMatrix * vec4(normal, 1.0));
 }

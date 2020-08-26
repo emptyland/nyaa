@@ -4,10 +4,12 @@
 
 #include "game/constants.h"
 #include "base/base.h"
+#include <vector>
 
 namespace nyaa {
 namespace com {
 class ZoneComponent;
+class RegionComponent;
 }  // namespace com
 namespace res {
 class Cube;
@@ -18,7 +20,7 @@ namespace sys {
 
 class ZoneRenderSystem {
 public:
-    ZoneRenderSystem() = default;
+    ZoneRenderSystem();
 
     DEF_VAL_PROP_RW(float, cube_size);
     DEF_VAL_PROP_RW(uint32_t, tile_tex_id);
@@ -32,20 +34,19 @@ public:
 private:
     void RenderSurface(com::ZoneComponent *zone, int i, int j);
 
-    void MakeCube(const Vector3f &p0);
+    void GenBuffer(com::RegionComponent *region, int i, int j);
 
-    struct Bundle {
-        Vector3f vertex;
-        Vector3f normal;
-        Vector2f uv;
+    void MakeCube(const res::Cube *cube, const Vector3f &p0, std::vector<float> *buf);
+
+    struct Vbo {
+        Vector2i coord;
+        uint32_t buffer;
+        int count;
     };
-    static_assert(sizeof(Bundle) == 8 * sizeof(float), "Incorrect bundle size");
 
     float    cube_size_   = 1;
     uint32_t tile_tex_id_ = -1;
-    uint32_t vao_ = 0;
-    uint32_t vbo_ = 0;
-    Bundle vertices_[24];
+    Vbo vbo_[3][3];
 };  // class ZoneRenderSystem
 
 }  // namespace sys

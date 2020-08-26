@@ -133,7 +133,7 @@ void BootScene::Render(double d) {
     Matrix proj_mat;
     proj_mat.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
 
-    res::ShaderProgramScope<res::DemoShaderProgram> program(game()->shader_lib()->demo_program());
+    res::ShaderProgramScope program(game()->shader_lib()->demo_program());
 
     program->SetProjectionMatrix(proj_mat);
     program->SetViewMatrix(view_mat);
@@ -141,11 +141,13 @@ void BootScene::Render(double d) {
 
     res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
     glBindTexture(GL_TEXTURE_2D, tex->tex_id());
-    glBindVertexArray(vao_);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    program->Enable();
     glDrawArrays(GL_QUADS, 0, 24);
-    glBindVertexArray(0);
+    program->Disable();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    //glDisable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE);
 }
 
 }  // namespace nyaa
