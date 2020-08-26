@@ -15,7 +15,7 @@ public:
     DEF_VAL_GETTER(ResourceId, id);
     DEF_VAL_GETTER(Vector2i, size);
     DEF_VAL_GETTER(float, speed);
-    DEF_VAL_GETTER(Vector4i, key_frames);
+    DEF_VAL_GETTER(Boundi, key_frames);
     DEF_VAL_GETTER(int, up_frames_size);
     DEF_VAL_GETTER(int, right_frames_size);
     DEF_VAL_GETTER(int, down_frames_size);
@@ -33,7 +33,7 @@ public:
         ParseValue<DefValType::ARRAY_U32>(items[4], &down_frames_size_);
         ParseValue<DefValType::ARRAY_U32>(items[5], &left_frames_size_);
         ParseValue<DefValType::F32>(items[6], &speed_);
-        ParseValue<DefValType::VECTOR4I>(items[7], &key_frames_);
+        ParseValue<DefValType::BOUNDI>(items[7], &key_frames_);
     }
 
 private:
@@ -48,7 +48,7 @@ private:
     int        left_frames_size_;
     ResourceId left_frames_[Avatar::kMaxFrames];
     float      speed_;
-    Vector4i   key_frames_;
+    Boundi     key_frames_;
 };  // class AvatarDef
 
 Avatar::Avatar(ResourceId id, Vector2f size, float speed, int frames_count)

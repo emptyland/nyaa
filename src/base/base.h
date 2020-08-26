@@ -157,14 +157,16 @@ template <class T>
 struct Vector4 {
     T x;
     T y;
+    T z;
     T w;
-    T h;
 };  // // template<class T> struct Vector4
 
 template <class T>
-struct Bundle2 {
-    Vector2<T> p1;
-    Vector2<T> p2;
+struct Bound {
+    T x;
+    T y;
+    T w;
+    T h;
 };  // template<class T> struct Bundle2
 
 using Vector2i = Vector2<int>;
@@ -175,6 +177,9 @@ using Vector3f = Vector3<float>;
 
 using Vector4i = Vector4<int>;
 using Vector4f = Vector4<float>;
+
+using Boundi = Bound<int>;
+using Boundf = Bound<float>;
 
 /**
  * define getter/mutable_getter/setter

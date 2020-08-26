@@ -23,7 +23,7 @@ enum class DefValType {
     F64,
     ID,
     VECTOR2I,
-    VECTOR4I,
+    BOUNDI,
     ARRAY_I32,
     ARRAY_U32,
 };  // enum class DefValType
@@ -155,9 +155,9 @@ struct DefValParser<DefValType::VECTOR2I> {
 };
 
 template <>
-struct DefValParser<DefValType::VECTOR4I> {
+struct DefValParser<DefValType::BOUNDI> {
     using Type = Vector4i;
-    int Parse(std::string_view input, Vector4i *receive) { return ParseVertex_Ni(input, receive); }
+    int Parse(std::string_view input, Boundi *receive) { return ParseVertex_Ni(input, receive); }
 };
 
 template <>
@@ -211,8 +211,8 @@ int Definition<T>::ParseValue(std::string_view input, DefValType type, void *rec
         case DefValType::ID: return DefValParser<DefValType::ID>{}.Parse(input, static_cast<ResourceId *>(receiver));
         case DefValType::VECTOR2I:
             return DefValParser<DefValType::VECTOR2I>{}.Parse(input, static_cast<Vector2i *>(receiver));
-        case DefValType::VECTOR4I:
-            return DefValParser<DefValType::VECTOR4I>{}.Parse(input, static_cast<Vector4i *>(receiver));
+        case DefValType::BOUNDI:
+            return DefValParser<DefValType::BOUNDI>{}.Parse(input, static_cast<Boundi *>(receiver));
         case DefValType::ARRAY_I32:
             return DefValParser<DefValType::ARRAY_I32>{}.Parse(input, static_cast<int32_t *>(receiver));
         case DefValType::ARRAY_U32:

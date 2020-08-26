@@ -15,20 +15,20 @@ public:
 
     DEF_VAL_GETTER(std::string, file_name);
     DEF_VAL_GETTER(ResourceId, id);
-    DEF_VAL_GETTER(Vector4i, bound);
+    DEF_VAL_GETTER(Boundi, bound);
     DEF_VAL_GETTER(int, index);
 
     void Parse(const std::vector<std::string_view> &items) {
         ParseValue<DefValType::STRING>(items[0], &file_name_);
         ParseValue<DefValType::ID>(items[1], &id_);
-        ParseValue<DefValType::VECTOR4I>(items[2], &bound_);
+        ParseValue<DefValType::BOUNDI>(items[2], &bound_);
         ParseValue<DefValType::I32>(items[3], &index_);
     }
 
 private:
     std::string file_name_;
     ResourceId  id_ = ResourceId::Of(0);
-    Vector4i    bound_;
+    Boundi      bound_;
     int         index_;
 };  // class TextureDef
 

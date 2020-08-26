@@ -62,7 +62,7 @@ public:
         Character *next_ = nullptr;
         Character *prev_ = nullptr;
         uint32_t   code_point;
-        Vector4i   glyph;
+        Boundi     glyph;
         Vector2i   bearing;
         long       advance;
     };

@@ -150,12 +150,12 @@ const char *ZoneComponent::kDirectionText[] = {
 };
 
 ZoneComponent::Direction ZoneComponent::WantSibling() {
-    Vector4i region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
-                    region_->global_coord().y + kRegionSize};
-    Vector4i view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
-                  viewport_.round_down_center_y() - viewport_.bound().y / 2,
-                  viewport_.round_down_center_x() + viewport_.bound().x / 2,
-                  viewport_.round_down_center_y() + viewport_.bound().y / 2};
+    Boundi region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
+                  region_->global_coord().y + kRegionSize};
+    Boundi view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
+                viewport_.round_down_center_y() - viewport_.bound().y / 2,
+                viewport_.round_down_center_x() + viewport_.bound().x / 2,
+                viewport_.round_down_center_y() + viewport_.bound().y / 2};
 
     Direction want = kNone;
     if (view.w > region.w) {
