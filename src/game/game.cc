@@ -148,7 +148,7 @@ void Game::Run() {
 
         if (properties()->show_fps()) {
             char fps_buf[120];
-            ::snprintf(fps_buf, sizeof(fps_buf), "FPS: %0.2f", 1 / delta);
+            ::snprintf(fps_buf, sizeof(fps_buf), "FPS: %0.0f", 1 / delta + 0.3);
             font_lib()->default_face()->Render(fps_buf, 0, fb_h() - properties()->default_font_size(), {1, 1, 1});
         }
 

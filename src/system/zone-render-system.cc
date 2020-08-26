@@ -128,9 +128,9 @@ void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, std::
         vertices[i * 8 + 1] = p0.y + kVertices[i * 8 + 1] * half_size;
         vertices[i * 8 + 2] = p0.z + kVertices[i * 8 + 2] * half_size;
 
-        vertices[i * 8 + 3] = p0.x + kVertices[i * 8 + 3];
-        vertices[i * 8 + 4] = p0.y + kVertices[i * 8 + 4];
-        vertices[i * 8 + 5] = p0.z + kVertices[i * 8 + 5];
+        vertices[i * 8 + 3] = kVertices[i * 8 + 3];
+        vertices[i * 8 + 4] = kVertices[i * 8 + 4];
+        vertices[i * 8 + 5] = kVertices[i * 8 + 5];
     }
     for (int i = 0; i < 4; i++) {
         vertices[i * 8 + 6] = cube->top_tex()->coord(i).x;

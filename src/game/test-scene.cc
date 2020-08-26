@@ -129,8 +129,8 @@ void TestScene::Render(double delta) {
     shader->SetDiffuseLight({0.7, 0.7, 0.7});
     shader->SetAmbientMaterial({0.8, 0.8, 0.8});
     shader->SetAmbientLight({ambient_light_, ambient_light_, ambient_light_});
-    shader->SetSpecularMaterial({0.4, 0.4, 0.4});
-    shader->SetSpecularLight({0.4, 0.4, 0.4});
+    shader->SetSpecularMaterial({0.7, 0.7, 0.7});
+    shader->SetSpecularLight({1.0, 1.0, 1.0});
 
     Matrix mat;
     mat.Identity();
