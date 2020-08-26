@@ -4,11 +4,12 @@ namespace nyaa {
 
 namespace com {
 
-ZoneComponent::ZoneComponent() { ::memset(sibling_, 0, sizeof(sibling_)); }
+ZoneComponent::ZoneComponent() {
+    ClearRegions();
+}
 
 ZoneComponent::~ZoneComponent() {
-    delete region_;
-    for (int i = 0; i < arraysize(sibling_); i++) { delete sibling(i); }
+    ClearRegions();
 }
 
 CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
@@ -33,116 +34,28 @@ CubeComponent *ZoneComponent::CubeAt(int i, int j, int z) {
 }
 
 CubeComponent *ZoneComponent::Cube(int x, int y, int z) {
+    const int lx = x % kRegionSize;
+    const int ly = y % kRegionSize;
 
-    const int limit_x = region()->global_coord().x + kRegionSize;
-    const int limit_y = region()->global_coord().y + kRegionSize;
-    const int lx      = x % kRegionSize;
-    const int ly      = y % kRegionSize;
-    switch (want()) {
-        case kNone: return &region()->floor(z)->cubes[lx][ly];
-        case kE:
-            if (region()->AtEast(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtBound(x, y));
-                return &region()->floor(z)->cubes[lx][ly];
-            }
-            break;
-        case kS:
-            if (region()->AtSouth(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtBound(x, y));
-                return &region()->floor(z)->cubes[lx][ly];
-            }
-            break;
-        case kW:
-            if (region()->AtWest(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtBound(x, y));
-                return &region()->floor(z)->cubes[lx][ly];
-            }
-            break;
-        case kN:
-            if (region()->AtNorth(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtBound(x, y));
-                return &region()->floor(z)->cubes[lx][ly];
-            }
-            break;
-
-        //
-        //   SE | [0]
-        // -----+-----
-        //  [2] | [1]
-        case kSE:
-            if (region()->AtBound(x, y)) {
-                return &region()->floor(z)->cubes[lx][ly];
-            } else if (region()->AtEast(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtSouthEast(x, y)) {
-                return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtSouth(x, y));
-                return &sibling(2)->floor(z)->cubes[lx][ly];
-            }
-            break;
-
-        //
-        //   [0] | [1]
-        // ------+-----
-        //    NE | [2]
-        case kNE:
-            if (region()->AtNorth(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtNorthEast(x, y)) {
-                return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtEast(x, y)) {
-                return &sibling(2)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtBound(x, y));
-                return &region()->floor(z)->cubes[lx][ly];
-            }
-            break;
-
-        //
-        //  [0] | SW
-        // -----+-----
-        //  [2] | [1]
-        case kSW:
-            if (region()->AtWest(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtBound(x, y)) {
-                return &region()->floor(z)->cubes[lx][ly];
-            } else if (region()->AtSouth(x, y)) {
-                return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtSouthWest(x, y));
-                return &sibling(2)->floor(z)->cubes[lx][ly];
-            }
-            break;
-
-        //
-        //  [0] | [1]
-        // -----+-----
-        //  [2] | NW
-        case kNW:
-            if (region()->AtNorthWest(x, y)) {
-                return &sibling(0)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtNorth(x, y)) {
-                return &sibling(1)->floor(z)->cubes[lx][ly];
-            } else if (region()->AtBound(x, y)) {
-                return &region()->floor(z)->cubes[lx][ly];
-            } else {
-                DCHECK(region()->AtWest(x, y));
-                return &sibling(2)->floor(z)->cubes[lx][ly];
-            }
-            break;
-        default: NOREACHED(); break;
+    if (center()->AtEast(x, y)) {
+        return &region(2, 1)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtWest(x, y)) {
+        return &region(0, 1)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtSouth(x, y)) {
+        return &region(1, 2)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtNorth(x, y)) {
+        return &region(1, 0)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtSouthEast(x, y)) {
+        return &region(2, 2)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtSouthWest(x, y)) {
+        return &region(0, 2)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtNorthEast(x, y)) {
+        return &region(2, 0)->floor(z)->cubes[lx][ly];
+    } else if (center()->AtNorthWest(x, y)) {
+        return &region(0, 0)->floor(z)->cubes[lx][ly];
     }
-    return nullptr;
+    DCHECK(center()->AtBound(x, y));
+    return &center()->floor(z)->cubes[lx][ly];
 }
 
 const char *ZoneComponent::kDirectionText[] = {
@@ -150,12 +63,12 @@ const char *ZoneComponent::kDirectionText[] = {
 };
 
 ZoneComponent::Direction ZoneComponent::WantSibling() {
-    Boundi region{region_->global_coord().x, region_->global_coord().y, region_->global_coord().x + kRegionSize,
-                  region_->global_coord().y + kRegionSize};
-    Boundi view{viewport_.round_down_center_x() - viewport_.bound().x / 2,
-                viewport_.round_down_center_y() - viewport_.bound().y / 2,
-                viewport_.round_down_center_x() + viewport_.bound().x / 2,
-                viewport_.round_down_center_y() + viewport_.bound().y / 2};
+    Boundi region{center()->global_coord().x, center()->global_coord().y, center()->global_coord().x + kRegionSize,
+                  center()->global_coord().y + kRegionSize};
+    Boundi view{viewport().round_down_center_x() - viewport().bound().x / 2,
+                viewport().round_down_center_y() - viewport().bound().y / 2,
+                viewport().round_down_center_x() + viewport().bound().x / 2,
+                viewport().round_down_center_y() + viewport().bound().y / 2};
 
     Direction want = kNone;
     if (view.w > region.w) {

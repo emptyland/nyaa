@@ -4,7 +4,7 @@
 
 namespace nyaa {
 
-static constexpr int kRegionSize = 256;
+static constexpr int kRegionSize = 128;
 
 static constexpr int kTerrainMaxLevels = 16;
 

@@ -49,7 +49,7 @@ ZoneRenderSystem::ZoneRenderSystem() {
         for (int j = 0; j < 3; j++) {
             vbo_[i][j].coord  = {-1, -1};
             vbo_[i][j].buffer = 0;
-            vbo_[i][j].count = 0;
+            vbo_[i][j].count  = 0;
         }
     }
 }
@@ -57,8 +57,14 @@ ZoneRenderSystem::ZoneRenderSystem() {
 void ZoneRenderSystem::Prepare() {}
 
 void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
-    if (!zone->region()->GlobalCoordEqual(vbo_[1][1].coord.x, vbo_[1][1].coord.y)) {
-        GenBuffer(zone->region(), 1, 1);
+    // if (!zone->center()->GlobalCoordEqual(vbo_[1][1].coord.x, vbo_[1][1].coord.y)) { GenBuffer(zone->center(), 1, 1);
+    // }
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (zone->region(i, j) && !zone->region(i, j)->GlobalCoordEqual(vbo_[i][j].coord.x, vbo_[i][j].coord.y)) {
+                GenBuffer(zone->region(i, j), i, j);
+            }
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -71,18 +77,30 @@ void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
     glBindTexture(GL_TEXTURE_2D, tile_tex_id());
 
     res::BlockShaderProgram *shader = Game::This()->shader_lib()->block_program();
-    Matrix<float> mat;
-    mat.Translate(-zone->viewport().center_coord().x, -zone->viewport().center_coord().y, 0);
-    shader->SetModelMatrix(mat);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_[1][1].buffer);
-    shader->Enable();
-    shader->SetPositionAttribute(4, 8, 0);
-    shader->SetNormalAttribute(4, 8, 3);
-    shader->SetUVAttribute(4, 8, 6);
-    glDrawArrays(GL_QUADS, 0, vbo_[1][1].count);
-    shader->Disable();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (!zone->region(i, j)) { continue; }
+
+            float offset_x =
+                zone->center()->global_coord().x - zone->viewport().center_coord().x + kRegionSize * (i - 1);
+            float offset_y =
+                zone->center()->global_coord().y - zone->viewport().center_coord().y + kRegionSize * (j - 1);
+
+            Matrix<float> mat;
+            mat.Translate(offset_x, offset_y, 0);
+            shader->SetModelMatrix(mat);
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo_[i][j].buffer);
+            shader->Enable();
+            shader->SetPositionAttribute(4, 8, 0);
+            shader->SetNormalAttribute(4, 8, 3);
+            shader->SetUVAttribute(4, 8, 6);
+            glDrawArrays(GL_QUADS, 0, vbo_[i][j].count);
+            shader->Disable();
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+    }
 
     glDisable(GL_CULL_FACE);
 }
@@ -121,7 +139,7 @@ void ZoneRenderSystem::GenBuffer(com::RegionComponent *region, int i, int j) {
 void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, std::vector<float> *buf) {
     float half_size = cube_size_ / 2;
 
-    size_t pos = buf->size(); 
+    size_t pos = buf->size();
     buf->resize(pos + 24 * 8);
     float *vertices = &(*buf)[pos];
     for (int i = 0; i < 24; i++) {

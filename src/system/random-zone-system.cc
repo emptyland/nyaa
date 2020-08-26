@@ -8,9 +8,9 @@ namespace nyaa {
 namespace sys {
 
 void RandomZoneSystem::Update(com::ZoneComponent *zone) {
-    if (!zone->region()) {
-        zone->set_region(new com::RegionComponent());
-        Update(zone->region());
+    if (!zone->center()) {
+        zone->set_region(1, 1, new com::RegionComponent());
+        Update(zone->center());
     }
 
     zone->UpdateViewportCoord(zone->viewport().center_coord());

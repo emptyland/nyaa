@@ -90,30 +90,43 @@ public:
     Direction WantSibling();
 
     DEF_VAL_PROP_RM(com::ViewportComponent, viewport);
-    DEF_PTR_PROP_RW(com::RegionComponent, region);
     DEF_VAL_GETTER(Direction, want);
+
+    com::RegionComponent *center() const { return regions_[1][1]; }
 
     const char *want_string() const { return kDirectionText[want()]; }
 
-    com::RegionComponent *sibling(int i) {
+    com::RegionComponent *region(int i, int j) {
         DCHECK_GE(i, 0);
-        DCHECK_LT(i, arraysize(sibling_));
-        return sibling_[i];
+        DCHECK_LT(i, 3);
+        DCHECK_GE(j, 0);
+        DCHECK_LT(j, 3);
+        return regions_[i][j];
     }
 
-    void set_sibling(int i, com::RegionComponent *region) {
+    void set_region(int i, int j, com::RegionComponent *region) {
         DCHECK_GE(i, 0);
-        DCHECK_LT(i, arraysize(sibling_));
-        sibling_[i] = region;
+        DCHECK_LT(i, 3);
+        DCHECK_GE(j, 0);
+        DCHECK_LT(j, 3);
+        regions_[i][j] = region;
+    }
+
+    void ClearRegions() {
+        for (int i = 0; i < 3; i++) {
+            regions_[i][0] = nullptr;
+            regions_[i][1] = nullptr;
+            regions_[i][2] = nullptr;
+        }
     }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ZoneComponent);
 
 private:
     com::ViewportComponent viewport_;
-    Direction              want_   = kNone;
-    com::RegionComponent * region_ = nullptr;
-    com::RegionComponent * sibling_[4];
+    com::RegionComponent * regions_[3][3];
+
+    Direction want_ = kNone;
 
     static const char *kDirectionText[];
 };  // class Zone
