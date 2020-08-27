@@ -31,6 +31,7 @@ public:
     DEF_VAL_GETTER(int, frames_count);
     DEF_VAL_GETTER(float, speed);
     DEF_VAL_GETTER(Vector2f, size);
+    DEF_VAL_PROP_RW(int, vbo_hint);
 
     Texture *key_frame(Direction dir) const { return frame(dir, 0); }
 
@@ -48,6 +49,7 @@ private:
     int        frames_count_;
     float      speed_;
     Vector2f   size_;
+    int        vbo_hint_;
     int        key_frame_[kMaxDir];
     Texture *  textures_[kMaxDir][kMaxFrames];
 };  // class Avatar

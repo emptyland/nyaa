@@ -36,7 +36,7 @@ private:
 
     void GenBuffer(com::RegionComponent *region, int i, int j);
 
-    void MakeCube(const res::Cube *cube, const Vector3f &p0, std::vector<float> *buf);
+    void MakeCube(const res::Cube *cube, const Vector3f &p0, bool surface, std::vector<float> *buf);
 
     struct Vbo {
         Vector2i coord;
@@ -47,6 +47,8 @@ private:
     float    cube_size_   = 1;
     uint32_t tile_tex_id_ = -1;
     Vbo vbo_[3][3];
+
+    static const float kVertices[];
 };  // class ZoneRenderSystem
 
 }  // namespace sys

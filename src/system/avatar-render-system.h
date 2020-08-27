@@ -28,6 +28,8 @@ public:
 private:
     uint32_t vbo_ = 0;
     bool initialized_ = false;
+
+    static const float kVertices[];
 }; // class AvatarRenderSystem
 
 }  // namespace sys

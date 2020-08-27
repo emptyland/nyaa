@@ -12,6 +12,7 @@ class AvatarComponent {
 public:
     AvatarComponent(res::Avatar *def) : def_(def) {}
 
+    DEF_PTR_GETTER(res::Avatar, def);
     DEF_VAL_PROP_RW(res::Avatar::Direction, dir);
     DEF_VAL_PROP_RW(double, speed);
     DEF_VAL_PROP_RW(double, time);
@@ -22,6 +23,14 @@ public:
         if (speed_ == 0.0) { return def_->key_frame(dir_); }
         int i = static_cast<int>(time / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
         return def_->frame(dir_, i);
+    }
+
+    int FrameIndex() const { return FrameIndex(time_); }
+
+    int FrameIndex(double time) const {
+        if (speed_ == 0.0) { return static_cast<int>(dir_) * def_->frames_count() + 0; }
+        int i = static_cast<int>(time / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
+        return static_cast<int>(dir_) * def_->frames_count() + i;
     }
 
     void AddTime(double d) { time_ += d; }

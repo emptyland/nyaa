@@ -127,6 +127,8 @@ bool Game::Prepare(const std::string &properties_file_name) {
     zone_render()->set_tile_tex_id(tex->tex_id());
     //zone_render()->Prepare();
 
+    avatar_render()->Prepare(avatar_lib());
+
     scene_ = boot_scene_.get();
     boot_scene_->Reset();
     return true;

@@ -11,7 +11,7 @@ namespace nyaa {
 
 namespace sys {
 
-static const float kVertices[] = {
+const float ZoneRenderSystem::kVertices[] = {
     // top
     -1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
     -1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
@@ -106,7 +106,7 @@ void ZoneRenderSystem::GenBuffer(com::RegionComponent *region, int i, int j) {
                 res::Cube *def = DCHECK_NOTNULL(Game::This()->cube_lib()->cube(cube->kind()));
 
                 p0.z = (-1 + (z - kTerrainSurfaceLevel)) * cube_size_;
-                MakeCube(def, p0, &buf);
+                MakeCube(def, p0, z == kTerrainSurfaceLevel, &buf);
             }
         }
     }
@@ -117,13 +117,14 @@ void ZoneRenderSystem::GenBuffer(com::RegionComponent *region, int i, int j) {
     vbo_[i][j].coord = region->global_coord();
 }
 
-void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, std::vector<float> *buf) {
+void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, bool surface, std::vector<float> *buf) {
     float half_size = cube_size_ / 2;
+    int n_vertices = surface ? 4 : 24;
 
     size_t pos = buf->size();
-    buf->resize(pos + 24 * 8);
+    buf->resize(pos + n_vertices * 8);
     float *vertices = &(*buf)[pos];
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < n_vertices; i++) {
         vertices[i * 8 + 0] = p0.x + kVertices[i * 8 + 0] * half_size;
         vertices[i * 8 + 1] = p0.y + kVertices[i * 8 + 1] * half_size;
         vertices[i * 8 + 2] = p0.z + kVertices[i * 8 + 2] * half_size;
@@ -136,9 +137,11 @@ void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, std::
         vertices[i * 8 + 6] = cube->top_tex()->coord(i).x;
         vertices[i * 8 + 7] = cube->top_tex()->coord(i).y;
     }
-    for (int i = 4; i < 24; i++) {
-        vertices[i * 8 + 6] = cube->edge_tex()->coord(i % 4).x;
-        vertices[i * 8 + 7] = cube->edge_tex()->coord(i % 4).y;
+    if (!surface) {
+        for (int i = 4; i < 24; i++) {
+            vertices[i * 8 + 6] = cube->edge_tex()->coord(i % 4).x;
+            vertices[i * 8 + 7] = cube->edge_tex()->coord(i % 4).y;
+        }
     }
 }
 

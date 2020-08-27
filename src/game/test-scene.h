@@ -37,6 +37,7 @@ private:
     float y_rolated_ = 45;
     float z_rolated_ = 45;
     float ambient_light_ = 1.0;
+    Vector3f directional_light_ = {0, 0, 1};
 };  // class TestScene
 
 }  // namespace nyaa

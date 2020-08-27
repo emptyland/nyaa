@@ -3,6 +3,7 @@
 #include "component/movement-component.h"
 #include "resource/texture-library.h"
 #include "resource/avatar-library.h"
+#include "resource/shader-library.h"
 #include "game/game.h"
 #include "game/constants.h"
 #include <GL/glew.h>
@@ -12,6 +13,19 @@ namespace nyaa {
 
 namespace sys {
 
+const float AvatarRenderSystem::kVertices[] = {
+    // :front
+    -1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    -1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    // :back
+    -1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+};
+
 void AvatarRenderSystem::Prepare(res::AvatarLibrary *avatar_lib) {
     DCHECK(!initialized_);
     glGenBuffers(1, &vbo_);
@@ -20,8 +34,42 @@ void AvatarRenderSystem::Prepare(res::AvatarLibrary *avatar_lib) {
     std::vector<GLfloat> buf;
     for (const auto &pair : avatar_lib->avatars()) {
         res::Avatar *def = pair.second;
+        def->set_vbo_hint(static_cast<int>(buf.size() / 8));
 
-        // TODO:
+        for (int i = res::Avatar::kUp; i < res::Avatar::kMaxDir; i++) {
+            for (int j = 0; j < def->frames_count(); j++) {
+                size_t pos = buf.size();
+                buf.resize(buf.size() + 4 * 8);
+                GLfloat *vectices = &buf[pos];
+
+                res::Texture *frame = def->frame(static_cast<res::Avatar::Direction>(i), j);
+
+                vectices[0] = 0;
+                vectices[1] = 0;
+                vectices[2] = 0;
+
+                vectices[8]  = 0;
+                vectices[9]  = 0;
+                vectices[10] = 1 * frame->aspect_ratio();
+
+                vectices[16] = 1;
+                vectices[17] = 0;
+                vectices[18] = 1 * frame->aspect_ratio();
+
+                vectices[24] = 1;
+                vectices[25] = 0;
+                vectices[26] = 0;
+
+                for (int k = 0; k < 4; k++) {
+                    vectices[k * 8 + 3] = 0;
+                    vectices[k * 8 + 4] = -1;
+                    vectices[k * 8 + 5] = 0;
+
+                    vectices[k * 8 + 6] = frame->coord((k + 3) % 4).x;
+                    vectices[k * 8 + 7] = frame->coord((k + 3) % 4).y;
+                }
+            }
+        }
     }
     glBufferData(GL_ARRAY_BUFFER, buf.size() * sizeof(GLfloat), &buf[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -45,40 +93,42 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
         float dir = movement->GetMovingDirection();
 
         if (dir >= -M_PI_4 * 3 && dir < -M_PI_4) {  // [-3π/4, -π/4)
-            avatar->set_dir(res::Avatar::kUp);
+            avatar->set_dir(res::Avatar::kDown);
         } else if (dir >= -M_PI_4 && dir < M_PI_4) {  // [-π/4, π/4)
             avatar->set_dir(res::Avatar::kRight);
         } else if (dir >= M_PI_4 && dir < M_PI_4 * 3) {  // [π/4, 3π/4)
-            avatar->set_dir(res::Avatar::kDown);
+            avatar->set_dir(res::Avatar::kUp);
         } else {  // [3π/4, )
             avatar->set_dir(res::Avatar::kLeft);
         }
     }
     avatar->AddTime(delta);
-    res::Texture *frame = avatar->GetFrame();
+    int frame = avatar->FrameIndex();
 
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, frame->tex_id());
-    glColor3f(1.0, 1.0, 1.0);
-    glBegin(GL_QUADS);
+    glBindTexture(GL_TEXTURE_2D, avatar->GetFrame()->tex_id());
 
-    float dy = movement->coord().z - kTerrainSurfaceLevel;
+    res::BlockShaderProgram *shader = Game::This()->shader_lib()->block_program();
 
-    glTexCoord2f(frame->coord(0).x, frame->coord(0).y);
-    glVertex3f(0, 2 + dy, 0);
+    float z = movement->coord().z - kTerrainSurfaceLevel;
 
-    glTexCoord2f(frame->coord(1).x, frame->coord(1).y);
-    glVertex3f(1.5, 2 + dy, 0);
+    Matrix<float> mat;
+    mat.Translate(0, 0, z - 0.5);  // TODO:
+    shader->SetModelMatrix(mat);
+    shader->SetSpecularMaterial({0.9, 0.9, 0.7});
 
-    glTexCoord2f(frame->coord(2).x, frame->coord(2).y);
-    glVertex3f(1.5, 0 + dy, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    shader->Enable();
+    shader->SetPositionAttribute(4, 8, 0);
+    shader->SetNormalAttribute(4, 8, 3);
+    shader->SetUVAttribute(4, 8, 6);
+    glDrawArrays(GL_QUADS, avatar->def()->vbo_hint() + frame * 4, 4);
+    DLOG(INFO) << "frame: " << frame;
+    shader->Disable();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glTexCoord2f(frame->coord(3).x, frame->coord(3).y);
-    glVertex3f(0, 0 + dy, 0);
-
-    glEnd();
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 }

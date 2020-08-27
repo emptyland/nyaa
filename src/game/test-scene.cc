@@ -64,30 +64,39 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
 void TestScene::Render(double delta) {
     int command = 0;
     if (glfwGetKey(game()->window(), GLFW_KEY_W) == GLFW_PRESS) {
-        zone_->mutable_viewport()->mutable_center_coord()->y += 0.5;
+        player_->mutable_movement()->mutable_speed()->y = speed;
+        // zone_->mutable_viewport()->mutable_center_coord()->y += 0.5;
         command++;
     }
     if (glfwGetKey(game()->window(), GLFW_KEY_S) == GLFW_PRESS) {
-        if (zone_->mutable_viewport()->mutable_center_coord()->y > 0) {
-            zone_->mutable_viewport()->mutable_center_coord()->y -= 0.5;
-            command++;
-        }
+        player_->mutable_movement()->mutable_speed()->y = -speed;
+        command++;
+        // if (zone_->mutable_viewport()->mutable_center_coord()->y > 0) {
+        //     zone_->mutable_viewport()->mutable_center_coord()->y -= 0.5;
+        //     command++;
+        // }
     }
     if (glfwGetKey(game()->window(), GLFW_KEY_A) == GLFW_PRESS) {
-        if (zone_->mutable_viewport()->mutable_center_coord()->x > 0) {
-            zone_->mutable_viewport()->mutable_center_coord()->x -= 0.5;
-            command++;
-        }
+        player_->mutable_movement()->mutable_speed()->x = -speed;
+        command++;
+        // if (zone_->mutable_viewport()->mutable_center_coord()->x > 0) {
+        //     zone_->mutable_viewport()->mutable_center_coord()->x -= 0.5;
+        //     command++;
+        // }
     }
     if (glfwGetKey(game()->window(), GLFW_KEY_D) == GLFW_PRESS) {
-        zone_->mutable_viewport()->mutable_center_coord()->x += 0.5;
+        // zone_->mutable_viewport()->mutable_center_coord()->x += 0.5;
+        player_->mutable_movement()->mutable_speed()->x = speed;
         command++;
     }
+    if (glfwGetKey(game()->window(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (player_->movement().speed().z == 0) { player_->mutable_movement()->mutable_speed()->z = 10; }
+    }
 
-    // if (command == 0) {
-    //     player_->mutable_movement()->mutable_speed()->x = 0;
-    //     player_->mutable_movement()->mutable_speed()->y = 0;
-    // }
+    if (command == 0) {
+        player_->mutable_movement()->mutable_speed()->x = 0;
+        player_->mutable_movement()->mutable_speed()->y = 0;
+    }
 
     if (glfwGetKey(game()->window(), GLFW_KEY_UP) == GLFW_PRESS) {
         y_rolated_ -= 2;
@@ -98,18 +107,26 @@ void TestScene::Render(double delta) {
     } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
         z_rolated_ += 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_H) == GLFW_PRESS) {
-        if (ambient_light_ < 1) { ambient_light_ += 0.01; }
+        //if (ambient_light_ < 1) { ambient_light_ += 0.01; }
+        directional_light_.y -= 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_J) == GLFW_PRESS) {
-        if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        //if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        directional_light_.y += 0.1;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_K) == GLFW_PRESS) {
+        //if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        directional_light_.z -= 0.1;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_L) == GLFW_PRESS) {
+        //if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        directional_light_.z += 0.1;
     }
 
-    // if (zone_->center()) {
-    //     game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3,
-    //                                      game()->frame_delta_time() /*delta*/, false);
-    // }
+    if (zone_->center()) {
+        game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3,
+                                         game()->frame_delta_time() /*delta*/, false);
+    }
 
     if (!zone_->center() || command > 0) {
-        // zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
+        zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
         game()->zone_loader()->Update(zone_.get());
     }
 
@@ -145,13 +162,14 @@ void TestScene::Render(double delta) {
     shader->SetViewMatrix(view_mat);
     shader->SetProjectionMatrix(proj_mat);
     shader->SetModelMatrix(model_mat);
-    shader->SetDirectionalLight({.0, .0, 1.0});
+    shader->SetDirectionalLight(directional_light_);
     shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
     // const vec3 directionalLight = vec3(0, 1.0, 1.0);
     // const vec3 cameraPosition   = vec3(0, 0, 2);
 
     game()->zone_render()->RenderTerrain(zone_.get());
+    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
 
     shader->Unuse();
     {
