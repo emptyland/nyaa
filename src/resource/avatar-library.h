@@ -59,6 +59,8 @@ public:
 
     AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena) : arena_(arena), tex_lib_(tex_lib), avatars_(arena) {}
 
+    const base::ArenaUnorderedMap<ResourceId, Avatar *> &avatars() const { return avatars_; }
+
     bool Prepare(const std::string &file_name);
 
     Avatar *FindOrNull(ResourceId id) const {
@@ -67,8 +69,9 @@ public:
     }
 
 private:
-    base::Arena *const                            arena_;
-    TextureLibrary *const                         tex_lib_;
+    base::Arena *const    arena_;
+    TextureLibrary *const tex_lib_;
+
     base::ArenaUnorderedMap<ResourceId, Avatar *> avatars_;
 };  // class AvatarLibrary
 

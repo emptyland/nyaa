@@ -2,13 +2,31 @@
 #include "component/avatar-component.h"
 #include "component/movement-component.h"
 #include "resource/texture-library.h"
+#include "resource/avatar-library.h"
 #include "game/game.h"
 #include "game/constants.h"
 #include <GL/glew.h>
 #include <math.h>
 
 namespace nyaa {
+
 namespace sys {
+
+void AvatarRenderSystem::Prepare(res::AvatarLibrary *avatar_lib) {
+    DCHECK(!initialized_);
+    glGenBuffers(1, &vbo_);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+
+    std::vector<GLfloat> buf;
+    for (const auto &pair : avatar_lib->avatars()) {
+        res::Avatar *def = pair.second;
+
+        // TODO:
+    }
+    glBufferData(GL_ARRAY_BUFFER, buf.size() * sizeof(GLfloat), &buf[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    initialized_ = true;
+}
 
 void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarComponent *avatar, double delta) {
     const Vector2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
