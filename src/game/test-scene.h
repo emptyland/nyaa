@@ -16,6 +16,7 @@ class PlayerEntity;
 }  // namespace entity
 
 class Game;
+class EntitiesSet;
 
 class TestScene : public Scene {
 public:
@@ -33,6 +34,7 @@ private:
 
     std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<entity::PlayerEntity> player_;
+    std::unique_ptr<EntitiesSet> entities_set_;
 
     float y_rolated_ = 45;
     float z_rolated_ = 45;

@@ -46,7 +46,7 @@ set(GAME_SRC
     src/game/boot-scene.cc
     src/game/test-scene.cc
     src/game/properties.cc
-    src/game/entities-zone.cc
+    src/game/entities-set.cc
     src/game/matrix.cc
     src/entity/player-entity.cc
     src/component/cube-component.cc

@@ -3,7 +3,9 @@
 #define NYAA_COMPONENT_REGION_COMPONENT_H_
 
 #include "component/cube-component.h"
+#include "component/plant-component.h"
 #include "game/constants.h"
+#include <vector>
 
 namespace nyaa {
 
@@ -48,9 +50,20 @@ public:
         return &terrain_[i];
     }
 
+    DEF_VAL_PROP_RM(std::vector<PlantComponent>, plants);
+
+    size_t plants_size() const { return plants().size(); }
+
+    PlantComponent *plant(int i) {
+        DCHECK_GE(i, 0);
+        DCHECK_LT(i, plants_size());
+        return &plants_[i];
+    }
+
 private:
     Vector2i global_coord_ = {0, 0};
     Floor    terrain_[kTerrainMaxLevels];
+    std::vector<PlantComponent> plants_;
 };  // class RegionComponent
 
 class ViewportComponent {

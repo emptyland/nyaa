@@ -1,6 +1,7 @@
 #include "system/random-zone-system.h"
 #include "component/zone-component.h"
 #include "resource/cube-library.h"
+#include "resource/texture-library.h"
 #include "game/game.h"
 
 namespace nyaa {
@@ -17,6 +18,8 @@ void RandomZoneSystem::Update(com::ZoneComponent *zone) {
 }
 
 void RandomZoneSystem::Update(com::RegionComponent *region) {
+    res::TextureLibrary *tex_lib = Game::This()->texture_lib();
+
     // (1),  fill sky cube
     for (int i = 0; i < kTerrainMaxLevels; i++) { ::memset(region->floor(i), 0, sizeof(com::RegionComponent::Floor)); }
 
@@ -27,7 +30,7 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
             int seed = ::rand() & 0x7;
             switch (seed) {
                 case 0: surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_1); break;
-                //case 1: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
+                // case 1: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
                 case 2: surface->cubes[x][y].set_kind(res::Cube::CUBE_DIRT_2); break;
                 case 3: surface->cubes[x][y].set_kind(res::Cube::CUBE_GRASS_2); break;
                 default: surface->cubes[x][y].set_kind(res::Cube::CUBE_GRASS_1); break;
@@ -45,6 +48,13 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
                 // case 0: surface->cubes[x][y].set_kind(res::Cube::CUBE_STONE_1); break;
                 case 0: surface->cubes[x][y].set_kind(res::Cube::CUBE_GRASS_2); break;
                 case 1: surface->cubes[x][y].set_kind(res::Cube::CUBE_GRASS_1); break;
+                case 2: {
+                    size_t pos = region->plants_size();
+                    region->mutable_plants()->resize(pos + 1);
+                    com::PlantComponent *plant = region->plant(pos);
+                    plant->set_position({x + 0.5f, y + 0.5f, kTerrainSurfaceLevel + 0.0f});
+                    plant->set_tex(tex_lib->FindOrNull(ResourceId::Of((rand() & 0x1) ? 300000 : 300010)));
+                } break;
                 default: surface->cubes[x][y].set_kind(res::Cube::CUBE_AIR); break;
             }
             if (surface->cubes[x][y].kind() != res::Cube::CUBE_AIR) { surface->cubes[x][y].set_hardness(4); }

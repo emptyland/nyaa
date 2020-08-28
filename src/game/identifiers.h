@@ -41,6 +41,10 @@ private:
     ResourceId(uint64_t value) : Identifier<uint32_t>(value) {}
 };  // class ResourceId
 
+struct EntityHash : public std::unary_function<EntityId, size_t> {
+    inline size_t operator()(EntityId value) const { return value.value(); }
+};
+
 namespace base {
 
 template <>

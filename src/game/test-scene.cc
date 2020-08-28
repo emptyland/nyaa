@@ -1,10 +1,12 @@
 #include "game/test-scene.h"
 #include "game/game.h"
 #include "game/matrix.h"
+#include "game/entities-set.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/shader-library.h"
 #include "entity/player-entity.h"
+#include "entity/plant-entity.h"
 #include "component/zone-component.h"
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
@@ -24,13 +26,20 @@ TestScene::TestScene(Game *game) : Scene(game) {}
 TestScene::~TestScene() {}
 
 void TestScene::Reset() {
+    entities_set_.reset(new EntitiesSet);
+
     zone_.reset(new com::ZoneComponent());
-    // com::RegionComponent *region = new com::RegionComponent();
-    // region->set_global_coord({0, 0});
-    // zone_->set_region(1, 1, region);
-    // game()->random_zone()->Update(region);
+    com::RegionComponent *region = new com::RegionComponent();
+    region->set_global_coord({0, 0});
+    zone_->set_region(1, 1, region);
+    game()->random_zone()->Update(region);
+    for (int i = 0; i < region->plants_size(); i++) {
+        // entities_set_->UpdatePlant()
+        entity::PlantEntity *plant = game()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
+        entities_set_->UpdatePlant(plant);
+    }
+
     zone_->mutable_viewport()->set_center_coord({kRegionSize / 2, kRegionSize / 2});
-    // game()->random_zone()->Update(zone_.get());
 
     game()->entity_allocator()->Register<entity::PlayerEntity>();
     player_.reset(
@@ -107,16 +116,16 @@ void TestScene::Render(double delta) {
     } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
         z_rolated_ += 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_H) == GLFW_PRESS) {
-        //if (ambient_light_ < 1) { ambient_light_ += 0.01; }
+        // if (ambient_light_ < 1) { ambient_light_ += 0.01; }
         directional_light_.y -= 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_J) == GLFW_PRESS) {
-        //if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.y += 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_K) == GLFW_PRESS) {
-        //if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.z -= 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_L) == GLFW_PRESS) {
-        //if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.z += 0.1;
     }
 
@@ -129,6 +138,7 @@ void TestScene::Render(double delta) {
         zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
         game()->zone_loader()->Update(zone_.get());
     }
+    entities_set_->UpdatePlayer(player_.get());
 
     res::BlockShaderProgram *shader = game()->shader_lib()->block_program();
     shader->Use();
