@@ -10,6 +10,13 @@ class EntitiesGrid;
 
 namespace entity {
 
+template <class T>
+struct Class {
+    inline static constexpr intptr_t id() { return reinterpret_cast<intptr_t>(&clazz_stub); }
+
+    inline static const int clazz_stub = 0;
+};  // struct Class
+
 class Entity {
 public:
     Entity() : Entity(EntityId::Of(0), 0) {}
@@ -20,6 +27,16 @@ public:
     DEF_PTR_PROP_RW(Entity, next);
     DEF_PTR_PROP_RW(Entity, prev);
     DEF_PTR_PROP_RW(EntitiesGrid, grid);
+
+    template <class T>
+    bool Is() const {
+        return clazz() == Class<T>::id();
+    }
+
+    template <class T>
+    T *AsOrNull() {
+        return Is<T>() ? static_cast<T *>(this) : nullptr;
+    }
 
     virtual float ZOrder() const { return 0; }
 
@@ -35,14 +52,6 @@ private:
     intptr_t      clazz_;
     EntitiesGrid *grid_ = nullptr;
 };  // class Entity
-
-template <class T>
-struct Class {
-    inline static constexpr intptr_t id() {
-        return reinterpret_cast<intptr_t>(&clazz_stub);
-    }
-    inline static const int clazz_stub = 0;
-};  // struct Class
 
 }  // namespace entity
 

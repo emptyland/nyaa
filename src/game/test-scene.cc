@@ -179,7 +179,18 @@ void TestScene::Render(double delta) {
     // const vec3 cameraPosition   = vec3(0, 0, 2);
 
     game()->zone_render()->RenderTerrain(zone_.get());
-    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
+
+    for (int y = 0; y < zone_->viewport().bound().y; y++) {
+        for (int x = 0; x < zone_->viewport().bound().x; x++) {
+            for (entity::Entity *obj : *entities_set_->ViewGrid(zone_->viewport(), x, y)) {
+                if (obj->Is<entity::PlayerEntity>()) {
+                    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
+                }
+                // TODO:
+            }
+        }
+    }
+
 
     shader->Unuse();
     {
