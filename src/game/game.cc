@@ -13,6 +13,7 @@
 #include "resource/font-library.h"
 #include "resource/text-library.h"
 #include "resource/texture-library.h"
+#include "resource/sprite-library.h"
 #include "resource/avatar-library.h"
 #include "resource/cube-library.h"
 #include "resource/shader-library.h"
@@ -37,6 +38,7 @@ Game::Game()
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))
+    , sprite_lib_(new res::SpriteLibrary(texture_lib_.get(), &arena_))
     , avatar_lib_(new res::AvatarLibrary(texture_lib_.get(), &arena_))
     , cube_lib_(new res::CubeLibrary(texture_lib_.get(), &arena_))
     , shader_lib_(new res::ShaderLibrary(&arena_))

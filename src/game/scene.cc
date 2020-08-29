@@ -4,7 +4,7 @@
 
 namespace nyaa {
 
-Scene::Scene(Game *game) : game_(DCHECK_NOTNULL(game)), id_(game->NextEntityId()) {}
+Scene::Scene(Game *game) : id_(game->NextEntityId()), game_(DCHECK_NOTNULL(game)) {}
 
 /*virtual*/ Scene::~Scene() {}
 

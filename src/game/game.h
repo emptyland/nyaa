@@ -18,6 +18,7 @@ class TextureLibrary;
 class AvatarLibrary;
 class CubeLibrary;
 class ShaderLibrary;
+class SpriteLibrary;
 }  // namespace res
 
 namespace sys {
@@ -61,6 +62,7 @@ public:
     res::TextLibrary *   text_lib() const { return text_lib_.get(); }
     res::AvatarLibrary * avatar_lib() const { return avatar_lib_.get(); }
     res::TextureLibrary *texture_lib() const { return texture_lib_.get(); }
+    res::SpriteLibrary * sprite_lib() const { return sprite_lib_.get(); }
     res::CubeLibrary *   cube_lib() const { return cube_lib_.get(); }
     res::ShaderLibrary * shader_lib() const { return shader_lib_.get(); }
 
@@ -111,6 +113,7 @@ private:
     std::unique_ptr<res::FontLibrary>    font_lib_;
     std::unique_ptr<res::TextLibrary>    text_lib_;
     std::unique_ptr<res::TextureLibrary> texture_lib_;
+    std::unique_ptr<res::SpriteLibrary>  sprite_lib_;
     std::unique_ptr<res::AvatarLibrary>  avatar_lib_;
     std::unique_ptr<res::CubeLibrary>    cube_lib_;
     std::unique_ptr<res::ShaderLibrary>  shader_lib_;

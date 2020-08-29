@@ -52,7 +52,7 @@ private:
 };  // class AvatarDef
 
 Avatar::Avatar(ResourceId id, Vector2f size, float speed, int frames_count)
-    : id_(id), size_(size), speed_(speed), frames_count_(frames_count) {
+    : id_(id), frames_count_(frames_count), speed_(speed), size_(size)  {
     ::memset(key_frame_, 0, sizeof(key_frame_));
     ::memset(textures_, 0, sizeof(textures_));
 }
@@ -61,7 +61,7 @@ const char AvatarLibrary::kAvatarDir[]         = "";
 const char AvatarLibrary::kAvatarDefFileName[] = "avatar.txt";
 
 bool AvatarLibrary::Prepare(const std::string &file_name) {
-    FILE *fp = ::fopen(file_name.c_str(), "r");
+    FILE *fp = ::fopen(file_name.c_str(), "rb");
     if (!fp) {
         DLOG(ERROR) << "can not open texture definition file: " << file_name;
         return false;

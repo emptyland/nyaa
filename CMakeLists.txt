@@ -65,6 +65,7 @@ set(GAME_SRC
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc
+    src/resource/sprite-library.cc
     src/resource/cube-library.cc
     src/resource/avatar-library.cc
     src/resource/shader-library.cc

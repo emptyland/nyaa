@@ -1,0 +1,75 @@
+#include "resource/sprite-library.h"
+#include "resource/definition.h"
+#include "resource/texture-library.h"
+
+namespace nyaa {
+
+namespace res {
+
+class SpriteDef : public Definition<SpriteDef> {
+public:
+    SpriteDef() = default;
+
+    DEF_VAL_GETTER(ResourceId, id);
+    DEF_VAL_GETTER(int, frames_count);
+    DEF_VAL_GETTER(float, speed);
+    DEF_VAL_GETTER(Vector3f, light);
+
+    ResourceId frame(int i) const {
+        DCHECK_GE(i, 0);
+        DCHECK_LT(i, frames_count());
+        return frames_[i];
+    }
+
+    void Parse(const std::vector<std::string_view> items) {
+        ParseValue<DefValType::ID>(items[0], &id_);
+        // ParseValue<DefValType::VECTOR2I>(items[1], &size_);
+        ParseValue<DefValType::ARRAY_U32>(items[2], &frames_count_);
+        ParseValue<DefValType::F32>(items[3], &speed_);
+        // ParseValue<DefValType::ARRAY_U32>(items[4], &down_frames_size_);
+        ParseValue<DefValType::VECTOR3F>(items[5], &light_);
+    }
+
+private:
+    ResourceId       id_;
+    std::string_view name_;
+    int              frames_count_;
+    ResourceId       frames_[Sprite::kMaxFrames];
+    float            speed_;
+    std::string_view env_;
+    Vector3f         light_;
+};  // class SpriteDef
+
+const char SpriteLibrary::kSpriteDir[]         = "";
+const char SpriteLibrary::kSpriteDefFileName[] = "sprite.txt";
+
+bool SpriteLibrary::Prepare(const std::string &file_name) {
+    FILE *fp = ::fopen(file_name.c_str(), "rb");
+    if (!fp) {
+        DLOG(ERROR) << "can not open sprites definition file: " << file_name;
+        return false;
+    }
+
+    DefinitionReader rd(fp, true /*ownership*/);
+    SpriteDef        row;
+    while (row.Read(&rd) != EOF) {
+        if (sprites_.find(row.id()) != sprites_.end()) {
+            DLOG(ERROR) << "Duplicated sprite id: " << row.id().value();
+            return false;
+        }
+
+        Sprite *sprite = new (arena_) Sprite(row.id(), row.frames_count(), row.speed(), row.light());
+        for (int i = 0; i < row.frames_count(); i++) {
+            if (sprite->frames_[i] = tex_lib_->FindOrNull(row.frame(i)); !sprite->frames_[i]) {
+                DLOG(ERROR) << "Can not find texture by id: " << row.frame(i).value();
+                return false;
+            }
+        }
+        sprites_[row.id()] = sprite;
+    }
+    return false;
+}
+
+}  // namespace res
+
+}  // namespace nyaa

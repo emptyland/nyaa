@@ -77,8 +77,6 @@ void AvatarRenderSystem::Prepare(res::AvatarLibrary *avatar_lib) {
 }
 
 void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarComponent *avatar, double delta) {
-    const Vector2i fb_size{Game::This()->fb_w(), Game::This()->fb_h()};
-
     if (movement->is_horizontal_stop()) {
         // avatar->set_time(0);
         avatar->set_speed(0);

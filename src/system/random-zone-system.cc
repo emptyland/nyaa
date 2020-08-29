@@ -1,7 +1,7 @@
 #include "system/random-zone-system.h"
 #include "component/zone-component.h"
 #include "resource/cube-library.h"
-#include "resource/texture-library.h"
+#include "resource/sprite-library.h"
 #include "game/game.h"
 
 namespace nyaa {
@@ -18,7 +18,7 @@ void RandomZoneSystem::Update(com::ZoneComponent *zone) {
 }
 
 void RandomZoneSystem::Update(com::RegionComponent *region) {
-    res::TextureLibrary *tex_lib = Game::This()->texture_lib();
+    res::SpriteLibrary *sprite_lib = Game::This()->sprite_lib();
 
     // (1),  fill sky cube
     for (int i = 0; i < kTerrainMaxLevels; i++) { ::memset(region->floor(i), 0, sizeof(com::RegionComponent::Floor)); }
@@ -53,7 +53,7 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
                     region->mutable_plants()->resize(pos + 1);
                     com::PlantComponent *plant = region->plant(pos);
                     plant->set_position({x + 0.5f, y + 0.5f, kTerrainSurfaceLevel + 0.0f});
-                    plant->set_tex(tex_lib->FindOrNull(ResourceId::Of((rand() & 0x1) ? 300000 : 300010)));
+                    plant->set_sprite(sprite_lib->FindOrNull(ResourceId::Of((rand() & 0x1) ? 100000 : 100010)));
                 } break;
                 default: surface->cubes[x][y].set_kind(res::Cube::CUBE_AIR); break;
             }

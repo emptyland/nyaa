@@ -23,6 +23,7 @@ enum class DefValType {
     F64,
     ID,
     VECTOR2I,
+    VECTOR3F,
     BOUNDI,
     ARRAY_I32,
     ARRAY_U32,
@@ -146,12 +147,38 @@ int ParseVertex_Ni(std::string_view input, T *vec) {
     return 0;
 }
 
+template <class T, int Items = sizeof(T) / sizeof(float)>
+int ParseVertex_Nf(std::string_view input, T *vec) {
+    float       value[4] = {0};
+    int         i        = 0;
+    const char *start = input.data(), *p = start, *e = start + input.size();
+    while (p < e) {
+        if (*p == ',') {
+            if (i > Items - 1) { return -1; }
+            value[i++] = ::atof(std::string(start, p - start).c_str());
+            start      = p + 1;
+        }
+        p++;
+    }
+    if (i > Items - 1) { return -1; }
+    // if (int err = base::Slice::ParseF32(start, p - start, &value[i++]); err) { return err; }
+    value[i++] = ::atof(std::string(start, p - start).c_str());
+    ::memcpy(vec, value, sizeof(*vec));
+    return 0;
+}
+
 int ParseArray_i32(std::string_view input, int32_t *receive);
 
 template <>
 struct DefValParser<DefValType::VECTOR2I> {
     using Type = Vector2i;
     int Parse(std::string_view input, Vector2i *receive) { return ParseVertex_Ni(input, receive); }
+};
+
+template <>
+struct DefValParser<DefValType::VECTOR3F> {
+    using Type = Vector3f;
+    int Parse(std::string_view input, Vector3f *receive) { return ParseVertex_Nf(input, receive); }
 };
 
 template <>

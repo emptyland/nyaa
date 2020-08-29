@@ -49,7 +49,7 @@ private:
     int        frames_count_;
     float      speed_;
     Vector2f   size_;
-    int        vbo_hint_;
+    int        vbo_hint_ = 0;
     int        key_frame_[kMaxDir];
     Texture *  textures_[kMaxDir][kMaxFrames];
 };  // class Avatar
