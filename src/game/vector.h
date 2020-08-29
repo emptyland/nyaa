@@ -58,6 +58,16 @@ inline Vector4f Vec4(const Vector2f &xy, float z, float w) { return Vector4f{xy.
 inline Vector4f Vec4(const Vector3f &xyz, float w) { return Vector4f{xyz.x, xyz.y, xyz.z, w}; }
 inline Vector4f Vec4(const Vector4i &v4i) { return Vec4(v4i.x, v4i.y, v4i.z, v4i.w); }
 
+inline Vector2f operator-(const Vector2f &lhs, const Vector2f &rhs) { return Vec2(lhs.x - rhs.x, lhs.y - rhs.y); }
+inline Vector2f operator+(const Vector2f &lhs, const Vector2f &rhs) { return Vec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+
+inline Vector3f operator-(const Vector3f &lhs, const Vector3f &rhs) {
+    return Vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+}
+inline Vector3f operator+(const Vector3f &lhs, const Vector3f &rhs) {
+    return Vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+}
+
 }  // namespace nyaa
 
 #endif  // NYAA_GAME_VECTOR_H_

@@ -62,12 +62,10 @@ void SpriteRenderSystem::Prepare(res::SpriteLibrary *lib) {
 }
 
 void SpriteRenderSystem::RenderPlant(const Vector3f &view, com::PlantComponent *plant, double delta) {
-    float dx = plant->position().x - view.x;
-    float dy = plant->position().y - view.y;
-    float dz = plant->position().z - view.z;
+    Vector3f d = plant->position() - view;
 
     Matrix model;
-    model.Translate(dx, dy, dz);
+    model.Translate(d.x, d.y, d.z);
     Matrix mat;
     mat.Scale(2, 2, 2);
     model.Multiply(mat);
@@ -96,7 +94,7 @@ void SpriteRenderSystem::Render(res::Sprite *def, int frame_index, double delta)
     shader->SetNormalAttribute(4, 8, 3);
     shader->SetUVAttribute(4, 8, 6);
     glDrawArrays(GL_QUADS, def->vbo_hint() + frame_index * 4, 4);
-    //DLOG(INFO) << "frame: " << frame;
+    // DLOG(INFO) << "frame: " << frame;
     shader->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
