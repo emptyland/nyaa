@@ -17,6 +17,8 @@ public:
     DEF_VAL_PROP_RM(com::AvatarComponent, avatar);
     DEF_VAL_PROP_RM(com::MovementComponent, movement);
 
+    float ZOrder() const final { return -movement().coord().y; }
+
     DISALLOW_IMPLICIT_CONSTRUCTORS(PlayerEntity);
 private:
     com::AvatarComponent   avatar_;

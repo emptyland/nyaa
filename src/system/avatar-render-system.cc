@@ -26,13 +26,13 @@ const float AvatarRenderSystem::kVertices[] = {
     -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
 };
 
-void AvatarRenderSystem::Prepare(res::AvatarLibrary *avatar_lib) {
+void AvatarRenderSystem::Prepare(res::AvatarLibrary *lib) {
     DCHECK(!initialized_);
     glGenBuffers(1, &vbo_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 
     std::vector<GLfloat> buf;
-    for (const auto &pair : avatar_lib->avatars()) {
+    for (const auto &pair : lib->avatars()) {
         res::Avatar *def = pair.second;
         def->set_vbo_hint(static_cast<int>(buf.size() / 8));
 
@@ -123,7 +123,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     shader->SetNormalAttribute(4, 8, 3);
     shader->SetUVAttribute(4, 8, 6);
     glDrawArrays(GL_QUADS, avatar->def()->vbo_hint() + frame * 4, 4);
-    DLOG(INFO) << "frame: " << frame;
+    //DLOG(INFO) << "frame: " << frame;
     shader->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 

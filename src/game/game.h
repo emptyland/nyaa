@@ -29,6 +29,7 @@ class ZoneLoadingSystem;
 class ActorMovementSystem;
 class AvatarRenderSystem;
 class GeometryTransformSystem;
+class SpriteRenderSystem;
 }  // namespace sys
 
 class Scene;
@@ -54,6 +55,7 @@ public:
     sys::ZoneRenderSystem *       zone_render() const { return zone_render_.get(); }
     sys::ZoneLoadingSystem *      zone_loader() const { return zone_loader_.get(); }
     sys::AvatarRenderSystem *     avatar_render() const { return avatar_render_.get(); }
+    sys::SpriteRenderSystem *     sprite_render() const { return sprite_render_.get(); }
     sys::RandomZoneSystem *       random_zone() const { return random_zone_.get(); }
     sys::ActorMovementSystem *    actor_movement() const { return actor_movement_.get(); }
     sys::GeometryTransformSystem *transform() const { return transform_.get(); }
@@ -106,6 +108,7 @@ private:
     std::unique_ptr<sys::ZoneLoadingSystem>       zone_loader_;
     std::unique_ptr<sys::RandomZoneSystem>        random_zone_;
     std::unique_ptr<sys::ActorMovementSystem>     actor_movement_;
+    std::unique_ptr<sys::SpriteRenderSystem>      sprite_render_;
     std::unique_ptr<sys::AvatarRenderSystem>      avatar_render_;
     std::unique_ptr<sys::GeometryTransformSystem> transform_;
 

@@ -14,6 +14,9 @@ public:
     DEF_VAL_GETTER(int, frames_count);
     DEF_VAL_GETTER(float, speed);
     DEF_VAL_GETTER(Vector3f, light);
+    DEF_VAL_GETTER(Vector3f, ambient_meterial);
+    DEF_VAL_GETTER(Vector3f, diffuse_meterial);
+    DEF_VAL_GETTER(Vector3f, specular_meterial);
 
     ResourceId frame(int i) const {
         DCHECK_GE(i, 0);
@@ -28,6 +31,9 @@ public:
         ParseValue<DefValType::F32>(items[3], &speed_);
         // ParseValue<DefValType::ARRAY_U32>(items[4], &down_frames_size_);
         ParseValue<DefValType::VECTOR3F>(items[5], &light_);
+        ParseValue<DefValType::VECTOR3F>(items[6], &ambient_meterial_);
+        ParseValue<DefValType::VECTOR3F>(items[7], &diffuse_meterial_);
+        ParseValue<DefValType::VECTOR3F>(items[8], &specular_meterial_);
     }
 
 private:
@@ -38,6 +44,9 @@ private:
     float            speed_;
     std::string_view env_;
     Vector3f         light_;
+    Vector3f         ambient_meterial_;
+    Vector3f         diffuse_meterial_;
+    Vector3f         specular_meterial_;
 };  // class SpriteDef
 
 const char SpriteLibrary::kSpriteDir[]         = "";
@@ -58,7 +67,8 @@ bool SpriteLibrary::Prepare(const std::string &file_name) {
             return false;
         }
 
-        Sprite *sprite = new (arena_) Sprite(row.id(), row.frames_count(), row.speed(), row.light());
+        Sprite *sprite = new (arena_) Sprite(row.id(), row.frames_count(), row.speed(), row.light(),
+                                             row.ambient_meterial(), row.diffuse_meterial(), row.specular_meterial());
         for (int i = 0; i < row.frames_count(); i++) {
             if (sprite->frames_[i] = tex_lib_->FindOrNull(row.frame(i)); !sprite->frames_[i]) {
                 DLOG(ERROR) << "Can not find texture by id: " << row.frame(i).value();
@@ -67,7 +77,7 @@ bool SpriteLibrary::Prepare(const std::string &file_name) {
         }
         sprites_[row.id()] = sprite;
     }
-    return false;
+    return true;
 }
 
 }  // namespace res

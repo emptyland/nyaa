@@ -17,6 +17,7 @@
 #include "system/zone-loading-system.h"
 #include "system/actor-movement-system.h"
 #include "system/avatar-render-system.h"
+#include "system/sprite-render-system.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -175,22 +176,24 @@ void TestScene::Render(double delta) {
     shader->SetDirectionalLight(directional_light_);
     shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
-    // const vec3 directionalLight = vec3(0, 1.0, 1.0);
-    // const vec3 cameraPosition   = vec3(0, 0, 2);
-
     game()->zone_render()->RenderTerrain(zone_.get());
 
-    for (int y = 0; y < zone_->viewport().bound().y; y++) {
-        for (int x = 0; x < zone_->viewport().bound().x; x++) {
+    //for (int y = 0; y < zone_->viewport().bound().y; y++) {
+    for (int y = zone_->viewport().bound().y - 1; y >= 0; y--) {
+        //for (int x = 0; x < zone_->viewport().bound().x; x++) {
+        for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
             for (entity::Entity *obj : *entities_set_->ViewGrid(zone_->viewport(), x, y)) {
                 if (obj->Is<entity::PlayerEntity>()) {
                     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
                 }
-                // TODO:
+                if (obj->Is<entity::PlantEntity>()) {
+                    Vector3f view{zone_->viewport().center_coord().x, zone_->viewport().center_coord().y,
+                                  kTerrainSurfaceLevel + 0.5};
+                    game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
+                }
             }
         }
     }
-
 
     shader->Unuse();
     {

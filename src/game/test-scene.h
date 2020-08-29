@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_TEST_SCENE_H_
-#define NYAA_TEST_SCENE_H_
+#ifndef NYAA_GAME_TEST_SCENE_H_
+#define NYAA_GAME_TEST_SCENE_H_
 
 #include "game/scene.h"
 
@@ -38,10 +38,10 @@ private:
 
     float y_rolated_ = 45;
     float z_rolated_ = 45;
-    float ambient_light_ = 1.0;
+    float ambient_light_ = 0.8;
     Vector3f directional_light_ = {0, 0, 1};
 };  // class TestScene
 
 }  // namespace nyaa
 
-#endif  // NYAA_TEST_SCENE_H_
+#endif  // NYAA_GAME_TEST_SCENE_H_

@@ -9,6 +9,7 @@
 #include "system/zone-loading-system.h"
 #include "system/actor-movement-system.h"
 #include "system/avatar-render-system.h"
+#include "system/sprite-render-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -33,6 +34,7 @@ Game::Game()
     , zone_loader_(new sys::ZoneLoadingSystem())
     , random_zone_(new sys::RandomZoneSystem())
     , actor_movement_(new sys::ActorMovementSystem())
+    , sprite_render_(new sys::SpriteRenderSystem())
     , avatar_render_(new sys::AvatarRenderSystem())
     , transform_(new sys::GeometryTransformSystem())
     , font_lib_(new res::FontLibrary(&arena_))
@@ -89,7 +91,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwSetCursorPosCallback(window_, OnMouseInput);
     // glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
     glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
+    GLenum err       = glewInit();
     if (err != GLEW_OK) {
         DLOG(ERROR) << "glew init fail! detail :\n  " << glewGetErrorString(err);
         return false;
@@ -111,6 +113,9 @@ bool Game::Prepare(const std::string &properties_file_name) {
     if (!texture_lib_->Prepare(properties()->assets_dir() + "/" + res::TextureLibrary::kTextureDefFileName)) {
         return false;
     }
+    if (!sprite_lib_->Prepare(properties()->assets_dir() + "/" + res::SpriteLibrary::kSpriteDefFileName)) {
+        return false;
+    }
     if (!avatar_lib_->Prepare(properties()->assets_dir() + "/" + res::AvatarLibrary::kAvatarDefFileName)) {
         return false;
     }
@@ -127,8 +132,8 @@ bool Game::Prepare(const std::string &properties_file_name) {
     // Initial tiles texture id
     res::Texture *tex = DCHECK_NOTNULL(texture_lib_->FindOrNull(ResourceId::Of(200000)));
     zone_render()->set_tile_tex_id(tex->tex_id());
-    //zone_render()->Prepare();
-
+    // zone_render()->Prepare();
+    sprite_render()->Prepare(sprite_lib());
     avatar_render()->Prepare(avatar_lib());
 
     scene_ = boot_scene_.get();
@@ -195,7 +200,7 @@ Game::IdGenerator::IdGenerator() : bucket_id_((::rand() & 0xffff0000) >> 16) {}
 
 uint64_t Game::IdGenerator::New() {
     sequence_number_++;
-    timeval  time_val;
+    timeval time_val;
     ::gettimeofday(&time_val, nullptr);
     uint64_t mills = time_val.tv_sec * 1000 + time_val.tv_usec / 1000;
     return (static_cast<uint64_t>(bucket_id_ & 0x3ff) << 54) | ((mills & 0x7ffffffffff) << 12) |

@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 #ifndef NYAA_COMPONENT_SPRITE_COMPONENT_H_
 #define NYAA_COMPONENT_SPRITE_COMPONENT_H_
 

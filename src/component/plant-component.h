@@ -21,6 +21,7 @@ public:
     DEF_PTR_PROP_RW(res::Sprite, sprite);
 
     int IndexFrame(double delta) {
+        if (sprite()->frames_count() == 1) { return 0; }
         ts_ += delta * sprite()->speed();
         if (ts_ >= sprite()->frames_count() + 1) { ts_ = 0; }
         return static_cast<int>(ts_) % sprite()->frames_count();
@@ -33,8 +34,8 @@ public:
 
 private:
     Vector3f     position_ = {0, 0, 0};
-    double       ts_ = 0;
-    res::Sprite *sprite_ = nullptr;
+    double       ts_       = 0;
+    res::Sprite *sprite_   = nullptr;
 };  // class PlantComponent
 
 }  // namespace com

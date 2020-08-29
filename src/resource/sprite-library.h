@@ -17,16 +17,13 @@ class Sprite : public base::ArenaObject {
 public:
     static constexpr int kMaxFrames = 8;
 
-    Sprite(ResourceId id, int frames_count, float speed, Vector3f light)
-        : id_(id), frames_count_(frames_count), speed_(speed), light_(light) {
-        int i = kMaxFrames;
-        while (i--) { frames_[i] = nullptr; }
-    }
-
     DEF_VAL_GETTER(ResourceId, id);
     DEF_VAL_GETTER(int, frames_count);
     DEF_VAL_GETTER(float, speed);
     DEF_VAL_GETTER(Vector3f, light);
+    DEF_VAL_GETTER(Vector3f, ambient_meterial);
+    DEF_VAL_GETTER(Vector3f, diffuse_meterial);
+    DEF_VAL_GETTER(Vector3f, specular_meterial);
 
     DEF_VAL_PROP_RW(int, vbo_hint);
 
@@ -42,14 +39,31 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(Sprite);
 
 private:
+    Sprite(ResourceId id, int frames_count, float speed, Vector3f light, Vector3f ambient_meterial,
+           Vector3f diffuse_meterial, Vector3f specular_meterial)
+        : id_(id)
+        , frames_count_(frames_count)
+        , speed_(speed)
+        , light_(light)
+        , ambient_meterial_(ambient_meterial)
+        , diffuse_meterial_(diffuse_meterial)
+        , specular_meterial_(specular_meterial) {
+        int i = kMaxFrames;
+        while (i--) { frames_[i] = nullptr; }
+    }
+
     const ResourceId id_;
     const int        frames_count_;
     const float      speed_;
     const Vector3f   light_;
-    int              vbo_hint_ = 0;
-    Texture *        frames_[kMaxFrames];
-};  // class Sprite
+    // material(ambient/diffuse/specular)
+    const Vector3f ambient_meterial_;
+    const Vector3f diffuse_meterial_;
+    const Vector3f specular_meterial_;
 
+    int      vbo_hint_ = 0;
+    Texture *frames_[kMaxFrames];
+};  // class Sprite
 
 class SpriteLibrary final {
 public:
@@ -66,6 +80,7 @@ public:
         auto iter = sprites_.find(id);
         return iter == sprites_.end() ? nullptr : iter->second;
     }
+
 private:
     base::Arena *const    arena_;
     TextureLibrary *const tex_lib_;

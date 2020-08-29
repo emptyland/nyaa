@@ -12,10 +12,11 @@ namespace entity {
 class PlantEntity : public Entity {
 public:
     PlantEntity(com::PlantComponent *plant) : Entity(EntityId::Of(0), Class<PlantEntity>::id()), plant_(plant) {}
+    ~PlantEntity() final = default;
 
     DEF_PTR_GETTER(com::PlantComponent, plant);
 
-    float ZOrder() const final { return plant()->position().y; }
+    float ZOrder() const final { return -plant()->position().y; }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(PlantEntity);
 
