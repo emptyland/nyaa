@@ -1,7 +1,7 @@
-#  ID  # Name                    # Avatar | Yi    | Function
+#  ID  # Name                    # Avatar | Difficulty | Yi    | Camp | AI
 ------------------------------------------------------------------------------------------------------------------------
-100000 | ACTOR_JACK_LI           | 100000 | 10000 | None
-100010 | ACTOR_NIKO_CHEN         | 100010 | 100   | None
-100020 | ACTOR_STEVE_WANG        | 100020 | 10000 | None
-100030 | ACTOR_TOMMY_ZHANG       | 100030 | 10000 | None
-100040 | ACTOR_TIMMY_ZHANG       | 100040 | 10000 | None
+100000 | ACTOR_JACK_LI           | 100000 | 1          | 10000 | -1   | NONE
+100010 | ACTOR_NIKO_CHEN         | 100010 | 1          | 100   | -1   | STUPID
+100020 | ACTOR_STEVE_WANG        | 100020 | 1          | 10000 | -1   | NONE
+100030 | ACTOR_TOMMY_ZHANG       | 100030 | 1          | 10000 | -1   | NONE
+100040 | ACTOR_TIMMY_ZHANG       | 100040 | 1          | 10000 | -1   | NONE

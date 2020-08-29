@@ -70,7 +70,9 @@ set(GAME_SRC
     src/resource/cube-library.cc
     src/resource/avatar-library.cc
     src/resource/shader-library.cc
+    src/resource/actor-library.cc
     src/resource/definition.cc
+    src/resource/ai-def.cc
     src/base/arena-utils.cc
     src/base/arenas.cc
     src/base/hash.cc
