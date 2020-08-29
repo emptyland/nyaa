@@ -2,6 +2,7 @@
 #ifndef NYAA_SYSTEM_SPRITE_RENDER_SYSTEM_H_
 #define NYAA_SYSTEM_SPRITE_RENDER_SYSTEM_H_
 
+#include "game/vector.h"
 #include "base/base.h"
 
 namespace nyaa {

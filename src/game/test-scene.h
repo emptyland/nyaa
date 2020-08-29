@@ -2,6 +2,7 @@
 #ifndef NYAA_GAME_TEST_SCENE_H_
 #define NYAA_GAME_TEST_SCENE_H_
 
+#include "game/vector.h"
 #include "game/scene.h"
 
 namespace nyaa {

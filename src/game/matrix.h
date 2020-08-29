@@ -2,6 +2,7 @@
 #ifndef NYAA_GAME_MATRIX_H_
 #define NYAA_GAME_MATRIX_H_
 
+#include "game/vector.h"
 #include "base/base.h"
 #include "glog/logging.h"
 #include <math.h>

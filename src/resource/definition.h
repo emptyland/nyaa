@@ -3,6 +3,7 @@
 #define NYAA_RESOURCE_DEFINITION_H_
 
 #include "game/identifiers.h"
+#include "game/vector.h"
 #include "base/slice.h"
 #include "base/base.h"
 #include <memory>

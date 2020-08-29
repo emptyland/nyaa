@@ -3,6 +3,7 @@
 #define NYAA_RESOURCE_AVATAR_LIBRARY_H_
 
 #include "game/identifiers.h"
+#include "game/vector.h"
 #include "base/arena-utils.h"
 #include <string>
 

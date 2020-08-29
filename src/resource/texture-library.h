@@ -3,6 +3,7 @@
 #define NYAA_RESOURCE_TEXTURE_LIBRARY_H_
 
 #include "game/identifiers.h"
+#include "game/vector.h"
 #include "base/arena-utils.h"
 #include "base/base.h"
 #include "glog/logging.h"

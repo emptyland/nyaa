@@ -2,6 +2,7 @@
 #ifndef NYAA_COMPONENT_MOVEMENT_COMPONENT_H_
 #define NYAA_COMPONENT_MOVEMENT_COMPONENT_H_
 
+#include "game/vector.h"
 #include "base/base.h"
 
 namespace nyaa {

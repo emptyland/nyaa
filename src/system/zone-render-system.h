@@ -3,6 +3,7 @@
 #define NYAA_ZONE_RENDER_SYSTEM_H_
 
 #include "game/constants.h"
+#include "game/vector.h"
 #include "base/base.h"
 #include <vector>
 

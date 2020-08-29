@@ -1,7 +1,4 @@
 #include "game/test-scene.h"
-#include "game/game.h"
-#include "game/matrix.h"
-#include "game/entities-set.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/shader-library.h"
@@ -18,6 +15,9 @@
 #include "system/actor-movement-system.h"
 #include "system/avatar-render-system.h"
 #include "system/sprite-render-system.h"
+#include "game/game.h"
+#include "game/matrix.h"
+#include "game/entities-set.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -178,17 +178,16 @@ void TestScene::Render(double delta) {
 
     game()->zone_render()->RenderTerrain(zone_.get());
 
-    //for (int y = 0; y < zone_->viewport().bound().y; y++) {
+    // for (int y = 0; y < zone_->viewport().bound().y; y++) {
     for (int y = zone_->viewport().bound().y - 1; y >= 0; y--) {
-        //for (int x = 0; x < zone_->viewport().bound().x; x++) {
+        // for (int x = 0; x < zone_->viewport().bound().x; x++) {
         for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
             for (entity::Entity *obj : *entities_set_->ViewGrid(zone_->viewport(), x, y)) {
                 if (obj->Is<entity::PlayerEntity>()) {
                     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
                 }
                 if (obj->Is<entity::PlantEntity>()) {
-                    Vector3f view{zone_->viewport().center_coord().x, zone_->viewport().center_coord().y,
-                                  kTerrainSurfaceLevel + 0.5};
+                    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
                 }
             }
