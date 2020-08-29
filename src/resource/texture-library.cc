@@ -32,8 +32,8 @@ private:
     int         index_;
 };  // class TextureDef
 
-const char TextureLibrary::kTextureDir[]         = "textures";
-const char TextureLibrary::kTextureDefFileName[] = "textures/def.txt";
+const char TextureLibrary::kTextureDir[]         = "texture";
+const char TextureLibrary::kTextureDefFileName[] = "texture/def.txt";
 
 TextureLibrary::~TextureLibrary() {
     // TODO:

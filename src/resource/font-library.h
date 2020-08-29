@@ -73,7 +73,7 @@ public:
 
 private:
     FontFace(FT_FaceRec_ *face, int pixel_size, base::Arena *arena)
-        : face_(face), pixel_size_(pixel_size), arena_(arena) {
+        : face_(face), arena_(arena), pixel_size_(pixel_size) {
         chars_dummy_.next_ = &chars_dummy_;
         chars_dummy_.prev_ = &chars_dummy_;
     }

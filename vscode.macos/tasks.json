@@ -3,18 +3,38 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "C/C++: clang++ build active file",
+            "label": "C/C++: build project files",
             "command": "make",
             "args": [
                 "-j",
-                "2"
+                "3"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
             },
             "problemMatcher": [
-                "$gcc"
+                "$clang"
             ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        }, {
+            "type": "shell",
+            "label": "C/C++: clean project object files",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",

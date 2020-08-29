@@ -1,11 +1,15 @@
+# cmake -DCMAKE_BUILD_TYPE=Debug ..
 cmake_minimum_required(VERSION 2.8.12)
 project(Nyaa CXX C)
 enable_language(CXX)
 enable_language(C)
 enable_language(ASM)
 
-# set(CMAKE_CXX_FLAGS "-std=c++17 -O2 -DNDEBUG -D_NDEBUG")
-set(CMAKE_CXX_FLAGS "-std=c++17 -O0 -g -DDEBUG -D_DEBUG -Wno-deprecated-declarations")
+message(STATUS "Operation system is ${CMAKE_SYSTEM}")
+
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wno-deprecated-declarations")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -D_NDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -DDEBUG -D_DEBUG")
 
 # Test requried libraries
 find_library(GLOG_LIB glog)
@@ -79,10 +83,15 @@ set(GAME_SRC
     third_party/lodepng/lodepng_util.cpp
 )
 
+if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    include_directories(
+        /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
+        /usr/local/include/freetype2
+        /usr/local/include
+    )
+endif()
+
 include_directories(
-    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
-    /usr/local/include/freetype2
-    /usr/local/include
     third_party/lodepng
     src
 )

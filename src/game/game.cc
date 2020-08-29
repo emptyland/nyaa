@@ -28,12 +28,12 @@ base::LazyInstance<Game> ThisGame;
 Game::Game()
     : boot_scene_(new BootScene(this))
     , entity_allocator_(new sys::EntityAllocationSystem())
-    , transform_(new sys::GeometryTransformSystem())
     , zone_render_(new sys::ZoneRenderSystem())
     , zone_loader_(new sys::ZoneLoadingSystem())
-    , avatar_render_(new sys::AvatarRenderSystem())
     , random_zone_(new sys::RandomZoneSystem())
     , actor_movement_(new sys::ActorMovementSystem())
+    , avatar_render_(new sys::AvatarRenderSystem())
+    , transform_(new sys::GeometryTransformSystem())
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))
@@ -192,7 +192,7 @@ void Game::DelayDeleteScene(Scene *scene) {
 Game::IdGenerator::IdGenerator() : bucket_id_((::rand() & 0xffff0000) >> 16) {}
 
 uint64_t Game::IdGenerator::New() {
-    uint16_t seq = sequence_number_++;
+    sequence_number_++;
     timeval  time_val;
     ::gettimeofday(&time_val, nullptr);
     uint64_t mills = time_val.tv_sec * 1000 + time_val.tv_usec / 1000;

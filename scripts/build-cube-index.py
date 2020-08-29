@@ -6,7 +6,7 @@ print('''#pragma once
 
 #define DEFINE_CUBE_KINDS(V) \\''')
 
-f = open('assets/textures/cube.txt', 'r')
+f = open('assets/cube.txt', 'r')
 for line in f.readlines():
     if line[0] == '#' or line[0] == '-':
         continue

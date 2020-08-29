@@ -36,8 +36,8 @@ private:
     // TODO:
 };  // class CubeDef
 
-const char CubeLibrary::kCubeDir[]         = "textures";
-const char CubeLibrary::kCubeDefFileName[] = "textures/cube.txt";
+const char CubeLibrary::kCubeDir[]         = "";
+const char CubeLibrary::kCubeDefFileName[] = "cube.txt";
 
 CubeLibrary::CubeLibrary(TextureLibrary *tex_lib, base::Arena *arena)
     : arena_(arena), tex_lib_(tex_lib), id_to_cubes_(arena) {

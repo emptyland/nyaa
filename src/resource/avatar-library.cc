@@ -57,8 +57,8 @@ Avatar::Avatar(ResourceId id, Vector2f size, float speed, int frames_count)
     ::memset(textures_, 0, sizeof(textures_));
 }
 
-const char AvatarLibrary::kAvatarDir[]         = "textures";
-const char AvatarLibrary::kAvatarDefFileName[] = "textures/avatar.txt";
+const char AvatarLibrary::kAvatarDir[]         = "";
+const char AvatarLibrary::kAvatarDefFileName[] = "avatar.txt";
 
 bool AvatarLibrary::Prepare(const std::string &file_name) {
     FILE *fp = ::fopen(file_name.c_str(), "r");

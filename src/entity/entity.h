@@ -21,6 +21,7 @@ class Entity {
 public:
     Entity() : Entity(EntityId::Of(0), 0) {}
     Entity(EntityId id, intptr_t clazz) : next_(this), prev_(this), id_(id), clazz_(clazz) {}
+    virtual ~Entity() = default;
 
     DEF_VAL_GETTER(intptr_t, clazz);
     DEF_VAL_PROP_RW(EntityId, id);
