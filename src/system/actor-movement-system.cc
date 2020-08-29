@@ -14,7 +14,7 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
     DCHECK_GE(movement->coord().z, 0);
     DCHECK_LT(movement->coord().z, kTerrainMaxLevels);
 
-    com::CubeComponent *cube = zone->Cube(movement->round_down_coord_x() + 1, movement->round_down_coord_y() + 1,
+    com::CubeComponent *cube = zone->Cube(movement->round_down_coord_x(), movement->round_down_coord_y(),
                                           movement->round_down_coord_z() + 1);
 
     if (cube->kind() == res::Cube::CUBE_AIR) {
@@ -30,8 +30,8 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, com::ZoneComp
     if (next.z < 0) { next.z = 0; }
     if (next.z >= kTerrainMaxLevels - 1) { next.z = kTerrainMaxLevels - 2; }
 
-    int i = next.x + 0.75;
-    int j = next.y + 1;
+    int i = next.x + 1.0;
+    int j = next.y + 0.5;
     cube = zone->Cube(i, j, ceil(next.z) + 1);
     // DLOG(INFO) << "next: (" << next.x << ", " << next.y << ", " << next.z << ")";
     // DLOG(INFO) << "cube: " << cube->kind() << ":" << cube->hardness();

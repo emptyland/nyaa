@@ -32,7 +32,7 @@ void AvatarRenderSystem::Prepare(res::AvatarLibrary *lib) {
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 
     std::vector<GLfloat> buf;
-    for (const auto &pair : lib->avatars()) {
+    for (const auto &pair : lib->resource()) {
         res::Avatar *def = pair.second;
         def->set_vbo_hint(static_cast<int>(buf.size() / 8));
 
@@ -81,7 +81,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
         // avatar->set_time(0);
         avatar->set_speed(0);
     } else {
-        avatar->set_speed(0.9);  // TODO
+        avatar->set_speed(movement->NormalHorizontalSpeed() * 1.2);  // TODO
 
         // [-π, π]
         // -π/2: North (Up)
@@ -100,8 +100,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
             avatar->set_dir(res::Avatar::kLeft);
         }
     }
-    avatar->AddTime(delta);
-    int frame = avatar->FrameIndex();
+    int frame = avatar->FrameIndex(delta);
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);

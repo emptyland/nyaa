@@ -1,5 +1,4 @@
 #include "component/movement-component.h"
-#include <math.h>
 
 namespace nyaa {
 

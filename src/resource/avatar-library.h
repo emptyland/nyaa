@@ -2,9 +2,8 @@
 #ifndef NYAA_RESOURCE_AVATAR_LIBRARY_H_
 #define NYAA_RESOURCE_AVATAR_LIBRARY_H_
 
-#include "game/identifiers.h"
 #include "game/vector.h"
-#include "base/arena-utils.h"
+#include "resource/resource-library.h"
 #include <string>
 
 namespace nyaa {
@@ -55,27 +54,18 @@ private:
     Texture *  textures_[kMaxDir][kMaxFrames];
 };  // class Avatar
 
-class AvatarLibrary final {
+class AvatarLibrary final : public ResourceLibrary<Avatar, AvatarLibrary> {
 public:
     static const char kAvatarDir[];
     static const char kAvatarDefFileName[];
 
-    AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena) : arena_(arena), tex_lib_(tex_lib), avatars_(arena) {}
+    AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena);
 
-    const base::ArenaUnorderedMap<ResourceId, Avatar *> &avatars() const { return avatars_; }
+    bool Load(DefinitionReader *rd);
 
-    bool Prepare(const std::string &file_name);
-
-    Avatar *FindOrNull(ResourceId id) const {
-        auto iter = avatars_.find(id);
-        return iter == avatars_.end() ? nullptr : iter->second;
-    }
-
+    DISALLOW_IMPLICIT_CONSTRUCTORS(AvatarLibrary);
 private:
-    base::Arena *const    arena_;
-    TextureLibrary *const tex_lib_;
-
-    base::ArenaUnorderedMap<ResourceId, Avatar *> avatars_;
+    const TextureLibrary *const tex_lib_;
 };  // class AvatarLibrary
 
 }  // namespace res

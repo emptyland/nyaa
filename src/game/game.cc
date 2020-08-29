@@ -18,6 +18,7 @@
 #include "resource/avatar-library.h"
 #include "resource/cube-library.h"
 #include "resource/shader-library.h"
+#include "resource/actor-library.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -44,6 +45,7 @@ Game::Game()
     , avatar_lib_(new res::AvatarLibrary(texture_lib_.get(), &arena_))
     , cube_lib_(new res::CubeLibrary(texture_lib_.get(), &arena_))
     , shader_lib_(new res::ShaderLibrary(&arena_))
+    , actor_lib_(new res::ActorLibrary(avatar_lib_.get(), text_lib_.get(), &arena_))
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize

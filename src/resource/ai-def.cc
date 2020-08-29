@@ -30,8 +30,7 @@ struct AINameInitializer {
 /*static*/ AI::Kind AI::OfName(std::string_view name) {
     static base::LazyInstance<AINameTable, AINameInitializer> name_table;
     auto iter = name_table->find(name);
-    DCHECK(iter != name_table->end());
-    return iter->second;
+    return iter == name_table->end() ? MAX_AI_KIND : iter->second;
 }
 
 /*static*/ const char *AI::Name(Kind kind) {

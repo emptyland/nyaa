@@ -53,7 +53,7 @@ void TestScene::Reset() {
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
-static constexpr float speed = 10;
+static constexpr float speed = 5;
 
 void TestScene::OnKeyInput(int key, int code, int action, int mods) {
 

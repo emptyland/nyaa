@@ -52,7 +52,21 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
                     size_t pos = region->plants_size();
                     region->mutable_plants()->resize(pos + 1);
                     com::PlantComponent *plant = region->plant(pos);
-                    plant->set_position({x + 0.5f, y + 0.5f, kTerrainSurfaceLevel + 0.0f});
+                    float adjust = static_cast<float>(rand() & 0xff) / 1024;
+                    float xx = x + 0.5f, yy = y + adjust;
+                    if (xx >= kRegionSize) {
+                        xx = kRegionSize - 1;
+                    }
+                    if (xx < 0) {
+                        xx = 0;
+                    }
+                    if (yy >= kRegionSize) {
+                        yy = kRegionSize - 1;
+                    }
+                    if (yy < 0) {
+                        yy = 0;
+                    }
+                    plant->set_position({xx, yy, kTerrainSurfaceLevel + 0.0f});
                     plant->set_sprite(sprite_lib->FindOrNull(ResourceId::Of((rand() & 0x1) ? 100000 : 100010)));
                     //DLOG(INFO) << plant->sprite();
                 } break;

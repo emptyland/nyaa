@@ -39,24 +39,15 @@ private:
 const char CubeLibrary::kCubeDir[]         = "";
 const char CubeLibrary::kCubeDefFileName[] = "cube.txt";
 
-CubeLibrary::CubeLibrary(TextureLibrary *tex_lib, base::Arena *arena)
-    : arena_(arena), tex_lib_(tex_lib), id_to_cubes_(arena) {
+CubeLibrary::CubeLibrary(TextureLibrary *tex_lib, base::Arena *arena) : ResourceLibrary(arena), tex_lib_(tex_lib) {
     ::memset(cubes_, 0, sizeof(cubes_));
 }
 
-bool CubeLibrary::Prepare(const std::string &file_name) {
-    FILE *fp = ::fopen(file_name.c_str(), "r");
-    if (!fp) {
-        DLOG(ERROR) << "can not open cube definition file: " << file_name;
-        return false;
-    }
-
+bool CubeLibrary::Load(DefinitionReader *rd) {
     int     kind = 0;
     CubeDef row;
-
-    DefinitionReader rd(fp, true /*ownership*/);
-    while (row.Read(&rd) != EOF) {
-        if (id_to_cubes_.find(row.id()) != id_to_cubes_.end()) {
+    while (row.Read(rd) != EOF) {
+        if (FindOrNull(row.id())) {
             DLOG(ERROR) << "Duplicated cube id: " << row.id().value();
             return false;
         }
@@ -65,7 +56,7 @@ bool CubeLibrary::Prepare(const std::string &file_name) {
             return false;
         }
 
-        Cube *cube  = new (arena_) Cube(static_cast<Cube::Kind>(kind++));
+        Cube *cube  = new (arena()) Cube(static_cast<Cube::Kind>(kind++));
         cube->id_   = row.id();
         cube->name_ = "";
         if (cube->top_tex_ = tex_lib_->FindOrNull(row.top_tex_id()); !cube->top_tex_) {
@@ -80,6 +71,7 @@ bool CubeLibrary::Prepare(const std::string &file_name) {
         cube->vh_ = row.vh();
 
         cubes_[cube->kind()] = cube;
+        Put(row.id(), cube);
     }
     return true;
 }

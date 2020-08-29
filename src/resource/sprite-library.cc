@@ -52,22 +52,17 @@ private:
 const char SpriteLibrary::kSpriteDir[]         = "";
 const char SpriteLibrary::kSpriteDefFileName[] = "sprite.txt";
 
-bool SpriteLibrary::Prepare(const std::string &file_name) {
-    FILE *fp = ::fopen(file_name.c_str(), "rb");
-    if (!fp) {
-        DLOG(ERROR) << "can not open sprites definition file: " << file_name;
-        return false;
-    }
+SpriteLibrary::SpriteLibrary(TextureLibrary *tex_lib, base::Arena *arena) : ResourceLibrary(arena), tex_lib_(tex_lib) {}
 
-    DefinitionReader rd(fp, true /*ownership*/);
-    SpriteDef        row;
-    while (row.Read(&rd) != EOF) {
-        if (sprites_.find(row.id()) != sprites_.end()) {
+bool SpriteLibrary::Load(DefinitionReader *rd) {
+    SpriteDef row;
+    while (row.Read(rd) != EOF) {
+        if (FindOrNull(row.id())) {
             DLOG(ERROR) << "Duplicated sprite id: " << row.id().value();
             return false;
         }
 
-        Sprite *sprite = new (arena_) Sprite(row.id(), row.frames_count(), row.speed(), row.light(),
+        Sprite *sprite = new (arena()) Sprite(row.id(), row.frames_count(), row.speed(), row.light(),
                                              row.ambient_meterial(), row.diffuse_meterial(), row.specular_meterial());
         for (int i = 0; i < row.frames_count(); i++) {
             if (sprite->frames_[i] = tex_lib_->FindOrNull(row.frame(i)); !sprite->frames_[i]) {
@@ -75,7 +70,7 @@ bool SpriteLibrary::Prepare(const std::string &file_name) {
                 return false;
             }
         }
-        sprites_[row.id()] = sprite;
+        Put(row.id(), sprite);
     }
     return true;
 }

@@ -17,27 +17,32 @@ public:
     DEF_VAL_PROP_RW(double, speed);
     DEF_VAL_PROP_RW(double, time);
 
-    res::Texture *GetFrame() const { return GetFrame(time_); }
+    res::Texture *GetFrame(double delta) {
+        AddTime(delta);
+        return GetFrame();
+    }
 
-    res::Texture *GetFrame(double time) const {
+    res::Texture *GetFrame() const {
+        int i = static_cast<int>(time_);
         if (speed_ == 0.0) { return def_->key_frame(dir_); }
-        int i = static_cast<int>(time / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
-        return def_->frame(dir_, i);
+        return def_->frame(dir_, i % (def_->frames_count() - 1) + 1);
     }
 
-    int FrameIndex() const { return FrameIndex(time_); }
-
-    int FrameIndex(double time) const {
+    int FrameIndex(double delta) {
+        int i = AddTime(delta);
         if (speed_ == 0.0) { return static_cast<int>(dir_) * def_->frames_count() + 0; }
-        int i = static_cast<int>(time / (speed_ * def_->speed())) % (def_->frames_count() - 1) + 1;
-        return static_cast<int>(dir_) * def_->frames_count() + i;
+        return static_cast<int>(dir_) * def_->frames_count() + i % (def_->frames_count() - 1) + 1;
     }
-
-    void AddTime(double d) { time_ += d; }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(AvatarComponent);
 
 private:
+    int AddTime(double delta) {
+        time_ += delta * speed();
+        if (time_ >= def_->frames_count() + 1) { time_ = 0; }
+        return static_cast<int>(time_);
+    }
+
     res::Avatar::Direction dir_ = res::Avatar::kDown;
     res::Avatar *          def_;
     double                 speed_ = 0;

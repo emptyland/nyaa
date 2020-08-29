@@ -4,6 +4,7 @@
 
 #include "game/vector.h"
 #include "base/base.h"
+#include <math.h>
 
 namespace nyaa {
 
@@ -23,6 +24,8 @@ public:
 
     bool is_horizontal_moving() const { return !is_horizontal_stop(); }
     bool is_horizontal_stop() const { return speed().x == 0 && speed().y == 0; }
+
+    float NormalHorizontalSpeed() const { return ::sqrtf(speed().x * speed().x + speed().y * speed().y); }
 
     DEF_VAL_PROP_RMW(PositionComponent, coord);
     DEF_VAL_PROP_RMW(VelocityComponent, speed);

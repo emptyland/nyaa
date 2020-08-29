@@ -10,6 +10,7 @@ void EntitiesGrid::Enter(entity::Entity *obj) {
     entity::Entity *x = dummy()->next();
     while (x != dummy()) {
         if (obj->ZOrder() < x->ZOrder()) { break; }
+        x = x->next();
     }
     QUEUE_INSERT_TAIL(x, obj);
     obj->set_grid(this);

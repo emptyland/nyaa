@@ -19,6 +19,7 @@ class AvatarLibrary;
 class CubeLibrary;
 class ShaderLibrary;
 class SpriteLibrary;
+class ActorLibrary;
 }  // namespace res
 
 namespace sys {
@@ -67,6 +68,7 @@ public:
     res::SpriteLibrary * sprite_lib() const { return sprite_lib_.get(); }
     res::CubeLibrary *   cube_lib() const { return cube_lib_.get(); }
     res::ShaderLibrary * shader_lib() const { return shader_lib_.get(); }
+    res::ActorLibrary *  actor_lib() const { return actor_lib_.get(); }
 
     base::AbstractPrinter *debug_out() { return &stdout_; }
 
@@ -120,6 +122,7 @@ private:
     std::unique_ptr<res::AvatarLibrary>  avatar_lib_;
     std::unique_ptr<res::CubeLibrary>    cube_lib_;
     std::unique_ptr<res::ShaderLibrary>  shader_lib_;
+    std::unique_ptr<res::ActorLibrary>   actor_lib_;
 
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;
@@ -134,7 +137,7 @@ private:
     int         fb_w_             = 0;
     bool        exit_             = false;
     IdGenerator eid_generator_;
-};  // class Game
+};  // namespace nyaa
 
 extern base::LazyInstance<Game> ThisGame;
 

@@ -2,10 +2,8 @@
 #ifndef NYAA_RESOURCE_SPRITE_LIBRARY_H_
 #define NYAA_RESOURCE_SPRITE_LIBRARY_H_
 
-#include "game/identifiers.h"
+#include "resource/resource-library.h"
 #include "game/vector.h"
-#include "base/arena-utils.h"
-#include "base/base.h"
 
 namespace nyaa {
 
@@ -66,27 +64,17 @@ private:
     Texture *frames_[kMaxFrames];
 };  // class Sprite
 
-class SpriteLibrary final {
+class SpriteLibrary final : public ResourceLibrary<Sprite, SpriteLibrary> {
 public:
     static const char kSpriteDir[];
     static const char kSpriteDefFileName[];
 
-    SpriteLibrary(TextureLibrary *tex_lib, base::Arena *arena) : arena_(arena), tex_lib_(tex_lib), sprites_(arena) {}
+    SpriteLibrary(TextureLibrary *tex_lib, base::Arena *arena);
 
-    const base::ArenaUnorderedMap<ResourceId, Sprite *> &sprites() const { return sprites_; }
-
-    bool Prepare(const std::string &file_name);
-
-    Sprite *FindOrNull(ResourceId id) const {
-        auto iter = sprites_.find(id);
-        return iter == sprites_.end() ? nullptr : iter->second;
-    }
+    bool Load(DefinitionReader *rd);
 
 private:
-    base::Arena *const    arena_;
-    TextureLibrary *const tex_lib_;
-
-    base::ArenaUnorderedMap<ResourceId, Sprite *> sprites_;
+    const TextureLibrary *const tex_lib_;
 };  // class DecorationLibrary
 
 }  // namespace res

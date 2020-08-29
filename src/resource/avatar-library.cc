@@ -52,7 +52,7 @@ private:
 };  // class AvatarDef
 
 Avatar::Avatar(ResourceId id, Vector2f size, float speed, int frames_count)
-    : id_(id), frames_count_(frames_count), speed_(speed), size_(size)  {
+    : id_(id), frames_count_(frames_count), speed_(speed), size_(size) {
     ::memset(key_frame_, 0, sizeof(key_frame_));
     ::memset(textures_, 0, sizeof(textures_));
 }
@@ -60,17 +60,12 @@ Avatar::Avatar(ResourceId id, Vector2f size, float speed, int frames_count)
 const char AvatarLibrary::kAvatarDir[]         = "";
 const char AvatarLibrary::kAvatarDefFileName[] = "avatar.txt";
 
-bool AvatarLibrary::Prepare(const std::string &file_name) {
-    FILE *fp = ::fopen(file_name.c_str(), "rb");
-    if (!fp) {
-        DLOG(ERROR) << "can not open texture definition file: " << file_name;
-        return false;
-    }
+AvatarLibrary::AvatarLibrary(TextureLibrary *tex_lib, base::Arena *arena) : ResourceLibrary(arena), tex_lib_(tex_lib) {}
 
-    DefinitionReader rd(fp, true /*ownership*/);
-    AvatarDef        row;
-    while (row.Read(&rd) != EOF) {
-        if (avatars_.find(row.id()) != avatars_.end()) {
+bool AvatarLibrary::Load(DefinitionReader *rd) {
+    AvatarDef row;
+    while (row.Read(rd) != EOF) {
+        if (FindOrNull(row.id())) {
             DLOG(ERROR) << "Duplicated avatar id: " << row.id().value();
             return false;
         }
@@ -82,7 +77,8 @@ bool AvatarLibrary::Prepare(const std::string &file_name) {
             static_cast<float>(row.size().x),
             static_cast<float>(row.size().y),
         };
-        Avatar *avatar                     = new (arena_) Avatar(row.id(), size, row.speed(), frame_count);
+        Avatar *avatar = new (arena()) Avatar(row.id(), size, row.speed(), frame_count);
+
         avatar->key_frame_[Avatar::kUp]    = row.key_frames().x;
         avatar->key_frame_[Avatar::kRight] = row.key_frames().y;
         avatar->key_frame_[Avatar::kDown]  = row.key_frames().w;
@@ -117,7 +113,8 @@ bool AvatarLibrary::Prepare(const std::string &file_name) {
             }
             avatar->textures_[Avatar::kRight][i] = tex;
         }
-        avatars_[row.id()] = avatar;
+
+        Put(row.id(), avatar);
     }
     return true;
 }

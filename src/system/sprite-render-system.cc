@@ -18,7 +18,7 @@ void SpriteRenderSystem::Prepare(res::SpriteLibrary *lib) {
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 
     std::vector<GLfloat> buf;
-    for (const auto &pair : lib->sprites()) {
+    for (const auto &pair : lib->resource()) {
         res::Sprite *def = pair.second;
         def->set_vbo_hint(static_cast<int>(buf.size() / 8));
 
@@ -67,7 +67,7 @@ void SpriteRenderSystem::RenderPlant(const Vector3f &view, com::PlantComponent *
     Matrix model;
     model.Translate(d.x, d.y, d.z);
     Matrix mat;
-    mat.Scale(2, 2, 2);
+    mat.Scale(3, 3, 3);
     model.Multiply(mat);
 
     res::BlockShaderProgram *shader = Game::This()->shader_lib()->block_program();

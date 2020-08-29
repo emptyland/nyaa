@@ -3,8 +3,7 @@
 #define NYAA_RESOURCE_CUBE_LIBRARY_H_
 
 #include "resource/cube-kinds-inl.h"
-#include "game/identifiers.h"
-#include "base/arena-utils.h"
+#include "resource/resource-library.h"
 #include <string>
 
 namespace nyaa {
@@ -45,17 +44,12 @@ private:
     std::string_view name_;
 };  // class Cube
 
-class CubeLibrary final {
+class CubeLibrary final : public ResourceLibrary<Cube, CubeLibrary> {
 public:
     static const char kCubeDir[];
     static const char kCubeDefFileName[];
 
     CubeLibrary(TextureLibrary *tex_lib, base::Arena *arena);
-
-    Cube *FindOrNull(ResourceId id) const {
-        auto iter = id_to_cubes_.find(id);
-        return iter == id_to_cubes_.end() ? nullptr : iter->second;
-    }
 
     Cube *cube(Cube::Kind kind) const {
         int index = static_cast<int>(kind);
@@ -64,15 +58,13 @@ public:
         return cubes_[index];
     }
 
-    bool Prepare(const std::string &file_name);
+    bool Load(DefinitionReader *rd);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CubeLibrary);
 
 private:
-    base::Arena *const                          arena_;
-    TextureLibrary *const                       tex_lib_;
-    base::ArenaUnorderedMap<ResourceId, Cube *> id_to_cubes_;
-    Cube *                                      cubes_[Cube::MAX_CUBE_KINDS];
+    const TextureLibrary *const tex_lib_;
+    Cube *                      cubes_[Cube::MAX_CUBE_KINDS];
 };  // class CubeLibrary
 
 }  // namespace res
