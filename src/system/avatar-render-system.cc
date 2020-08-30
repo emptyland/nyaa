@@ -112,7 +112,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     float z = movement->coord().z - kTerrainSurfaceLevel;
 
     Matrix<float> mat;
-    mat.Translate(0, 0, z - 0.5);  // TODO:
+    mat.Translate(0, 0, z);  // TODO:
     shader->SetModelMatrix(mat);
     shader->SetSpecularMaterial({0.9, 0.9, 0.7});
 

@@ -13,35 +13,35 @@ namespace sys {
 
 const float ZoneRenderSystem::kVertices[] = {
     // top
-    -1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
-    -1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
-    +1, +1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
-    +1, -1, +1, /*normal*/ 0, 0, +1, /*uv*/ 0, 0,  // :format
+    0, 0, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
+    0, 1, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
+    1, 1, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
+    1, 0, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
     // bottom
-    -1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
-    -1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
-    +1, +1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
-    +1, -1, -1, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    0, 0, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    0, 1, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    1, 1, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    1, 0, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
     // :front
-    -1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    -1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    +1, -1, +1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    +1, -1, -1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    0, 0, 0, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    0, 0, 1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    1, 0, 1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    1, 0, 0, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
     // :back
-    -1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
-    +1, +1, -1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
-    +1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
-    -1, +1, +1, /*normal*/ 0, +1, 0, /*uv*/ 0, 0,  // :format
+    0, 1, 0, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
+    1, 1, 0, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
+    1, 1, 1, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
+    0, 1, 1, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
     // :left
-    -1, -1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    -1, +1, -1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    -1, +1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    -1, -1, +1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    0, 0, 0, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    0, 1, 0, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    0, 1, 1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    0, 0, 1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
     // :right
-    +1, -1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
-    +1, -1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
-    +1, +1, +1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
-    +1, +1, -1, /*normal*/ +1, 0, 0, /*uv*/ 0, 0,  // :format
+    1, 0, 0, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
+    1, 0, 1, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
+    1, 1, 1, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
+    1, 1, 0, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
 };
 
 ZoneRenderSystem::ZoneRenderSystem() {
@@ -54,7 +54,12 @@ ZoneRenderSystem::ZoneRenderSystem() {
     }
 }
 
-void ZoneRenderSystem::Prepare() {}
+void ZoneRenderSystem::Reset() {
+    if (vbo_[1][1].buffer) {
+        glDeleteBuffers(1, &vbo_[1][1].buffer);
+        vbo_[1][1].buffer = 0;
+    }
+}
 
 void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
     if (!vbo_[1][1].buffer) { GenBuffer(zone->center(), 1, 1); }
@@ -118,16 +123,16 @@ void ZoneRenderSystem::GenBuffer(com::RegionComponent *region, int i, int j) {
 }
 
 void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, bool surface, std::vector<float> *buf) {
-    float half_size = cube_size_ / 2;
-    int n_vertices = surface ? 4 : 24;
+    //float half_size  = cube_size_ / 2;
+    int   n_vertices = surface ? 4 : 24;
 
     size_t pos = buf->size();
     buf->resize(pos + n_vertices * 8);
     float *vertices = &(*buf)[pos];
     for (int i = 0; i < n_vertices; i++) {
-        vertices[i * 8 + 0] = p0.x + kVertices[i * 8 + 0] * half_size;
-        vertices[i * 8 + 1] = p0.y + kVertices[i * 8 + 1] * half_size;
-        vertices[i * 8 + 2] = p0.z + kVertices[i * 8 + 2] * half_size;
+        vertices[i * 8 + 0] = p0.x + kVertices[i * 8 + 0] * cube_size_;
+        vertices[i * 8 + 1] = p0.y + kVertices[i * 8 + 1] * cube_size_;
+        vertices[i * 8 + 2] = p0.z + kVertices[i * 8 + 2] * cube_size_;
 
         vertices[i * 8 + 3] = kVertices[i * 8 + 3];
         vertices[i * 8 + 4] = kVertices[i * 8 + 4];

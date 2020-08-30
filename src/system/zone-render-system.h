@@ -26,7 +26,7 @@ public:
     DEF_VAL_PROP_RW(float, cube_size);
     DEF_VAL_PROP_RW(uint32_t, tile_tex_id);
 
-    void Prepare();
+    void Reset();
 
     void RenderTerrain(com::ZoneComponent *zone);
 

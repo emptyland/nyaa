@@ -53,7 +53,7 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
                     region->mutable_plants()->resize(pos + 1);
                     com::PlantComponent *plant = region->plant(pos);
                     float adjust = static_cast<float>(rand() & 0xff) / 1024;
-                    float xx = x + 0.5f, yy = y + adjust;
+                    float xx = x, yy = y + adjust;
                     if (xx >= kRegionSize) {
                         xx = kRegionSize - 1;
                     }

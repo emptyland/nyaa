@@ -49,7 +49,7 @@ void TestScene::Reset() {
     player_->mutable_movement()->mutable_coord()->x = zone_->viewport().center_coord().x;
     player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;
 
-    game()->zone_render()->Prepare();
+    game()->zone_render()->Reset();
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
@@ -128,6 +128,12 @@ void TestScene::Render(double delta) {
     } else if (glfwGetKey(game()->window(), GLFW_KEY_L) == GLFW_PRESS) {
         // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.z += 0.1;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_F) == GLFW_PRESS) {
+        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        directional_light_.x -= 0.1;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_G) == GLFW_PRESS) {
+        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
+        directional_light_.x += 0.1;
     }
 
     if (zone_->center()) {
@@ -197,9 +203,10 @@ void TestScene::Render(double delta) {
     shader->Unuse();
     {
         char buf[128];
-        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f, z=%0.2f", zone_->viewport().center_coord().x,
-                   zone_->viewport().center_coord().y, player_->movement().coord().z);
-        game()->font_lib()->default_face()->Render(buf, 0, 32, {1, 1, 0});
+        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f, z=%0.2f, light=%0.2f,%0.2f,%0.2f",
+                   zone_->viewport().center_coord().x, zone_->viewport().center_coord().y,
+                   player_->movement().coord().z, directional_light_.x, directional_light_.y, directional_light_.z);
+        game()->font_lib()->default_face()->Render(buf, 0, 32, {1, 0, 0});
     }
 }
 

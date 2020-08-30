@@ -68,6 +68,30 @@ inline Vector3f operator+(const Vector3f &lhs, const Vector3f &rhs) {
     return Vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 }
 
+// a.x, a.y             b.x,b.y
+//
+//          a.w, a.h            b.w, b.h
+/*
+    int zx = abs(x01 + x02 -x11 - x12);
+	int x  = abs(x01 - x02) + abs(x11 - x12);
+	int zy = abs(y01 + y02 - y11 - y12);
+	int y  = abs(y01 - y02) + abs(y11 - y12);
+	if(zx <= x && zy <= y)
+		return 1;
+	else
+		return 0;
+
+ */
+inline int Abs(int n) { return n < 0 ? -n : n; }
+
+inline bool IsIntersect(const Boundf &a, const Boundf &b) {
+    int zx = Abs(a.x + (a.x + a.w) - b.x - (b.x + b.w));
+    int x = Abs(a.w) + Abs(b.w);
+    int zy = Abs(a.y + (a.y + a.h) - b.y - (b.y + b.h));
+    int y = Abs(a.h) + Abs(b.h);
+    return zx <= x && zy <= y;
+}
+
 }  // namespace nyaa
 
 #endif  // NYAA_GAME_VECTOR_H_
