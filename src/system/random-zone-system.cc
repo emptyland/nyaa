@@ -52,23 +52,16 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
                     size_t pos = region->plants_size();
                     region->mutable_plants()->resize(pos + 1);
                     com::PlantComponent *plant = region->plant(pos);
+
                     float adjust = static_cast<float>(rand() & 0xff) / 1024;
                     float xx = x, yy = y + adjust;
-                    if (xx >= kRegionSize) {
-                        xx = kRegionSize - 1;
-                    }
-                    if (xx < 0) {
-                        xx = 0;
-                    }
-                    if (yy >= kRegionSize) {
-                        yy = kRegionSize - 1;
-                    }
-                    if (yy < 0) {
-                        yy = 0;
-                    }
+                    if (xx >= kRegionSize) { xx = kRegionSize - 1; }
+                    if (xx < 0) { xx = 0; }
+                    if (yy >= kRegionSize) { yy = kRegionSize - 1; }
+                    if (yy < 0) { yy = 0; }
                     plant->set_position({xx, yy, kTerrainSurfaceLevel + 0.0f});
                     plant->set_sprite(sprite_lib->FindOrNull(ResourceId::Of((rand() & 0x1) ? 100000 : 100010)));
-                    //DLOG(INFO) << plant->sprite();
+                    // DLOG(INFO) << plant->sprite();
                 } break;
                 default: surface->cubes[x][y].set_kind(res::Cube::CUBE_AIR); break;
             }
