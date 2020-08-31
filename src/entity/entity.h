@@ -6,7 +6,7 @@
 
 namespace nyaa {
 
-class EntitiesGrid;
+class EntityGrid;
 
 namespace entity {
 
@@ -27,7 +27,7 @@ public:
     DEF_VAL_PROP_RW(EntityId, id);
     DEF_PTR_PROP_RW(Entity, next);
     DEF_PTR_PROP_RW(Entity, prev);
-    DEF_PTR_PROP_RW(EntitiesGrid, grid);
+    DEF_PTR_PROP_RW(EntityGrid, grid);
 
     template <class T>
     bool Is() const {
@@ -41,7 +41,7 @@ public:
 
     virtual float ZOrder() const { return 0; }
 
-    friend class ::nyaa::EntitiesGrid;
+    friend class ::nyaa::EntityGrid;
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(Entity);
 
@@ -49,9 +49,9 @@ private:
     Entity *next_;
     Entity *prev_;
 
-    EntityId      id_;
-    intptr_t      clazz_;
-    EntitiesGrid *grid_ = nullptr;
+    EntityId    id_;
+    intptr_t    clazz_;
+    EntityGrid *grid_ = nullptr;
 };  // class Entity
 
 }  // namespace entity

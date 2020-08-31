@@ -50,7 +50,8 @@ set(GAME_SRC
     src/game/boot-scene.cc
     src/game/test-scene.cc
     src/game/properties.cc
-    src/game/entities-set.cc
+    src/game/entity-virtual-db.cc
+    src/game/entity-grid-set.cc
     src/game/matrix.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
@@ -64,6 +65,7 @@ set(GAME_SRC
     src/system/actor-movement-system.cc
     src/system/geometry-transform-system.cc
     src/system/sprite-render-system.cc
+    src/system/actor-ai-system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc

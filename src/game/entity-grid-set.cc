@@ -1,4 +1,4 @@
-#include "game/entities-set.h"
+#include "game/entity-grid-set.h"
 #include "entity/plant-entity.h"
 #include "entity/player-entity.h"
 #include "entity/actor-entity.h"
@@ -6,7 +6,7 @@
 
 namespace nyaa {
 
-void EntitiesGrid::Enter(entity::Entity *obj) {
+void EntityGrid::Enter(entity::Entity *obj) {
     if (obj->grid() == this) { return; }
     entity::Entity *x = dummy()->next();
     while (x != dummy()) {
@@ -17,7 +17,7 @@ void EntitiesGrid::Enter(entity::Entity *obj) {
     obj->set_grid(this);
 }
 
-EntitiesSet::EntitiesSet() {
+EntityGridSet::EntityGridSet() {
     for (int j = 0; j < kRegionSize; j++) {
         for (int i = 0; i < kRegionSize; i++) {
             grids_[i][j].coord_.x = i;
@@ -26,9 +26,9 @@ EntitiesSet::EntitiesSet() {
     }
 }
 
-EntitiesSet::~EntitiesSet() {}
+EntityGridSet::~EntityGridSet() {}
 
-EntitiesGrid *EntitiesSet::ViewGrid(const com::ViewportComponent &viewport, int x, int y) {
+EntityGrid *EntityGridSet::ViewGrid(const com::ViewportComponent &viewport, int x, int y) {
     int abs_x = viewport.round_down_center_x() - viewport.bound().x / 2 + x;
     int abs_y = viewport.round_down_center_y() - viewport.bound().y / 2 + y;
 
@@ -37,10 +37,10 @@ EntitiesGrid *EntitiesSet::ViewGrid(const com::ViewportComponent &viewport, int 
     return &grids_[abs_x][abs_y];
 }
 
-void EntitiesSet::UpdatePlayer(entity::PlayerEntity *obj) { Update(obj->movement().coord(), obj); }
+void EntityGridSet::UpdatePlayer(entity::PlayerEntity *obj) { Update(obj->movement().coord(), obj); }
 
-void EntitiesSet::UpdateActor(entity::ActorEntity *obj) { Update(obj->movement().coord(), obj); }
+void EntityGridSet::UpdateActor(entity::ActorEntity *obj) { Update(obj->movement().coord(), obj); }
 
-void EntitiesSet::UpdatePlant(entity::PlantEntity *obj) { Update(obj->plant()->position(), obj); }
+void EntityGridSet::UpdatePlant(entity::PlantEntity *obj) { Update(obj->plant()->position(), obj); }
 
 }  // namespace nyaa

@@ -18,7 +18,7 @@
 #include "system/sprite-render-system.h"
 #include "game/game.h"
 #include "game/matrix.h"
-#include "game/entities-set.h"
+#include "game/entity-grid-set.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -28,7 +28,7 @@ TestScene::TestScene(Game *game) : Scene(game) {}
 TestScene::~TestScene() {}
 
 void TestScene::Reset() {
-    entities_set_.reset(new EntitiesSet);
+    entity_grid_set_.reset(new EntityGridSet);
 
     zone_.reset(new com::ZoneComponent());
     com::RegionComponent *region = new com::RegionComponent();
@@ -36,9 +36,9 @@ void TestScene::Reset() {
     zone_->set_region(1, 1, region);
     game()->random_zone()->Update(region);
     for (int i = 0; i < region->plants_size(); i++) {
-        // entities_set_->UpdatePlant()
+        // entity_grid_set_->UpdatePlant()
         entity::PlantEntity *plant = game()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
-        entities_set_->UpdatePlant(plant);
+        entity_grid_set_->UpdatePlant(plant);
     }
 
     zone_->mutable_viewport()->set_center_coord({kRegionSize / 2, kRegionSize / 2});
@@ -57,7 +57,7 @@ void TestScene::Reset() {
     actor->mutable_movement()->mutable_coord()->y += 1;
     actor->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
 
-    entities_set_->UpdateActor(actor);
+    entity_grid_set_->UpdateActor(actor);
 
     game()->zone_render()->Reset();
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
@@ -154,7 +154,7 @@ void TestScene::Render(double delta) {
         zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
         game()->zone_loader()->Update(zone_.get());
     }
-    entities_set_->UpdatePlayer(player_.get());
+    entity_grid_set_->UpdatePlayer(player_.get());
 
     res::BlockShaderProgram *shader = game()->shader_lib()->block_program();
     shader->Use();
@@ -197,7 +197,7 @@ void TestScene::Render(double delta) {
     for (int y = zone_->viewport().bound().y - 1; y >= 0; y--) {
         for (int x = 0; x < zone_->viewport().bound().x; x++) {
             // for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
-            for (entity::Entity *obj : *entities_set_->ViewGrid(zone_->viewport(), x, y)) {
+            for (entity::Entity *obj : *entity_grid_set_->ViewGrid(zone_->viewport(), x, y)) {
                 if (obj->Is<entity::PlayerEntity>()) {
                     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
                                                     delta);
@@ -213,7 +213,7 @@ void TestScene::Render(double delta) {
                     }
 
                     game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
-                    entities_set_->UpdateActor(actor);
+                    entity_grid_set_->UpdateActor(actor);
                     game()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
                 }
             }

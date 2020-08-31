@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_GAME_ENTITIES_ZONE_H_
-#define NYAA_GAME_ENTITIES_ZONE_H_
+#ifndef NYAA_GAME_ENTITY_GRID_SET_H_
+#define NYAA_GAME_ENTITY_GRID_SET_H_
 
 #include "entity/entity.h"
 #include "game/constants.h"
@@ -22,9 +22,9 @@ namespace com {
 class ViewportComponent;
 }  // namespace com
 
-class EntitiesGrid {
+class EntityGrid {
 public:
-    EntitiesGrid() = default;
+    EntityGrid() = default;
 
     void Enter(entity::Entity *obj);
 
@@ -53,21 +53,21 @@ public:
     iterator begin() { return iterator(entities_dummy_.next()); }
     iterator end() { return iterator(&entities_dummy_); }
 
-    friend class EntitiesSet;
+    friend class EntityGridSet;
 
 private:
     entity::Entity *dummy() { return &entities_dummy_; }
 
     Vector2i       coord_;
     entity::Entity entities_dummy_;
-};  // class EntitiesGrid
+};  // class EntityGrid
 
-class EntitiesSet {
+class EntityGridSet {
 public:
-    EntitiesSet();
-    ~EntitiesSet();
+    EntityGridSet();
+    ~EntityGridSet();
 
-    EntitiesGrid *grid(int x, int y) {
+    EntityGrid *grid(int x, int y) {
         DCHECK_GE(x, 0);
         DCHECK_LT(x, kRegionSize);
         DCHECK_GE(y, 0);
@@ -75,7 +75,7 @@ public:
         return &grids_[x][y];
     }
 
-    EntitiesGrid *ViewGrid(const com::ViewportComponent &viewport, int x, int y);
+    EntityGrid *ViewGrid(const com::ViewportComponent &viewport, int x, int y);
 
     void UpdatePlayer(entity::PlayerEntity *obj);
     void UpdatePlant(entity::PlantEntity *obj);
@@ -86,11 +86,11 @@ public:
         if (obj->grid()) { obj->grid()->Exit(obj); }
     }
 
-    DISALLOW_IMPLICIT_CONSTRUCTORS(EntitiesSet);
+    DISALLOW_IMPLICIT_CONSTRUCTORS(EntityGridSet);
 
 private:
     void Update(const Vector3f &position, entity::Entity *obj) {
-        EntitiesGrid *g = grid(position.x, position.y);
+        EntityGrid *g = grid(position.x, position.y);
         if (!obj->grid()) {
             g->Enter(obj);
             entities_[obj->id()] = obj;
@@ -102,10 +102,10 @@ private:
 
     std::unordered_map<EntityId, entity::Entity *, EntityHash> entities_;
 
-    EntitiesGrid empty_grid_;
-    EntitiesGrid grids_[kRegionSize][kRegionSize];
-};  // class EntitiesSet
+    EntityGrid empty_grid_;
+    EntityGrid grids_[kRegionSize][kRegionSize];
+};  // class EntityGridSet
 
 }  // namespace nyaa
 
-#endif  // NYAA_GAME_ENTITIES_ZONE_H_
+#endif  // NYAA_GAME_ENTITY_GRID_SET_H_
