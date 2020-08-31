@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./scripts/build-cube-index.py > src/resource/cube-kinds-inl.h
-./scripts/build-text-index.py > src/resource/text-ids-inl.h
+./scripts/build-cube-index.py > src/resource/cube-def-inl.h
+./scripts/build-text-index.py > src/resource/text-def-inl.h
 

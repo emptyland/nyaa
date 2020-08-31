@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_RESOURCE_TEXT_IDS_INL_H_
-#define NYAA_RESOURCE_TEXT_IDS_INL_H_
+#ifndef NYAA_RESOURCE_TEXT_DEF_INL_H_
+#define NYAA_RESOURCE_TEXT_DEF_INL_H_
 
 namespace nyaa {
 namespace res {
@@ -37,4 +37,4 @@ enum TextID {
 } // namespace res
 } // namespace nyaa
 
-#endif // NYAA_RESOURCE_TEXT_IDS_INL_H_
+#endif // NYAA_RESOURCE_TEXT_DEF_INL_H_

@@ -2,17 +2,18 @@
 #ifndef NYAA_SYSTEM_AVATAR_RENDER_SYSTEM_H_
 #define NYAA_SYSTEM_AVATAR_RENDER_SYSTEM_H_
 
+#include "game/vector.h"
 #include "base/base.h"
 
 namespace nyaa {
 namespace com {
 class AvatarComponent;
 class MovementComponent;
-} // namespace com
+}  // namespace com
 
 namespace res {
 class AvatarLibrary;
-} // namespace res
+}  // namespace res
 
 namespace sys {
 
@@ -22,15 +23,16 @@ public:
 
     void Prepare(res::AvatarLibrary *avatar_lib);
 
-    void Render(com::MovementComponent *move, com::AvatarComponent *avatar, double delta);
+    void Render(com::MovementComponent *move, com::AvatarComponent *avatar, Vector3f *view, double delta);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(AvatarRenderSystem);
+
 private:
-    uint32_t vbo_ = 0;
-    bool initialized_ = false;
+    uint32_t vbo_         = 0;
+    bool     initialized_ = false;
 
     static const float kVertices[];
-}; // class AvatarRenderSystem
+};  // class AvatarRenderSystem
 
 }  // namespace sys
 

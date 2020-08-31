@@ -35,6 +35,7 @@ public:
     }
 
     T *FindOrNull(ResourceId id) const {
+        //DCHECK(initialized());
         auto iter = resource_.find(id);
         return iter == resource_.end() ? nullptr : iter->second;
     }

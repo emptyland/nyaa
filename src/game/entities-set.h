@@ -16,6 +16,7 @@ namespace nyaa {
 namespace entity {
 class PlayerEntity;
 class PlantEntity;
+class ActorEntity;
 }  // namespace entity
 namespace com {
 class ViewportComponent;
@@ -78,6 +79,7 @@ public:
 
     void UpdatePlayer(entity::PlayerEntity *obj);
     void UpdatePlant(entity::PlantEntity *obj);
+    void UpdateActor(entity::ActorEntity *obj);
 
     void Remove(entity::Entity *obj) {
         entities_.erase(obj->id());

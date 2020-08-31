@@ -2,7 +2,7 @@
 #ifndef NYAA_RESOURCE_TEXT_LIBRARY_H_
 #define NYAA_RESOURCE_TEXT_LIBRARY_H_
 
-#include "resource/text-ids-inl.h"
+#include "resource/text-def-inl.h"
 #include "base/arena-utils.h"
 #include "glog/logging.h"
 

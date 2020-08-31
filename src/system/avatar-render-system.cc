@@ -76,7 +76,8 @@ void AvatarRenderSystem::Prepare(res::AvatarLibrary *lib) {
     initialized_ = true;
 }
 
-void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarComponent *avatar, double delta) {
+void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarComponent *avatar, Vector3f *view,
+                                double delta) {
     if (movement->is_horizontal_stop()) {
         // avatar->set_time(0);
         avatar->set_speed(0);
@@ -112,7 +113,12 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     float z = movement->coord().z - kTerrainSurfaceLevel;
 
     Matrix<float> mat;
-    mat.Translate(0, 0, z);  // TODO:
+    if (!view) {
+        mat.Translate(0, 0, z);
+    } else {
+        Vector3f pos = movement->coord() - *view;
+        mat.Translate(pos.x, pos.y, pos.z + 0.5);
+    }
     shader->SetModelMatrix(mat);
     shader->SetSpecularMaterial({0.9, 0.9, 0.7});
 
@@ -122,7 +128,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
     shader->SetNormalAttribute(4, 8, 3);
     shader->SetUVAttribute(4, 8, 6);
     glDrawArrays(GL_QUADS, avatar->def()->vbo_hint() + frame * 4, 4);
-    //DLOG(INFO) << "frame: " << frame;
+    // DLOG(INFO) << "frame: " << frame;
     shader->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 

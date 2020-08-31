@@ -121,6 +121,10 @@ bool Game::Prepare(const std::string &properties_file_name) {
     if (!avatar_lib_->Prepare(properties()->assets_dir() + "/" + res::AvatarLibrary::kAvatarDefFileName)) {
         return false;
     }
+    if (!actor_lib_->Prepare(properties()->assets_dir() + "/" + res::ActorLibrary::kActorDefFileName)) {
+        // :format
+        return false;
+    }
     if (!cube_lib_->Prepare(properties()->assets_dir() + "/" + res::CubeLibrary::kCubeDefFileName)) {
         // :format
         return false;

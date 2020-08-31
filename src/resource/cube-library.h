@@ -2,7 +2,7 @@
 #ifndef NYAA_RESOURCE_CUBE_LIBRARY_H_
 #define NYAA_RESOURCE_CUBE_LIBRARY_H_
 
-#include "resource/cube-kinds-inl.h"
+#include "resource/cube-def-inl.h"
 #include "resource/resource-library.h"
 #include <string>
 

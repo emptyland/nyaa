@@ -2,10 +2,10 @@
 #ifndef NYAA_RESOURCE_ACTOR_LIBRARY_H_
 #define NYAA_RESOURCE_ACTOR_LIBRARY_H_
 
-#include "game/vector.h"
 #include "resource/resource-library.h"
 #include "resource/ai-def.h"
-#include "resource/text-ids-inl.h"
+#include "resource/text-def-inl.h"
+#include "game/vector.h"
 
 namespace nyaa {
 

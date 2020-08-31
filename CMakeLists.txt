@@ -53,6 +53,7 @@ set(GAME_SRC
     src/game/entities-set.cc
     src/game/matrix.cc
     src/entity/player-entity.cc
+    src/entity/actor-entity.cc
     src/component/cube-component.cc
     src/component/zone-component.cc
     src/component/movement-component.cc

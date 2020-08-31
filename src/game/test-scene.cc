@@ -4,6 +4,7 @@
 #include "resource/shader-library.h"
 #include "entity/player-entity.h"
 #include "entity/plant-entity.h"
+#include "entity/actor-entity.h"
 #include "component/zone-component.h"
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
@@ -48,6 +49,15 @@ void TestScene::Reset() {
     player_->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
     player_->mutable_movement()->mutable_coord()->x = zone_->viewport().center_coord().x;
     player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;
+
+    entity::ActorEntity *actor =
+        game()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100020));
+    *actor->mutable_movement() = player_->movement();
+    actor->mutable_movement()->mutable_coord()->x += 1;
+    actor->mutable_movement()->mutable_coord()->y += 1;
+    actor->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
+
+    entities_set_->UpdateActor(actor);
 
     game()->zone_render()->Reset();
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
@@ -137,8 +147,7 @@ void TestScene::Render(double delta) {
     }
 
     if (zone_->center()) {
-        game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3,
-                                         game()->frame_delta_time() /*delta*/, false);
+        game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3, delta, false);
     }
 
     if (!zone_->center() || command > 0) {
@@ -186,15 +195,26 @@ void TestScene::Render(double delta) {
 
     // for (int y = 0; y < zone_->viewport().bound().y; y++) {
     for (int y = zone_->viewport().bound().y - 1; y >= 0; y--) {
-        // for (int x = 0; x < zone_->viewport().bound().x; x++) {
-        for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
+        for (int x = 0; x < zone_->viewport().bound().x; x++) {
+            // for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
             for (entity::Entity *obj : *entities_set_->ViewGrid(zone_->viewport(), x, y)) {
                 if (obj->Is<entity::PlayerEntity>()) {
-                    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), delta);
-                }
-                if (obj->Is<entity::PlantEntity>()) {
+                    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
+                                                    delta);
+                } else if (obj->Is<entity::PlantEntity>()) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
+                } else if (obj->Is<entity::ActorEntity>()) {
+                    Vector3f view  = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
+                    auto     actor = obj->AsOrNull<entity::ActorEntity>();
+
+                    if (actor->movement().speed().z == 0) {
+                        actor->mutable_movement()->mutable_speed()->z = 10;
+                    }
+
+                    game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
+                    entities_set_->UpdateActor(actor);
+                    game()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
                 }
             }
         }
