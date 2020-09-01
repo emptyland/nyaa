@@ -2,6 +2,8 @@
 #ifndef NYAA_GAME_VECTOR_H_
 #define NYAA_GAME_VECTOR_H_
 
+#include <math.h>
+
 namespace nyaa {
 
 template <class T>
@@ -90,6 +92,16 @@ inline bool IsIntersect(const Boundf &a, const Boundf &b) {
     int zy = Abs(a.y + (a.y + a.h) - b.y - (b.y + b.h));
     int y = Abs(a.h) + Abs(b.h);
     return zx <= x && zy <= y;
+}
+
+inline float Square(float n) { return n * n; }
+
+inline float Distance(const Vector2f &a, const Vector2f &b) {
+    return ::sqrtf(Square(a.x - b.x) + Square(a.y - b.y));
+}
+
+inline float Distance(const Vector3f &a, const Vector3f &b) {
+    return ::powf(Square(a.x - b.x) + Square(a.y - b.y) + Square(a.z - b.z), 1.0/3.0);
 }
 
 }  // namespace nyaa

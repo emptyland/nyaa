@@ -124,9 +124,6 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     shader->Enable();
-    shader->SetPositionAttribute(4, 8, 0);
-    shader->SetNormalAttribute(4, 8, 3);
-    shader->SetUVAttribute(4, 8, 6);
     glDrawArrays(GL_QUADS, avatar->def()->vbo_hint() + frame * 4, 4);
     // DLOG(INFO) << "frame: " << frame;
     shader->Disable();

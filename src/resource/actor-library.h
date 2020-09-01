@@ -27,6 +27,10 @@ public:
     DEF_VAL_GETTER(int, yi);
     DEF_VAL_GETTER(int, camp);
 
+    DEF_VAL_GETTER(float, jump_speed);
+    DEF_VAL_GETTER(float, move_speed);
+    DEF_VAL_GETTER(float, patrol_radius);
+
     friend class ActorLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(Actor);
 
@@ -43,6 +47,9 @@ private:
     int      difficulty_;
     int      yi_;
     int      camp_;
+    float    jump_speed_;
+    float    move_speed_;
+    float    patrol_radius_;
 };  // class Actor
 
 class ActorLibrary : public ResourceLibrary<Actor, ActorLibrary> {

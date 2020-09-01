@@ -12,6 +12,7 @@ namespace nyaa {
 namespace res {
 
 class DemoShaderProgram;
+class BillboardShaderProgram;
 class BlockShaderProgram;
 
 class ShaderLibrary final {
@@ -22,6 +23,7 @@ public:
     ShaderLibrary(base::Arena *arena) : arena_(arena) {}
 
     DEF_PTR_GETTER(DemoShaderProgram, demo_program);
+    DEF_PTR_GETTER(BillboardShaderProgram, billboard_program);
     DEF_PTR_GETTER(BlockShaderProgram, block_program);
 
     bool Prepare(const std::string &dir);
@@ -33,9 +35,10 @@ private:
     bool MakeShader(const std::string &file_name, int type, uint32_t *handle);
     bool ReadAll(const std::string &file_name, std::string *content);
 
-    base::Arena *const  arena_;
-    DemoShaderProgram * demo_program_;
-    BlockShaderProgram *block_program_;
+    base::Arena *const      arena_;
+    DemoShaderProgram *     demo_program_;
+    BillboardShaderProgram *billboard_program_;
+    BlockShaderProgram *    block_program_;
 };  // class ShaderLibrary
 
 class ShaderProgram : public base::ArenaObject {
@@ -44,6 +47,8 @@ public:
 
     void Use();
     void Unuse();
+
+    void SetAttribute(int location, int size, int stride, int offset);
 
     virtual void Enable(){};
     virtual void Disable(){};
@@ -59,15 +64,9 @@ protected:
 template <class T, class = std::enable_if_t<std::is_base_of<ShaderProgram, T>::value>>
 class ShaderProgramScope {
 public:
-    explicit ShaderProgramScope(T *program) : program_(program) {
-        program_->Use();
-        //program_->Enable();
-    }
+    explicit ShaderProgramScope(T *program) : program_(program) { program_->Use(); }
 
-    ~ShaderProgramScope() {
-        //program_->Disable();
-        program_->Unuse();
-    }
+    ~ShaderProgramScope() { program_->Unuse(); }
 
     T *operator->() { return program_; }
 
@@ -82,20 +81,10 @@ public:
     DEF_VAL_GETTER(int, projection_matrix);
     DEF_VAL_GETTER(int, view_matrix);
     DEF_VAL_GETTER(int, model_matrix);
-    DEF_VAL_GETTER(int, position);
-    DEF_VAL_GETTER(int, normal);
-    DEF_VAL_GETTER(int, uv);
 
     void SetProjectionMatrix(const Matrix<float> &mat);
     void SetViewMatrix(const Matrix<float> &mat);
     void SetModelMatrix(const Matrix<float> &mat);
-
-    void SetPositionAttribute(int size, int stride, int offset);
-    void SetNormalAttribute(int size, int stride, int offset);
-    void SetUVAttribute(int size, int stride, int offset);
-
-    void Enable() override;
-    void Disable() override;
 
     friend class ShaderLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(UniversalShaderProgram);
@@ -107,20 +96,49 @@ private:
     int projection_matrix_;
     int view_matrix_;
     int model_matrix_;
-    int position_;
-    int normal_;
-    int uv_;
 };  // class UniversalShaderProgram
 
 class DemoShaderProgram : public UniversalShaderProgram {
 public:
+    DEF_VAL_GETTER(int, position);
+    DEF_VAL_GETTER(int, normal);
+    DEF_VAL_GETTER(int, uv);
+
+    void Enable() override;
+    void Disable() override;
+
     friend class ShaderLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(DemoShaderProgram);
 
 private:
     DemoShaderProgram(uint32_t program);
 
+    int position_;
+    int normal_;
+    int uv_;
 };  // class BlockShaderProgram
+
+class BillboardShaderProgram : public UniversalShaderProgram {
+public:
+    DEF_VAL_GETTER(int, uv);
+    DEF_VAL_GETTER(int, position);
+    DEF_VAL_GETTER(int, center_position);
+
+    void SetCenterPosition(const Vector3f &pos);
+
+    void Enable() override;
+    void Disable() override;
+
+    friend class ShaderLibrary;
+    DISALLOW_IMPLICIT_CONSTRUCTORS(BillboardShaderProgram);
+
+private:
+    BillboardShaderProgram(uint32_t program);
+
+    int center_position_;
+    int position_;
+    int uv_;
+};  // class BillboardShaderProgram
 
 class BlockShaderProgram : public UniversalShaderProgram {
 public:
@@ -132,6 +150,9 @@ public:
     DEF_VAL_GETTER(int, diffuse_light);
     DEF_VAL_GETTER(int, specular_material);
     DEF_VAL_GETTER(int, specular_light);
+    DEF_VAL_GETTER(int, position);
+    DEF_VAL_GETTER(int, normal);
+    DEF_VAL_GETTER(int, uv);
 
     void SetDirectionalLight(const Vector3f &value);
     void SetCameraPosition(const Vector3f &value);
@@ -144,6 +165,9 @@ public:
 
     void SetSpecularMaterial(const Vector3f &value);
     void SetSpecularLight(const Vector3f &value);
+
+    void Enable() override;
+    void Disable() override;
 
     friend class ShaderLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(BlockShaderProgram);
@@ -167,6 +191,10 @@ private:
     int diffuse_light_;
     int specular_material_;
     int specular_light_;
+
+    int position_;
+    int normal_;
+    int uv_;
 };  // class BlockShaderProgram
 
 }  // namespace res

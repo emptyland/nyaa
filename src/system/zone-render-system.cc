@@ -81,9 +81,6 @@ void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo_[1][1].buffer);
     shader->Enable();
-    shader->SetPositionAttribute(4, 8, 0);
-    shader->SetNormalAttribute(4, 8, 3);
-    shader->SetUVAttribute(4, 8, 6);
     glDrawArrays(GL_QUADS, 0, vbo_[1][1].count);
     shader->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);

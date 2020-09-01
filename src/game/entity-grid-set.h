@@ -67,6 +67,8 @@ public:
     EntityGridSet();
     ~EntityGridSet();
 
+    DEF_PTR_GETTER(entity::PlayerEntity, player);
+
     EntityGrid *grid(int x, int y) {
         DCHECK_GE(x, 0);
         DCHECK_LT(x, kRegionSize);
@@ -100,6 +102,7 @@ private:
         }
     }
 
+    entity::PlayerEntity *player_ = nullptr;
     std::unordered_map<EntityId, entity::Entity *, EntityHash> entities_;
 
     EntityGrid empty_grid_;

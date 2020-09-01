@@ -5,10 +5,12 @@ namespace nyaa {
 
 namespace {  // internal
 
-class EntityVirtualDBImpl : public EntityVirtualDB {
+class EntityVirtualDBImpl final : public EntityVirtualDB {
 public:
     EntityVirtualDBImpl(EntityGridSet *entity_grids) : entity_grids_(entity_grids) {}
     ~EntityVirtualDBImpl() final {}
+
+    entity::PlayerEntity *FindPlayer() const final { return entity_grids_->player(); }
 
 private:
     EntityGridSet *entity_grids_;

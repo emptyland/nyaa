@@ -5,6 +5,7 @@
 #include "component/ai-state-component.h"
 #include "component/avatar-component.h"
 #include "component/movement-component.h"
+#include "component/property-components.h"
 #include "entity/entity.h"
 
 namespace nyaa {
@@ -31,8 +32,11 @@ public:
     DEF_VAL_PROP_RM(com::AvatarComponent, avatar);
     DEF_VAL_PROP_RM(com::MovementComponent, movement);
     DEF_VAL_PROP_RM(com::AIStateComponent, ai_state);
+    DEF_VAL_PROP_RM(com::NPCNaturePropertiesComponent, nature_properties);
 
-    //const char *name() const { return def()->name(); }
+    void set_spawn_point(const Vector3f &point) {
+        nature_properties_.set_spawn_point(point);
+    }
 
     float ZOrder() const final { return -movement().coord().y; }
 
@@ -44,6 +48,8 @@ private:
     com::AvatarComponent   avatar_;
     com::MovementComponent movement_;
     com::AIStateComponent  ai_state_;
+
+    com::NPCNaturePropertiesComponent nature_properties_;
 };  // class ActorEntity
 
 }  // namespace entity

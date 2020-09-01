@@ -37,7 +37,10 @@ EntityGrid *EntityGridSet::ViewGrid(const com::ViewportComponent &viewport, int 
     return &grids_[abs_x][abs_y];
 }
 
-void EntityGridSet::UpdatePlayer(entity::PlayerEntity *obj) { Update(obj->movement().coord(), obj); }
+void EntityGridSet::UpdatePlayer(entity::PlayerEntity *obj) {
+    Update(obj->movement().coord(), obj);
+    player_ = obj;
+}
 
 void EntityGridSet::UpdateActor(entity::ActorEntity *obj) { Update(obj->movement().coord(), obj); }
 

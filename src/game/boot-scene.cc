@@ -66,16 +66,16 @@ void BootScene::Reset() {
         vertices[i * 32 + 31] = tex->coord(3).y;
     }
 
-    res::DemoShaderProgram *program = game()->shader_lib()->demo_program();
+    //res::DemoShaderProgram *program = game()->shader_lib()->demo_program();
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    program->SetPositionAttribute(4, 8, 0);
-    program->SetNormalAttribute(4, 8, 3);
-    program->SetUVAttribute(4, 8, 6);
+    // program->SetPositionAttribute(4, 8, 0);
+    // program->SetNormalAttribute(4, 8, 3);
+    // program->SetUVAttribute(4, 8, 6);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }

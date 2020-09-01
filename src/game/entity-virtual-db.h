@@ -7,6 +7,7 @@
 namespace nyaa {
 
 namespace entity {
+class PlayerEntity;
 class Entity;
 }  // namespace entity
 
@@ -17,6 +18,8 @@ class EntityVirtualDB {
 public:
     inline EntityVirtualDB() = default;
     virtual ~EntityVirtualDB();
+
+    virtual entity::PlayerEntity *FindPlayer() const = 0;
     
     static EntityVirtualDB *New(EntityGridSet *entity_grids);
 

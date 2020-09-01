@@ -7,6 +7,7 @@
 namespace nyaa {
 namespace com {
 class MovementComponent;
+class NPCNaturePropertiesComponent;
 class ZoneComponent;
 class AIStateComponent;
 }  // namespace com
@@ -17,13 +18,15 @@ class ActorAISystem {
 public:
     ActorAISystem() = default;
 
-    void Update(com::AIStateComponent * ai_state,   // :format
-                com::MovementComponent *movement,   // :format
-                com::ZoneComponent *    zone,       // :format
-                EntityGridDB *          entity_db,  // :format
-                double                  delta);
+    void Update(com::AIStateComponent *            ai_state,  // :format
+                com::MovementComponent *           movement,  // :format
+                com::NPCNaturePropertiesComponent *nature_properties,
+                com::ZoneComponent *               zone,       // :format
+                EntityGridDB *                     entity_db,  // :format
+                double                             delta);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ActorAISystem);
+
 private:
 };  // class ActorAISystem
 

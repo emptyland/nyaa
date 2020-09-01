@@ -13,20 +13,26 @@ const char ShaderLibrary::kShaderDefFileName[] = "shader/def.txt";
 const char kDemoFSFileName[] = "demo.fs";
 const char kDemoVSFileName[] = "demo.vs";
 
+const char kBillboardFSFileName[] = "billboard.fs";
+const char kBillboardVSFileName[] = "billboard.vs";
+
 const char kBlockFSFileName[] = "block.fs";
 const char kBlockVSFileName[] = "block.vs";
 
 void ShaderProgram::Use() { glUseProgram(handle()); }
 void ShaderProgram::Unuse() { glUseProgram(0); }
 
-UniversalShaderProgram::UniversalShaderProgram(uint32_t program) : ShaderProgram(program) {
-    projection_matrix_ = glGetUniformLocation(handle_, "projectionMatrix");
-    view_matrix_       = glGetUniformLocation(handle_, "viewMatrix");
-    model_matrix_      = glGetUniformLocation(handle_, "modelMatrix");
-    position_          = glGetAttribLocation(handle_, "position");
-    normal_            = glGetAttribLocation(handle_, "normal");
-    uv_                = glGetAttribLocation(handle_, "uv");
+void ShaderProgram::SetAttribute(int location, int size, int stride, int offset) {
+    DCHECK_NE(-1, location);
+    glVertexAttribPointer(location, size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
+                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
 }
+
+UniversalShaderProgram::UniversalShaderProgram(uint32_t program)
+    : ShaderProgram(program)
+    , projection_matrix_(glGetUniformLocation(handle_, "projectionMatrix"))
+    , view_matrix_(glGetUniformLocation(handle_, "viewMatrix"))
+    , model_matrix_(glGetUniformLocation(handle_, "modelMatrix")) {}
 
 void UniversalShaderProgram::SetProjectionMatrix(const Matrix<float> &mat) {
     DCHECK_NE(-1, projection_matrix());
@@ -43,37 +49,44 @@ void UniversalShaderProgram::SetModelMatrix(const Matrix<float> &mat) {
     glUniformMatrix4fv(model_matrix(), 1, GL_FALSE, mat.values());
 }
 
-void UniversalShaderProgram::SetPositionAttribute(int size, int stride, int offset) {
-    DCHECK_NE(-1, position());
-    glVertexAttribPointer(position(), size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
-                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
-}
+DemoShaderProgram::DemoShaderProgram(uint32_t program)
+    : UniversalShaderProgram(program)
+    , position_(glGetAttribLocation(handle_, "position"))
+    , normal_(glGetAttribLocation(handle_, "normal"))
+    , uv_(glGetAttribLocation(handle_, "uv")) {}
 
-void UniversalShaderProgram::SetNormalAttribute(int size, int stride, int offset) {
-    DCHECK_NE(-1, normal());
-    glVertexAttribPointer(normal(), size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
-                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
-}
-
-void UniversalShaderProgram::SetUVAttribute(int size, int stride, int offset) {
-    DCHECK_NE(-1, uv());
-    glVertexAttribPointer(uv(), size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat),
-                          reinterpret_cast<void *>(offset * sizeof(GLfloat)));
-}
-
-void UniversalShaderProgram::Enable() /*override*/ {
+void DemoShaderProgram::Enable() /*override*/ {
     glEnableVertexAttribArray(position());
     glEnableVertexAttribArray(normal());
     glEnableVertexAttribArray(uv());
+    SetAttribute(position(), 4, 8, 0);
+    SetAttribute(normal(), 4, 8, 3);
+    SetAttribute(uv(), 4, 8, 6);
 }
 
-void UniversalShaderProgram::Disable() /*override*/ {
+void DemoShaderProgram::Disable() /*override*/ {
     glDisableVertexAttribArray(position());
     glDisableVertexAttribArray(normal());
     glDisableVertexAttribArray(uv());
 }
 
-DemoShaderProgram::DemoShaderProgram(uint32_t program) : UniversalShaderProgram(program) {}
+BillboardShaderProgram::BillboardShaderProgram(uint32_t program)
+    : UniversalShaderProgram(program)
+    , center_position_(glGetAttribLocation(handle_, "centerPosition"))
+    , position_(glGetAttribLocation(handle_, "position"))
+    , uv_(glGetAttribLocation(handle_, "uv")) {}
+
+void BillboardShaderProgram::Enable() /*override*/ {
+    glEnableVertexAttribArray(position());
+    glEnableVertexAttribArray(uv());
+    SetAttribute(position(), 4, 3, 0);
+    SetAttribute(uv(), 4, 3, 3);
+}
+
+void BillboardShaderProgram::Disable() /*override*/ {
+    glDisableVertexAttribArray(position());
+    glDisableVertexAttribArray(uv());
+}
 
 BlockShaderProgram::BlockShaderProgram(uint32_t program)
     : UniversalShaderProgram(program)
@@ -84,7 +97,25 @@ BlockShaderProgram::BlockShaderProgram(uint32_t program)
     , diffuse_material_(glGetUniformLocation(program, "diffuseMaterial"))
     , diffuse_light_(glGetUniformLocation(program, "diffuseLight"))
     , specular_material_(glGetUniformLocation(program, "specularMaterial"))
-    , specular_light_(glGetUniformLocation(program, "specularLight")) {}
+    , specular_light_(glGetUniformLocation(program, "specularLight"))
+    , position_(glGetAttribLocation(handle_, "position"))
+    , normal_(glGetAttribLocation(handle_, "normal"))
+    , uv_(glGetAttribLocation(handle_, "uv")) {}
+
+void BlockShaderProgram::Enable() /*override*/ {
+    glEnableVertexAttribArray(position());
+    glEnableVertexAttribArray(normal());
+    glEnableVertexAttribArray(uv());
+    SetAttribute(position(), 4, 8, 0);
+    SetAttribute(normal(), 4, 8, 3);
+    SetAttribute(uv(), 4, 8, 6);
+}
+
+void BlockShaderProgram::Disable() /*override*/ {
+    glDisableVertexAttribArray(position());
+    glDisableVertexAttribArray(normal());
+    glDisableVertexAttribArray(uv());
+}
 
 void BlockShaderProgram::SetDirectionalLight(const Vector3f &value) {
     DCHECK_NE(-1, directional_light());
@@ -132,6 +163,11 @@ bool ShaderLibrary::Prepare(const std::string &dir) {
     if (!MakeShader(dir + "/" + kDemoFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
     if (!MakeProgram(vs, fs, &program)) { return false; }
     demo_program_ = new (arena_) DemoShaderProgram(program);
+
+    if (!MakeShader(dir + "/" + kBillboardVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
+    if (!MakeShader(dir + "/" + kBillboardFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
+    if (!MakeProgram(vs, fs, &program)) { return false; }
+    billboard_program_ = new (arena_) BillboardShaderProgram(program);
 
     if (!MakeShader(dir + "/" + kBlockVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
     if (!MakeShader(dir + "/" + kBlockFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }

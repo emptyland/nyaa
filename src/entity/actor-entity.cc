@@ -14,6 +14,14 @@ ActorEntity::ActorEntity(EntityId id, ResourceId actor_id)
     , ai_state_(def_->ai()) {
     DCHECK(def() != nullptr);
     DCHECK(avatar().def() != nullptr);
+
+    nature_properties_.set_jump_speed(def()->jump_speed());
+    nature_properties_.set_move_speed(def()->move_speed());
+    nature_properties_.set_patrol_radius(def()->patrol_radius());
+
+    nature_properties_.set_camp(def()->camp());
+    nature_properties_.set_difficulty(def()->difficulty());
+    nature_properties_.set_yi(def()->yi());
 }
 
 }  // namespace entity
