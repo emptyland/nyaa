@@ -123,8 +123,10 @@ public:
     DEF_VAL_GETTER(int, uv);
     DEF_VAL_GETTER(int, position);
     DEF_VAL_GETTER(int, center_position);
+    DEF_VAL_GETTER(int, size);
 
     void SetCenterPosition(const Vector3f &pos);
+    void SetSize(const Vector2f &size);
 
     void Enable() override;
     void Disable() override;
@@ -136,6 +138,7 @@ private:
     BillboardShaderProgram(uint32_t program);
 
     int center_position_;
+    int size_;
     int position_;
     int uv_;
 };  // class BillboardShaderProgram

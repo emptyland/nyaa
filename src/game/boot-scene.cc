@@ -66,18 +66,27 @@ void BootScene::Reset() {
         vertices[i * 32 + 31] = tex->coord(3).y;
     }
 
-    //res::DemoShaderProgram *program = game()->shader_lib()->demo_program();
+    // res::DemoShaderProgram *program = game()->shader_lib()->demo_program();
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // program->SetPositionAttribute(4, 8, 0);
-    // program->SetNormalAttribute(4, 8, 3);
-    // program->SetUVAttribute(4, 8, 6);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    float billboard[] = {
+        -1, -1, 0, /*uv*/ tex->coord(0).x, tex->coord(0).y,  // :format
+        +1, -1, 0, /*uv*/ tex->coord(1).x, tex->coord(1).y,  // :format
+        +1, +1, 0, /*uv*/ tex->coord(2).x, tex->coord(2).y,  // :format
+        -1, +1, 0, /*uv*/ tex->coord(3).x, tex->coord(3).y,  // :format
+    };
+
+    glGenBuffers(1, &billboard_vbo_);
+    glBindBuffer(GL_ARRAY_BUFFER, billboard_vbo_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(billboard), billboard, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void BootScene::OnKeyInput(int key, int code, int action, int mods) {
@@ -122,32 +131,55 @@ void BootScene::Render(double d) {
 
     Matrix view_mat;
     view_mat.Translate(0, 0, -2);
+    mat.Rotate(0, 1, 0, y_rolated_);
+    view_mat.Multiply(mat);
+    mat.Rotate(0, 0, 1, z_rolated_);
+    view_mat.Multiply(mat);
+    mat.Scale(0.1, 0.1, 0.1);
+    view_mat.Multiply(mat);
 
     Matrix model_mat;
-    model_mat.Rotate(0, 1, 0, y_rolated_);
-    mat.Rotate(0, 0, 1, z_rolated_);
-    model_mat.Multiply(mat);
-    mat.Scale(0.1, 0.1, 0.1);
-    model_mat.Multiply(mat);
+    model_mat.Identity();
+    // model_mat.Rotate(0, 1, 0, y_rolated_);
+    // mat.Rotate(0, 0, 1, z_rolated_);
+    // model_mat.Multiply(mat);
+    // mat.Scale(0.1, 0.1, 0.1);
+    // model_mat.Multiply(mat);
 
     Matrix proj_mat;
     proj_mat.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
 
-    res::ShaderProgramScope program(game()->shader_lib()->demo_program());
-
-    program->SetProjectionMatrix(proj_mat);
-    program->SetViewMatrix(view_mat);
-    program->SetModelMatrix(model_mat);
+    res::DemoShaderProgram *demo = game()->shader_lib()->demo_program();
+    demo->Use();
+    demo->SetProjectionMatrix(proj_mat);
+    demo->SetViewMatrix(view_mat);
+    demo->SetModelMatrix(model_mat);
 
     res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
     glBindTexture(GL_TEXTURE_2D, tex->tex_id());
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-    program->Enable();
+    demo->Enable();
     glDrawArrays(GL_QUADS, 0, 24);
-    program->Disable();
+    demo->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // glDisable(GL_CULL_FACE);
+    res::BillboardShaderProgram *billboard = game()->shader_lib()->billboard_program();
+    billboard->Use();
+    billboard->SetProjectionMatrix(proj_mat);
+    billboard->SetViewMatrix(view_mat);
+    //model_mat.Identity();
+    //model_mat.Translate(0, 0, -1);
+    //billboard->SetModelMatrix(model_mat);
+    billboard->SetCenterPosition(Vec3(0, 0, 0));
+    billboard->SetSize(Vec2(0.2, 0.2));
+
+    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
+    glBindBuffer(GL_ARRAY_BUFFER, billboard_vbo_);
+    billboard->Enable();
+    glDrawArrays(GL_QUADS, 0, 4);
+    billboard->Disable();
+    billboard->Unuse();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 }  // namespace nyaa

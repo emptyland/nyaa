@@ -24,6 +24,7 @@ public:
 private:
     uint32_t vao_;
     uint32_t vbo_;
+    uint32_t billboard_vbo_ = 0;
     float y_rolated_ = 45;
     float z_rolated_ = 45;
 };  // class BootScene
