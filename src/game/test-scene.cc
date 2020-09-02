@@ -226,7 +226,7 @@ void TestScene::Render(double delta) {
         bb_shader->SetViewMatrix(view_mat);
         bb_shader->SetProjectionMatrix(proj_mat);
         Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
-        game()->actor_billboard()->Render(actor->movement().coord() - view, Vec3(0.0, 1.0, 0.0), actor->id(),
+        game()->actor_billboard()->Render(actor->movement().coord() - view, Vec3(1.0, 1.0, 1.0), actor->id(),
                                           actor->mutable_nature_properties());
     }
 

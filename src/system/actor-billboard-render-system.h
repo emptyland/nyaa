@@ -43,7 +43,8 @@ private:
 
     VboEntry dummy_;
     int      max_entries_ = 1024;
-
+    // uint32_t vbo_ = 0;
+    // std::vector<float> buf_;
     std::unordered_map<EntityId, VboEntry *, EntityHash> entries_;
 };  // class ActorBillboardRenderSystem
 

@@ -27,10 +27,10 @@ void ActorBillboardRenderSystem::Render(const Vector3f &position, const Vector3f
 
     Matrix model;
     VboEntry *entry = EnsureBufferdVbo(name, id);
-    model.Translate(position.x, position.y, position.z + 1.5);
+    model.Translate(position.x - entry->size.x, position.y, position.z - 1.5);
     shader->SetModelMatrix(model);
     shader->SetCenterPosition(entry->center);
-    shader->SetSize(entry->size);
+    shader->SetSize(Vec2(0.1, 0.1));
     shader->SetPaintColor(color);
 
     glBindBuffer(GL_ARRAY_BUFFER, entry->vbo);
@@ -75,17 +75,17 @@ ActorBillboardRenderSystem::VboEntry *  // :format
     std::vector<float> vertices;
 
     Boundf bound      = Game::This()->font_lib()->default_face()->Render(name, 0, 0, 0, &vertices);
-    float  pixel_size = Game::This()->font_lib()->default_face()->pixel_size();
+    //float  pixel_size = Game::This()->font_lib()->default_face()->pixel_size();
 
     for (int i = 0; i < vertices.size(); i += 5) {
-        vertices[i + 0] /= pixel_size;
-        vertices[i + 1] /= pixel_size;
-        vertices[i + 2] /= pixel_size;
+        vertices[i + 0] /= bound.h;
+        vertices[i + 1] /= bound.h;
+        vertices[i + 2] /= bound.h;
     }
 
     entry->count  = vertices.size() / 5;
-    entry->size.x = bound.w / pixel_size / 60;
-    entry->size.y = bound.h / pixel_size / 30;
+    entry->size.x = bound.w / bound.h;
+    entry->size.y = bound.h / bound.h;
     entry->center = Vec3(bound.x + entry->size.x / 2, bound.y + entry->size.y / 2, 0);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
