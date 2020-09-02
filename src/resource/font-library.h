@@ -56,8 +56,12 @@ public:
 
     DEF_VAL_GETTER(uint32_t, buffered_tex);
 
-    void Render(std::string_view text, float x, float y, Vector3f color = {1, 1, 1});
-    void Render(TextID id, float x, float y, Vector3f color = {1, 1, 1});
+    Vector2f ApproximateSize(TextID id);
+    Vector2f ApproximateSize(std::string_view text);
+
+    Boundf Render(std::string_view text, float x, float y, Vector3f color = {1, 1, 1});
+    Boundf Render(TextID id, float x, float y, Vector3f color = {1, 1, 1});
+    Boundf Render(std::string_view text, float x, float y, float z, std::vector<float> *vertices);
 
     struct Character : public base::ArenaObject {
         Character *next_ = nullptr;

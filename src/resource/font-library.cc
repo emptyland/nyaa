@@ -57,63 +57,96 @@ void FontFace::Prepare() {
     }
 }
 
-void FontFace::Render(TextID id, float x, float y, Vector3f color) {
-    std::string_view text = ThisGame->text_lib()->Load(id);
-    Render(text, x, y, color);
+Vector2f FontFace::ApproximateSize(TextID id) {
+    std::string_view text = Game::This()->text_lib()->Load(id);
+    return ApproximateSize(text);
 }
 
-void FontFace::Render(std::string_view text, float x, float y, Vector3f color) {
-    std::vector<const Character *> chars;
-    glBindTexture(GL_TEXTURE_2D, buffered_tex_);
+Vector2f FontFace::ApproximateSize(std::string_view text) {
+    Vector2f                    size{0, 0};
     base::CodePointIteratorUtf8 iter(text);
     for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
         const Character *info = FindOrInsertCharacter(iter.ToU32());
-        chars.push_back(info);
+        size.x += (info->glyph.w + (info->advance >> 6));
+        size.y = std::max(size.y, static_cast<float>(info->glyph.y + info->bearing.y));
     }
+    return size;
+}
+
+Boundf FontFace::Render(TextID id, float x, float y, Vector3f color) {
+    std::string_view text = Game::This()->text_lib()->Load(id);
+    return Render(text, x, y, color);
+}
+
+Boundf FontFace::Render(std::string_view text, float x, float y, Vector3f color) {
+    std::vector<float> vertices;
+    vertices.reserve(text.size() * 5 * 4);
+    Boundf bound = Render(text, x, y, 0, &vertices);
 
     Game::This()->transform()->Enter2DProjection();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, buffered_tex_);
 
     glColor3f(color.x, color.y, color.z);
     glBegin(GL_QUADS);
 
-    // TL TR | BL BR
-    // BL BR | TL TR
-    for (const Character *info : chars) {
-        if (!info) { continue; }
-        double x_pos = x + info->bearing.x;
-        double y_pos = y - (info->glyph.h - info->bearing.y);
-
-        double x_tex = static_cast<double>(info->glyph.x) / kBufferTexWf;
-        double y_tex = static_cast<double>(info->glyph.y) / kBufferTexHf;
-        glTexCoord2d(x_tex, y_tex);
-        glVertex3d(x_pos, y_pos + info->glyph.h, 0);  // TL
-
-        x_tex = static_cast<double>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        y_tex = static_cast<double>(info->glyph.y) / kBufferTexHf;
-        glTexCoord2d(x_tex, y_tex);
-        glVertex3d(x_pos + info->glyph.w, y_pos + info->glyph.h, 0);  // TR
-
-        x_tex = static_cast<double>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        y_tex = static_cast<double>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-        glTexCoord2d(x_tex, y_tex);
-        glVertex3d(x_pos + info->glyph.w, y_pos, 0);  // BR
-
-        x_tex = static_cast<double>(info->glyph.x) / kBufferTexWf;
-        y_tex = static_cast<double>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-        glTexCoord2d(x_tex, y_tex);
-        glVertex3d(x_pos, y_pos, 0);  // BL
-
-        x += (info->advance >> 6);
+    for (int i = 0; i < vertices.size(); i += 5) {
+        glTexCoord2f(vertices[i + 3], vertices[i + 4]);
+        glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
     }
     glEnd();
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
     Game::This()->transform()->Exit2DProjection();
+    return bound;
+}
+
+Boundf FontFace::Render(std::string_view text, float x, float y, float z, std::vector<float> *receiver) {
+    Boundf bound{x, y, 0, 0};
+    base::CodePointIteratorUtf8 iter(text);
+    for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
+        const Character *info = FindOrInsertCharacter(iter.ToU32());
+        if (!info) { continue; }
+        float x_pos = x + info->bearing.x;
+        float y_pos = y - (info->glyph.h - info->bearing.y);
+
+        size_t pos = receiver->size();
+        receiver->resize(pos + 5 * 4);
+        float *vertices = &receiver->at(pos);
+
+        vertices[0] = x_pos;
+        vertices[1] = y_pos + info->glyph.h;
+        vertices[2] = z;
+        vertices[3] = static_cast<float>(info->glyph.x) / kBufferTexWf;
+        vertices[4] = static_cast<float>(info->glyph.y) / kBufferTexHf;
+
+        vertices[5] = x_pos + info->glyph.w;
+        vertices[6] = y_pos + info->glyph.h;
+        vertices[7] = z;
+        vertices[8] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+        vertices[9] = static_cast<float>(info->glyph.y) / kBufferTexHf;
+
+        vertices[10] = x_pos + info->glyph.w;
+        vertices[11] = y_pos;
+        vertices[12] = z;
+        vertices[13] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+        vertices[14] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
+
+        vertices[15] = x_pos;
+        vertices[16] = y_pos;
+        vertices[17] = z;
+        vertices[18] = static_cast<float>(info->glyph.x) / kBufferTexWf;
+        vertices[19] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
+
+        x += (info->advance >> 6);
+        bound.w += (info->glyph.w + (info->advance >> 6));
+        bound.y = std::max(bound.y, static_cast<float>(info->glyph.y + info->bearing.y));
+    }
+    return bound;
 }
 
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {
@@ -150,6 +183,8 @@ const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) 
     info->bearing.y  = face_->glyph->bitmap_top;
     info->advance    = face_->glyph->advance.x;
 
+    glBindTexture(GL_TEXTURE_2D, buffered_tex_);
+    glDisable(GL_BLEND);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexSubImage2D(GL_TEXTURE_2D, 0, info->glyph.x, info->glyph.y, info->glyph.w, info->glyph.h, GL_ALPHA,
                     GL_UNSIGNED_BYTE, face_->glyph->bitmap.buffer);

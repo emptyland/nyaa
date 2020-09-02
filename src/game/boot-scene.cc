@@ -173,6 +173,7 @@ void BootScene::Render(double d) {
     billboard->SetCenterPosition(Vec3(0, 0, 0));
     billboard->SetSize(Vec2(0.2, 0.2));
 
+    glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_2D, tex->tex_id());
     glBindBuffer(GL_ARRAY_BUFFER, billboard_vbo_);
     billboard->Enable();
@@ -180,6 +181,7 @@ void BootScene::Render(double d) {
     billboard->Disable();
     billboard->Unuse();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnable(GL_DEPTH_TEST);
 }
 
 }  // namespace nyaa
