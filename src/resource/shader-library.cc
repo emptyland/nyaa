@@ -73,6 +73,7 @@ void DemoShaderProgram::Disable() /*override*/ {
 BillboardShaderProgram::BillboardShaderProgram(uint32_t program)
     : UniversalShaderProgram(program)
     , center_position_(glGetUniformLocation(handle_, "billboardCenterPosition"))
+    , paint_color_(glGetUniformLocation(handle_, "paintColor"))
     , size_(glGetUniformLocation(handle_, "billboardSize"))
     , position_(glGetAttribLocation(handle_, "position"))
     , uv_(glGetAttribLocation(handle_, "uv")) {}
@@ -80,6 +81,11 @@ BillboardShaderProgram::BillboardShaderProgram(uint32_t program)
 void BillboardShaderProgram::SetCenterPosition(const Vector3f &pos) {
     DCHECK_NE(-1, center_position());
     glUniform3f(center_position(), pos.x, pos.y, pos.z);
+}
+
+void BillboardShaderProgram::SetPaintColor(const Vector3f &color) {
+    DCHECK_NE(-1, paint_color());
+    glUniform3f(paint_color(), color.x, color.y, color.z);
 }
 
 void BillboardShaderProgram::SetSize(const Vector2f &input) {

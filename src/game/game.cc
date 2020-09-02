@@ -7,6 +7,7 @@
 #include "system/zone-render-system.h"
 #include "system/random-zone-system.h"
 #include "system/zone-loading-system.h"
+#include "system/actor-billboard-render-system.h"
 #include "system/actor-movement-system.h"
 #include "system/avatar-render-system.h"
 #include "system/sprite-render-system.h"
@@ -35,6 +36,7 @@ Game::Game()
     , zone_loader_(new sys::ZoneLoadingSystem())
     , random_zone_(new sys::RandomZoneSystem())
     , actor_movement_(new sys::ActorMovementSystem())
+    , actor_billboard_(new sys::ActorBillboardRenderSystem())
     , sprite_render_(new sys::SpriteRenderSystem())
     , avatar_render_(new sys::AvatarRenderSystem())
     , transform_(new sys::GeometryTransformSystem())

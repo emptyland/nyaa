@@ -124,8 +124,10 @@ public:
     DEF_VAL_GETTER(int, position);
     DEF_VAL_GETTER(int, center_position);
     DEF_VAL_GETTER(int, size);
+    DEF_VAL_GETTER(int, paint_color);
 
     void SetCenterPosition(const Vector3f &pos);
+    void SetPaintColor(const Vector3f &color);
     void SetSize(const Vector2f &size);
 
     void Enable() override;
@@ -138,6 +140,7 @@ private:
     BillboardShaderProgram(uint32_t program);
 
     int center_position_;
+    int paint_color_;
     int size_;
     int position_;
     int uv_;

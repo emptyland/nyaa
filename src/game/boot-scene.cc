@@ -5,7 +5,9 @@
 #include "game/game.h"
 #include "component/avatar-component.h"
 #include "component/cube-component.h"
+#include "component/property-components.h"
 #include "system/geometry-transform-system.h"
+#include "system/actor-billboard-render-system.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/avatar-library.h"
@@ -155,33 +157,41 @@ void BootScene::Render(double d) {
     demo->SetViewMatrix(view_mat);
     demo->SetModelMatrix(model_mat);
 
-    res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
-    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-    demo->Enable();
-    glDrawArrays(GL_QUADS, 0, 24);
-    demo->Disable();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // res::Texture *tex = game()->texture_lib()->FindOrNull(ResourceId::Of(200120));
+    // glBindTexture(GL_TEXTURE_2D, tex->tex_id());
+    // glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    // demo->Enable();
+    // glDrawArrays(GL_QUADS, 0, 24);
+    // demo->Disable();
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     res::BillboardShaderProgram *billboard = game()->shader_lib()->billboard_program();
     billboard->Use();
     billboard->SetProjectionMatrix(proj_mat);
     billboard->SetViewMatrix(view_mat);
-    //model_mat.Identity();
-    //model_mat.Translate(0, 0, -1);
-    //billboard->SetModelMatrix(model_mat);
-    billboard->SetCenterPosition(Vec3(0, 0, 0));
-    billboard->SetSize(Vec2(0.2, 0.2));
 
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
-    glBindBuffer(GL_ARRAY_BUFFER, billboard_vbo_);
-    billboard->Enable();
-    glDrawArrays(GL_QUADS, 0, 4);
-    billboard->Disable();
+    com::NaturePropertiesComponent nature;
+    nature.set_name("ok");
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    game()->actor_billboard()->Render({0,0.2,1}, {1,1,0}, EntityId::Of(999), &nature);
+
     billboard->Unuse();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glEnable(GL_DEPTH_TEST);
+    // model_mat.Identity();
+    // billboard->SetModelMatrix(model_mat);
+    // billboard->SetCenterPosition(Vec3(0, 0, 0));
+    // billboard->SetSize(Vec2(0.2, 0.2));
+
+    // //glDisable(GL_DEPTH_TEST);
+    // glBindTexture(GL_TEXTURE_2D, tex->tex_id());
+    // glBindBuffer(GL_ARRAY_BUFFER, billboard_vbo_);
+    // billboard->Enable();
+    // glDrawArrays(GL_QUADS, 0, 4);
+    // billboard->Disable();
+    // billboard->Unuse();
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glEnable(GL_DEPTH_TEST);
 }
 
 }  // namespace nyaa

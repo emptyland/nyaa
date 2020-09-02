@@ -19,6 +19,8 @@ ActorEntity::ActorEntity(EntityId id, ResourceId actor_id)
     nature_properties_.set_move_speed(def()->move_speed());
     nature_properties_.set_patrol_radius(def()->patrol_radius());
 
+    nature_properties_.set_name_id(def()->name_id());
+    if (def()->name() != nullptr) { nature_properties_.set_name(def()->name()); }
     nature_properties_.set_camp(def()->camp());
     nature_properties_.set_difficulty(def()->difficulty());
     nature_properties_.set_yi(def()->yi());

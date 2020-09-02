@@ -66,6 +66,7 @@ set(GAME_SRC
     src/system/geometry-transform-system.cc
     src/system/sprite-render-system.cc
     src/system/actor-ai-system.cc
+    src/system/actor-billboard-render-system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc

@@ -143,9 +143,13 @@ Boundf FontFace::Render(std::string_view text, float x, float y, float z, std::v
         vertices[19] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
 
         x += (info->advance >> 6);
-        bound.w += (info->glyph.w + (info->advance >> 6));
-        bound.y = std::max(bound.y, static_cast<float>(info->glyph.y + info->bearing.y));
+        bound.h = std::max(bound.h, static_cast<float>(info->glyph.h + info->bearing.y));
+
+        // y - (info->glyph.h - info->bearing.y) + info->glyph.h
+        // y - info->glyph.h + info->bearing.y + info->glyph.h
+        // y + info->bearing.y
     }
+    bound.w = x - bound.x;
     return bound;
 }
 

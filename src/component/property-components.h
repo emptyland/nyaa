@@ -2,8 +2,10 @@
 #ifndef NYAA_COMPONENT_PROPERTY_COMPONENTS_H_
 #define NYAA_COMPONENT_PROPERTY_COMPONENTS_H_
 
+#include "resource/text-def-inl.h"
 #include "game/vector.h"
 #include "base/base.h"
+#include <string>
 
 namespace nyaa {
 
@@ -11,12 +13,17 @@ namespace com {
 
 class NaturePropertiesComponent {
 public:
+    DEF_VAL_PROP_RW(res::TextID, name_id);
+    DEF_VAL_PROP_RW(std::string, name);
     DEF_VAL_PROP_RW(int, yi);
     DEF_VAL_PROP_RW(int, camp);
     DEF_VAL_PROP_RW(float, jump_speed);
     DEF_VAL_PROP_RW(float, move_speed);
 
 private:
+    res::TextID name_id_ = res::MAX_TEXT_ID;
+    std::string name_;
+
     int   yi_;
     int   camp_;
     float jump_speed_;

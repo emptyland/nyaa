@@ -16,6 +16,7 @@
 #include "system/actor-movement-system.h"
 #include "system/avatar-render-system.h"
 #include "system/sprite-render-system.h"
+#include "system/actor-billboard-render-system.h"
 #include "game/game.h"
 #include "game/matrix.h"
 #include "game/entity-grid-set.h"
@@ -156,14 +157,15 @@ void TestScene::Render(double delta) {
     }
     entity_grid_set_->UpdatePlayer(player_.get());
 
-    res::BlockShaderProgram *shader = game()->shader_lib()->block_program();
-    shader->Use();
-    shader->SetDiffuseMaterial({0.6, 0.6, 0.6});
-    shader->SetDiffuseLight({0.7, 0.7, 0.7});
-    shader->SetAmbientMaterial({0.8, 0.8, 0.8});
-    shader->SetAmbientLight({ambient_light_, ambient_light_, ambient_light_});
-    shader->SetSpecularMaterial({0.7, 0.7, 0.7});
-    shader->SetSpecularLight({1.0, 1.0, 1.0});
+    res::BlockShaderProgram *    bk_shader = game()->shader_lib()->block_program();
+    res::BillboardShaderProgram *bb_shader = game()->shader_lib()->billboard_program();
+    bk_shader->Use();
+    bk_shader->SetDiffuseMaterial({0.6, 0.6, 0.6});
+    bk_shader->SetDiffuseLight({0.7, 0.7, 0.7});
+    bk_shader->SetAmbientMaterial({0.8, 0.8, 0.8});
+    bk_shader->SetAmbientLight({ambient_light_, ambient_light_, ambient_light_});
+    bk_shader->SetSpecularMaterial({0.7, 0.7, 0.7});
+    bk_shader->SetSpecularLight({1.0, 1.0, 1.0});
 
     Matrix mat;
     mat.Identity();
@@ -174,7 +176,7 @@ void TestScene::Render(double delta) {
     view_mat.Multiply(mat);
     mat.Rotate(0, 0, 1, z_rolated_);
     view_mat.Multiply(mat);
-    mat.Scale(0.1, 0.1, 0.1);
+    mat.Scale(0.2, 0.2, 0.2);
     view_mat.Multiply(mat);
 
     Vector4f camera{0, 0, -2, 1};
@@ -185,14 +187,15 @@ void TestScene::Render(double delta) {
     Matrix proj_mat;
     proj_mat.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
 
-    shader->SetViewMatrix(view_mat);
-    shader->SetProjectionMatrix(proj_mat);
-    shader->SetModelMatrix(model_mat);
-    shader->SetDirectionalLight(directional_light_);
-    shader->SetCameraPosition({camera.x, camera.y, camera.z});
+    bk_shader->SetViewMatrix(view_mat);
+    bk_shader->SetProjectionMatrix(proj_mat);
+    bk_shader->SetModelMatrix(model_mat);
+    bk_shader->SetDirectionalLight(directional_light_);
+    bk_shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
     game()->zone_render()->RenderTerrain(zone_.get());
 
+    entity::ActorEntity *actor = nullptr;
     // for (int y = 0; y < zone_->viewport().bound().y; y++) {
     for (int y = zone_->viewport().bound().y - 1; y >= 0; y--) {
         for (int x = 0; x < zone_->viewport().bound().x; x++) {
@@ -205,12 +208,10 @@ void TestScene::Render(double delta) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
                 } else if (obj->Is<entity::ActorEntity>()) {
-                    Vector3f view  = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
-                    auto     actor = obj->AsOrNull<entity::ActorEntity>();
+                    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
+                    actor         = obj->AsOrNull<entity::ActorEntity>();
 
-                    if (actor->movement().speed().z == 0) {
-                        actor->mutable_movement()->mutable_speed()->z = 10;
-                    }
+                    // if (actor->movement().speed().z == 0) { actor->mutable_movement()->mutable_speed()->z = 10; }
 
                     game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
                     entity_grid_set_->UpdateActor(actor);
@@ -220,7 +221,16 @@ void TestScene::Render(double delta) {
         }
     }
 
-    shader->Unuse();
+    if (actor) {
+        bb_shader->Use();
+        bb_shader->SetViewMatrix(view_mat);
+        bb_shader->SetProjectionMatrix(proj_mat);
+        Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
+        game()->actor_billboard()->Render(actor->movement().coord() - view, Vec3(0.0, 1.0, 0.0), actor->id(),
+                                          actor->mutable_nature_properties());
+    }
+
+    bk_shader->Unuse();
     {
         char buf[128];
         ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f, z=%0.2f, light=%0.2f,%0.2f,%0.2f",

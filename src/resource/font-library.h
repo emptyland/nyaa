@@ -55,6 +55,7 @@ public:
     ~FontFace();
 
     DEF_VAL_GETTER(uint32_t, buffered_tex);
+    DEF_VAL_GETTER(int, pixel_size);
 
     Vector2f ApproximateSize(TextID id);
     Vector2f ApproximateSize(std::string_view text);

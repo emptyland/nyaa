@@ -18,7 +18,7 @@ class Avatar;
 class Actor : public base::ArenaObject {
 public:
     DEF_VAL_GETTER(ResourceId, id);
-    DEF_VAL_GETTER(int, name_id);
+    DEF_VAL_GETTER(res::TextID, name_id);
     DEF_PTR_GETTER(const char, name);
     DEF_PTR_GETTER(Avatar, avatar);
 
@@ -35,11 +35,11 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(Actor);
 
 private:
-    Actor(ResourceId id, int name_id, const char *name, Avatar *avatar)
+    Actor(ResourceId id, res::TextID name_id, const char *name, Avatar *avatar)
         : id_(id), name_id_(name_id), name_(name), avatar_(avatar) {}
 
     const ResourceId  id_;
-    const int         name_id_;
+    const res::TextID name_id_;
     const char *const name_;
     Avatar *const     avatar_;
 
