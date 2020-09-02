@@ -19,18 +19,25 @@ ActorBillboardRenderSystem::ActorBillboardRenderSystem() {
 }
 
 void ActorBillboardRenderSystem::Render(const Vector3f &position, const Vector3f &color, EntityId id,
-                                        com::NaturePropertiesComponent *nature) {
+                                        com::NaturePropertiesComponent *nature, Vector3f *view) {
     std::string name = nature->name();
     if (nature->name_id() != res::MAX_TEXT_ID) { name = Game::This()->text_lib()->Load(nature->name_id()); }
 
     res::BillboardShaderProgram *shader = Game::This()->shader_lib()->billboard_program();
 
-    Matrix model;
+    Matrix model, mat;
     VboEntry *entry = EnsureBufferdVbo(name, id);
-    model.Translate(position.x - entry->size.x, position.y, position.z - 1.5);
-    shader->SetModelMatrix(model);
+    if (view) {
+        Vector3f pos = position - *view;
+        model.Translate(pos.x - entry->size.x/2 * 0.3/entry->size.y + 0.5, pos.y, pos.z + 2);
+    } else {
+        model.Translate(0, 0, 1);
+    }
+    mat.Scale(0.3/entry->size.y, 0.3/entry->size.y, 0.3/entry->size.y);
+    model.Multiply(mat);
     shader->SetCenterPosition(entry->center);
-    shader->SetSize(Vec2(0.1, 0.1));
+    shader->SetModelMatrix(model);
+    shader->SetSize(Vec2(0.02/entry->size.y, 0.02/entry->size.y));
     shader->SetPaintColor(color);
 
     glBindBuffer(GL_ARRAY_BUFFER, entry->vbo);
@@ -77,15 +84,15 @@ ActorBillboardRenderSystem::VboEntry *  // :format
     Boundf bound      = Game::This()->font_lib()->default_face()->Render(name, 0, 0, 0, &vertices);
     //float  pixel_size = Game::This()->font_lib()->default_face()->pixel_size();
 
-    for (int i = 0; i < vertices.size(); i += 5) {
-        vertices[i + 0] /= bound.h;
-        vertices[i + 1] /= bound.h;
-        vertices[i + 2] /= bound.h;
-    }
+    // for (int i = 0; i < vertices.size(); i += 5) {
+    //     vertices[i + 0] /= bound.h;
+    //     vertices[i + 1] /= bound.h;
+    //     vertices[i + 2] /= bound.h;
+    // }
 
     entry->count  = vertices.size() / 5;
-    entry->size.x = bound.w / bound.h;
-    entry->size.y = bound.h / bound.h;
+    entry->size.x = bound.w;
+    entry->size.y = bound.h;
     entry->center = Vec3(bound.x + entry->size.x / 2, bound.y + entry->size.y / 2, 0);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

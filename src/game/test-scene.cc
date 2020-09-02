@@ -176,7 +176,7 @@ void TestScene::Render(double delta) {
     view_mat.Multiply(mat);
     mat.Rotate(0, 0, 1, z_rolated_);
     view_mat.Multiply(mat);
-    mat.Scale(0.2, 0.2, 0.2);
+    mat.Scale(0.1, 0.1, 0.1);
     view_mat.Multiply(mat);
 
     Vector4f camera{0, 0, -2, 1};
@@ -211,7 +211,10 @@ void TestScene::Render(double delta) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     actor         = obj->AsOrNull<entity::ActorEntity>();
 
-                    // if (actor->movement().speed().z == 0) { actor->mutable_movement()->mutable_speed()->z = 10; }
+                    if (actor->movement().speed().z == 0) {
+                        actor->mutable_movement()->mutable_speed()->z = 7;
+                        //actor->mutable_movement()->mutable_speed()->y = 1;
+                    }
 
                     game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
                     entity_grid_set_->UpdateActor(actor);
@@ -226,8 +229,8 @@ void TestScene::Render(double delta) {
         bb_shader->SetViewMatrix(view_mat);
         bb_shader->SetProjectionMatrix(proj_mat);
         Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
-        game()->actor_billboard()->Render(actor->movement().coord() - view, Vec3(1.0, 1.0, 1.0), actor->id(),
-                                          actor->mutable_nature_properties());
+        game()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
+                                          actor->mutable_nature_properties(), &view);
     }
 
     bk_shader->Unuse();

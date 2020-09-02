@@ -20,15 +20,17 @@ varying vec2 fragmentUV;
 //     vec3 vertexPosition_worldspace = billboardCenterPosition + CameraRight_worldspace * position.x * billboardSize.x +
 //                                      CameraUp_worldspace * position.y * billboardSize.y;
 
+//     mat4 p = modelMatrix;
+
 //     gl_Position = projectionMatrix * viewMatrix * vec4(vertexPosition_worldspace, 1.0);
 //     fragmentUV  = uv;
 // }
 
 void main() {
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(billboardCenterPosition, 1.0);
-    gl_Position /= gl_Position.w;
-    gl_Position.xy += position.xy * billboardSize;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    // gl_Position /= gl_Position.w;
+    // gl_Position.xy += position.xy * billboardSize;
+    vec2 p = billboardSize;
+    vec3 t = billboardCenterPosition;
     fragmentUV = uv;
 }
-
-// vec2(0.2, 0.05);

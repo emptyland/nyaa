@@ -21,7 +21,8 @@ public:
 
     DEF_VAL_PROP_RW(int, max_entries);
 
-    void Render(const Vector3f &position, const Vector3f &color, EntityId id, com::NaturePropertiesComponent *nature);
+    void Render(const Vector3f &position, const Vector3f &color, EntityId id, com::NaturePropertiesComponent *nature,
+                Vector3f *view);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ActorBillboardRenderSystem);
 

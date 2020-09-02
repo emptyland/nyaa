@@ -175,7 +175,7 @@ void BootScene::Render(double d) {
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    game()->actor_billboard()->Render({0,0.2,1}, {1,1,0}, EntityId::Of(999), &nature);
+    game()->actor_billboard()->Render({0,0.2,1}, {1,1,0}, EntityId::Of(999), &nature, nullptr);
 
     billboard->Unuse();
     // model_mat.Identity();
