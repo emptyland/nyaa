@@ -18,23 +18,18 @@ varying vec3 worldPosition;
 varying vec3 fragmentNormal;
 
 void main() {
-    vec4 ambientColor = vec4(ambientMaterial * ambientLight, 1.0);
+    vec3 ambientColor = ambientMaterial * ambientLight;
 
-    vec3 norDirLight       = normalize(directionalLight);  //单位化
-    vec3 norFragmentNormal = normalize(fragmentNormal);    //单位化
+    vec3 lightDir = normalize(-directionalLight);
+    vec3 normal   = normalize(fragmentNormal);
 
-    //漫反射强度
-    float diffuseIntensity = max(0.0, dot(norDirLight, norFragmentNormal));
-    vec4  diffuseColor     = vec4(diffuseLight * diffuseMaterial * diffuseIntensity, 1.0);
+    float diffuseIntensity = max(0.0, dot(lightDir, normal));
+    vec3  diffuseColor     = diffuseLight * diffuseMaterial * diffuseIntensity;
 
-    vec4 specularColor = vec4(0.0, 0.0, 0.0, 1.0);  //黑色
-                                                    //当镜面反射不为零的时候我们才认为它具有反射光
-    if (diffuseIntensity != 0.0) {
-        vec3 reflectDir = normalize(reflect(-norDirLight, norFragmentNormal));
-        vec3 viewDir    = normalize(cameraPosition - worldPosition);
-        specularColor   = vec4(specularLight * specularMaterial, 1.0) * pow(max(0.0, dot(viewDir, reflectDir)), 0.1);
-    }
+    vec3 reflectDir    = normalize(reflect(-lightDir, normal));
+    vec3 viewDir       = normalize(cameraPosition - worldPosition);
+    vec3 specularColor = specularLight * specularMaterial * pow(max(0.0, dot(viewDir, reflectDir)), 1.0);
 
     vec4 color   = texture2D(sampler, fragmentUV);
-    gl_FragColor = (ambientColor + diffuseColor + specularColor) * color;
+    gl_FragColor = vec4(ambientColor + diffuseColor + specularColor, 1.0) * color;
 }

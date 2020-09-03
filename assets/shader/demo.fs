@@ -10,7 +10,7 @@ const vec3 diffuseMaterial  = vec3(0.4, 0.4, 0.4);
 const vec3 diffuseLight     = vec3(1.0, 1.0, 1.0);
 const vec3 specularMaterial = vec3(0.1, 0.1, 0.1);
 const vec3 specularLight    = vec3(0.4, 0.4, 0.4);
-const vec3 directionalLight = vec3(0, 1.0, 1.0);
+const vec3 directionalLight = vec3(-0.2, -1.0, -0.3);
 const vec3 cameraPosition   = vec3(0, 0, 2);
 
 varying vec2 fragmentUV;
@@ -20,7 +20,7 @@ varying vec3 fragmentNormal;
 void main() {
     vec4 ambientColor = vec4(ambientMaterial * ambientLight, 1.0);
 
-    vec3 norDirLight       = normalize(directionalLight);  //单位化
+    vec3 norDirLight       = normalize(-directionalLight);  //单位化
     vec3 norFragmentNormal = normalize(fragmentNormal);    //单位化
 
     //漫反射强度

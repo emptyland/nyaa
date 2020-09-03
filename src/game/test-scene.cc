@@ -147,6 +147,15 @@ void TestScene::Render(double delta) {
         directional_light_.x += 0.1;
     }
 
+    if (glfwGetKey(game()->window(), GLFW_KEY_O) == GLFW_PRESS) {
+        ambient_light_ = 1.0;
+    } else if (glfwGetKey(game()->window(), GLFW_KEY_P) == GLFW_PRESS) {
+        ambient_light_ = 0.3;
+        directional_light_.z = -1;
+        directional_light_.x = 0;
+        directional_light_.y = 0;
+    }
+
     if (zone_->center()) {
         game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3, delta, false);
     }
@@ -161,11 +170,11 @@ void TestScene::Render(double delta) {
     res::BillboardShaderProgram *bb_shader = game()->shader_lib()->billboard_program();
     bk_shader->Use();
     bk_shader->SetDiffuseMaterial({0.6, 0.6, 0.6});
-    bk_shader->SetDiffuseLight({0.7, 0.7, 0.7});
+    bk_shader->SetDiffuseLight({ambient_light_, ambient_light_, ambient_light_});
     bk_shader->SetAmbientMaterial({0.8, 0.8, 0.8});
     bk_shader->SetAmbientLight({ambient_light_, ambient_light_, ambient_light_});
     bk_shader->SetSpecularMaterial({0.7, 0.7, 0.7});
-    bk_shader->SetSpecularLight({1.0, 1.0, 1.0});
+    bk_shader->SetSpecularLight({ambient_light_, ambient_light_, ambient_light_});
 
     Matrix mat;
     mat.Identity();
@@ -211,10 +220,9 @@ void TestScene::Render(double delta) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     actor         = obj->AsOrNull<entity::ActorEntity>();
 
-                    if (actor->movement().speed().z == 0) {
-                        actor->mutable_movement()->mutable_speed()->z = 7;
-                        //actor->mutable_movement()->mutable_speed()->y = 1;
-                    }
+                    // if (actor->movement().speed().z == 0) {
+                    //     actor->mutable_movement()->mutable_speed()->z = 7;
+                    // }
 
                     game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
                     entity_grid_set_->UpdateActor(actor);
