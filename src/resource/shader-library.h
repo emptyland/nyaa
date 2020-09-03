@@ -149,28 +149,32 @@ private:
 class BlockShaderProgram : public UniversalShaderProgram {
 public:
     DEF_VAL_GETTER(int, directional_light);
+    DEF_VAL_GETTER(int, directional_light_color);
+    DEF_VAL_GETTER(int, point_light_position);
+    DEF_VAL_GETTER(int, point_light_color);
+    DEF_VAL_GETTER(int, point_light_constant);
+    DEF_VAL_GETTER(int, point_light_linear);
+    DEF_VAL_GETTER(int, point_light_quadratic);
     DEF_VAL_GETTER(int, camera_position);
     DEF_VAL_GETTER(int, ambient_material);
-    DEF_VAL_GETTER(int, ambient_light);
     DEF_VAL_GETTER(int, diffuse_material);
-    DEF_VAL_GETTER(int, diffuse_light);
     DEF_VAL_GETTER(int, specular_material);
-    DEF_VAL_GETTER(int, specular_light);
     DEF_VAL_GETTER(int, position);
     DEF_VAL_GETTER(int, normal);
     DEF_VAL_GETTER(int, uv);
 
     void SetDirectionalLight(const Vector3f &value);
+    void SetDirectionalLightColor(const Vector3f &value);
+    void SetPointLightPosition(const Vector3f &value);
+    void SetPointLightColor(const Vector3f &value);
+    void SetPointLightConstant(float value);
+    void SetPointLightLinear(float value);
+    void SetPointLightQuadratic(float value);
     void SetCameraPosition(const Vector3f &value);
 
     void SetAmbientMaterial(const Vector3f &value);
-    void SetAmbientLight(const Vector3f &value);
-
     void SetDiffuseMaterial(const Vector3f &value);
-    void SetDiffuseLight(const Vector3f &value);
-
     void SetSpecularMaterial(const Vector3f &value);
-    void SetSpecularLight(const Vector3f &value);
 
     void Enable() override;
     void Disable() override;
@@ -188,15 +192,21 @@ private:
     // uniform vec3 specularLight;
     // uniform vec3 directionalLight;
     // uniform vec3 cameraPosition;
+    // uniform float pointLightConstant;
+    // uniform float pointLightLinear;
+    // uniform float pointLightQuadratic;
     int directional_light_;
+    int directional_light_color_;
+    int point_light_position_;
+    int point_light_color_;
+    int point_light_constant_;
+    int point_light_linear_;
+    int point_light_quadratic_;
     int camera_position_;
 
     int ambient_material_;
-    int ambient_light_;
     int diffuse_material_;
-    int diffuse_light_;
     int specular_material_;
-    int specular_light_;
 
     int position_;
     int normal_;

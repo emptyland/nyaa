@@ -108,13 +108,16 @@ void BillboardShaderProgram::Disable() /*override*/ {
 BlockShaderProgram::BlockShaderProgram(uint32_t program)
     : UniversalShaderProgram(program)
     , directional_light_(glGetUniformLocation(program, "directionalLight"))
+    , directional_light_color_(glGetUniformLocation(program, "directionalLightColor"))
+    , point_light_position_(glGetUniformLocation(program, "pointLightPosition"))
+    , point_light_color_(glGetUniformLocation(program, "pointLightColor"))
+    , point_light_constant_(glGetUniformLocation(program, "pointLightConstant"))
+    , point_light_linear_(glGetUniformLocation(program, "pointLightLinear"))
+    , point_light_quadratic_(glGetUniformLocation(program, "pointLightQuadratic"))
     , camera_position_(glGetUniformLocation(program, "cameraPosition"))
     , ambient_material_(glGetUniformLocation(program, "ambientMaterial"))
-    , ambient_light_(glGetUniformLocation(program, "ambientLight"))
     , diffuse_material_(glGetUniformLocation(program, "diffuseMaterial"))
-    , diffuse_light_(glGetUniformLocation(program, "diffuseLight"))
     , specular_material_(glGetUniformLocation(program, "specularMaterial"))
-    , specular_light_(glGetUniformLocation(program, "specularLight"))
     , position_(glGetAttribLocation(handle_, "position"))
     , normal_(glGetAttribLocation(handle_, "normal"))
     , uv_(glGetAttribLocation(handle_, "uv")) {}
@@ -139,6 +142,36 @@ void BlockShaderProgram::SetDirectionalLight(const Vector3f &value) {
     glUniform3f(directional_light(), value.x, value.y, value.z);
 }
 
+void BlockShaderProgram::SetDirectionalLightColor(const Vector3f &value) {
+    DCHECK_NE(-1, directional_light_color());
+    glUniform3f(directional_light_color(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetPointLightPosition(const Vector3f &value) {
+    DCHECK_NE(-1, point_light_position());
+    glUniform3f(point_light_position(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetPointLightColor(const Vector3f &value) {
+    DCHECK_NE(-1, point_light_color());
+    glUniform3f(point_light_color(), value.x, value.y, value.z);
+}
+
+void BlockShaderProgram::SetPointLightConstant(float value) {
+    DCHECK_NE(-1, point_light_constant());
+    glUniform1f(point_light_constant(), value);
+}
+
+void BlockShaderProgram::SetPointLightLinear(float value) {
+    DCHECK_NE(-1, point_light_linear());
+    glUniform1f(point_light_linear(), value);
+}
+
+void BlockShaderProgram::SetPointLightQuadratic(float value) {
+    DCHECK_NE(-1, point_light_quadratic());
+    glUniform1f(point_light_quadratic(), value);
+}
+
 void BlockShaderProgram::SetCameraPosition(const Vector3f &value) {
     DCHECK_NE(-1, camera_position());
     glUniform3f(camera_position(), value.x, value.y, value.z);
@@ -149,29 +182,14 @@ void BlockShaderProgram::SetAmbientMaterial(const Vector3f &value) {
     glUniform3f(ambient_material(), value.x, value.y, value.z);
 }
 
-void BlockShaderProgram::SetAmbientLight(const Vector3f &value) {
-    DCHECK_NE(-1, ambient_light());
-    glUniform3f(ambient_light(), value.x, value.y, value.z);
-}
-
 void BlockShaderProgram::SetDiffuseMaterial(const Vector3f &value) {
     DCHECK_NE(-1, diffuse_material());
     glUniform3f(diffuse_material(), value.x, value.y, value.z);
 }
 
-void BlockShaderProgram::SetDiffuseLight(const Vector3f &value) {
-    DCHECK_NE(-1, diffuse_light());
-    glUniform3f(diffuse_light(), value.x, value.y, value.z);
-}
-
 void BlockShaderProgram::SetSpecularMaterial(const Vector3f &value) {
     DCHECK_NE(-1, specular_material());
     glUniform3f(specular_material(), value.x, value.y, value.z);
-}
-
-void BlockShaderProgram::SetSpecularLight(const Vector3f &value) {
-    DCHECK_NE(-1, specular_light());
-    glUniform3f(specular_light(), value.x, value.y, value.z);
 }
 
 bool ShaderLibrary::Prepare(const std::string &dir) {

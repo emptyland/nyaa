@@ -150,10 +150,10 @@ void TestScene::Render(double delta) {
     if (glfwGetKey(game()->window(), GLFW_KEY_O) == GLFW_PRESS) {
         ambient_light_ = 1.0;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_P) == GLFW_PRESS) {
-        ambient_light_ = 0.3;
-        directional_light_.z = -1;
-        directional_light_.x = 0;
-        directional_light_.y = 0;
+        ambient_light_ = 0.1;
+        // directional_light_.z = -1;
+        // directional_light_.x = 0;
+        // directional_light_.y = 0;
     }
 
     if (zone_->center()) {
@@ -170,11 +170,8 @@ void TestScene::Render(double delta) {
     res::BillboardShaderProgram *bb_shader = game()->shader_lib()->billboard_program();
     bk_shader->Use();
     bk_shader->SetDiffuseMaterial({0.6, 0.6, 0.6});
-    bk_shader->SetDiffuseLight({ambient_light_, ambient_light_, ambient_light_});
     bk_shader->SetAmbientMaterial({0.8, 0.8, 0.8});
-    bk_shader->SetAmbientLight({ambient_light_, ambient_light_, ambient_light_});
     bk_shader->SetSpecularMaterial({0.7, 0.7, 0.7});
-    bk_shader->SetSpecularLight({ambient_light_, ambient_light_, ambient_light_});
 
     Matrix mat;
     mat.Identity();
@@ -200,6 +197,13 @@ void TestScene::Render(double delta) {
     bk_shader->SetProjectionMatrix(proj_mat);
     bk_shader->SetModelMatrix(model_mat);
     bk_shader->SetDirectionalLight(directional_light_);
+    bk_shader->SetDirectionalLightColor(Vec3(ambient_light_, ambient_light_, ambient_light_));
+    bk_shader->SetPointLightColor(Vec3(0, 0, 0));
+    bk_shader->SetPointLightConstant(1);
+    bk_shader->SetPointLightLinear(0.09);
+    bk_shader->SetPointLightQuadratic(0.032);
+    bk_shader->SetPointLightColor(Vec3(0.7, 0.7, 0.7));
+    bk_shader->SetPointLightPosition(Vec3(0, 0, 2));
     bk_shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
     game()->zone_render()->RenderTerrain(zone_.get());
@@ -213,6 +217,8 @@ void TestScene::Render(double delta) {
                 if (obj->Is<entity::PlayerEntity>()) {
                     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
                                                     delta);
+
+                    //bk_shader->SetPointLightColor(Vec3(0, 0, 0));
                 } else if (obj->Is<entity::PlantEntity>()) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
