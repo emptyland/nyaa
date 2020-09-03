@@ -25,25 +25,28 @@ void ActorBillboardRenderSystem::Render(const Vector3f &position, const Vector3f
 
     res::BillboardShaderProgram *shader = Game::This()->shader_lib()->billboard_program();
 
-    Matrix model, mat;
-    VboEntry *entry = EnsureBufferdVbo(name, id);
+    Matrix      model, mat;
+    VboEntry *  entry        = EnsureBufferdVbo(name, id);
+    const float scale_factor = 0.3 / entry->size.y;
     if (view) {
         Vector3f pos = position - *view;
-        model.Translate(pos.x - entry->size.x/2 * 0.3/entry->size.y + 0.5, pos.y, pos.z + 2);
+        model.Translate(pos.x - entry->size.x / 2 * scale_factor + 0.5, pos.y, pos.z + 2);
     } else {
         model.Translate(0, 0, 1);
     }
-    mat.Scale(0.3/entry->size.y, 0.3/entry->size.y, 0.3/entry->size.y);
+    mat.Scale(scale_factor, scale_factor, scale_factor);
+    model.Multiply(mat);
+    mat.Rotate(-1, 0, 0, 80);
     model.Multiply(mat);
     shader->SetCenterPosition(entry->center);
     shader->SetModelMatrix(model);
-    shader->SetSize(Vec2(0.02/entry->size.y, 0.02/entry->size.y));
+    shader->SetSize(Vec2(0.02 / entry->size.y, 0.02 / entry->size.y));
     shader->SetPaintColor(color);
 
     glBindBuffer(GL_ARRAY_BUFFER, entry->vbo);
     shader->Enable();
     glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, Game::This()->font_lib()->default_face()->buffered_tex());
+    glBindTexture(GL_TEXTURE_2D, Game::This()->font_lib()->system_face()->buffered_tex());
     glDrawArrays(GL_QUADS, 0, entry->count);
     glEnable(GL_DEPTH_TEST);
     shader->Disable();
@@ -81,14 +84,7 @@ ActorBillboardRenderSystem::VboEntry *  // :format
 
     std::vector<float> vertices;
 
-    Boundf bound      = Game::This()->font_lib()->default_face()->Render(name, 0, 0, 0, &vertices);
-    //float  pixel_size = Game::This()->font_lib()->default_face()->pixel_size();
-
-    // for (int i = 0; i < vertices.size(); i += 5) {
-    //     vertices[i + 0] /= bound.h;
-    //     vertices[i + 1] /= bound.h;
-    //     vertices[i + 2] /= bound.h;
-    // }
+    Boundf bound = Game::This()->font_lib()->system_face()->Render(name, 0, 0, 0, &vertices);
 
     entry->count  = vertices.size() / 5;
     entry->size.x = bound.w;

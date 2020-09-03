@@ -34,14 +34,16 @@ public:
     ~FontLibrary();
 
     FontFace *default_face() const { return default_face_.get(); }
+    FontFace *system_face() const { return system_face_.get(); }
 
-    bool LoadFaces(const Options &options);
+    bool Prepare(const Options &options);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(FontLibrary);
 
 private:
     FT_LibraryRec_ *          lib_;
     std::unique_ptr<FontFace> default_face_;
+    std::unique_ptr<FontFace> system_face_;
     base::Arena *const        arena_;
 };  // class FontRender
 

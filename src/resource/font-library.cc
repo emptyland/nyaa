@@ -20,7 +20,7 @@ FontLibrary::FontLibrary(base::Arena *arena) : arena_(arena) {
 
 FontLibrary::~FontLibrary() { FT_Done_FreeType(lib_); }
 
-bool FontLibrary::LoadFaces(const FontLibrary::Options &options) {
+bool FontLibrary::Prepare(const FontLibrary::Options &options) {
     FT_Face  face;
     FT_Error err = FT_New_Face(lib_, options.default_font_file.c_str(), 0, &face);
     if (err) {
@@ -31,6 +31,15 @@ bool FontLibrary::LoadFaces(const FontLibrary::Options &options) {
     FT_Set_Pixel_Sizes(face, 0, options.default_font_size);
     default_face_.reset(new FontFace(face, options.default_font_size, arena_));
     default_face_->Prepare();
+
+    if (err = FT_New_Face(lib_, options.system_font_file.c_str(), 0, &face); err) {
+        DLOG(ERROR) << "Load " << options.system_font_file << " font file fail!";
+        return false;
+    }
+    FT_Select_Charmap(face, ft_encoding_unicode);
+    FT_Set_Pixel_Sizes(face, 0, options.system_font_size);
+    system_face_.reset(new FontFace(face, options.system_font_size, arena_));
+    system_face_->Prepare();
 
     return true;
 }

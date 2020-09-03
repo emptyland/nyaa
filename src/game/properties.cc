@@ -15,6 +15,8 @@ namespace nyaa {
     PROPERTY_DEF(window_height, I32),
     PROPERTY_DEF(default_font_file, STRING),
     PROPERTY_DEF(default_font_size, I32),
+    PROPERTY_DEF(system_font_file, STRING),
+    PROPERTY_DEF(system_font_size, I32),
     {nullptr, 0},
 #undef PROPERTY_DEF
 };
@@ -28,6 +30,8 @@ void Properties::Print(base::AbstractPrinter *out) const {
     out->Println("window_height: %d", window_height());
     out->Println("default_font_file: %s", default_font_file().c_str());
     out->Println("default_font_size: %d", default_font_size());
+    out->Println("system_font_file: %s", system_font_file().c_str());
+    out->Println("system_font_size: %d", system_font_size());
 }
 
 void Properties::Parse(const std::vector<std::string_view> &items) {

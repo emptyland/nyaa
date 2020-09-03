@@ -9,4 +9,4 @@ language          | text/en_US.txt
 default_font_file | PingFang.ttc
 default_font_size | 48
 system_font_file  | DinkieBitmap-9pxDemo.ttf
-system_font_size  | 32
+system_font_size  | 56

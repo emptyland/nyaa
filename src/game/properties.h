@@ -23,6 +23,8 @@ public:
     DEF_VAL_GETTER(int, window_height);
     DEF_VAL_GETTER(std::string, default_font_file);
     DEF_VAL_GETTER(int, default_font_size);
+    DEF_VAL_GETTER(std::string, system_font_file);
+    DEF_VAL_GETTER(int, system_font_size);
 
     void Print(base::AbstractPrinter *out) const;
     void Parse(const std::vector<std::string_view> &items);
@@ -52,6 +54,8 @@ private:
     int         window_height_ = 0;
     std::string default_font_file_;
     int         default_font_size_ = 0;
+    std::string system_font_file_;
+    int         system_font_size_ = 0;
 
     static const PropertyDef defs_[];
 };  // class Properties

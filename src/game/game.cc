@@ -9,6 +9,7 @@
 #include "system/zone-loading-system.h"
 #include "system/actor-billboard-render-system.h"
 #include "system/actor-movement-system.h"
+#include "system/actor-ai-system.h"
 #include "system/avatar-render-system.h"
 #include "system/sprite-render-system.h"
 #include "resource/definition.h"
@@ -36,6 +37,7 @@ Game::Game()
     , zone_loader_(new sys::ZoneLoadingSystem())
     , random_zone_(new sys::RandomZoneSystem())
     , actor_movement_(new sys::ActorMovementSystem())
+    , actor_ai_(new sys::ActorAISystem())
     , actor_billboard_(new sys::ActorBillboardRenderSystem())
     , sprite_render_(new sys::SpriteRenderSystem())
     , avatar_render_(new sys::AvatarRenderSystem())
@@ -113,7 +115,9 @@ bool Game::Prepare(const std::string &properties_file_name) {
     res::FontLibrary::Options options;
     options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
     options.default_font_size = properties()->default_font_size();
-    if (!font_lib_->LoadFaces(options)) { return false; }
+    options.system_font_file = properties()->assets_dir() + "/" + properties()->system_font_file();
+    options.system_font_size = properties()->system_font_size();
+    if (!font_lib_->Prepare(options)) { return false; }
     if (!texture_lib_->Prepare(properties()->assets_dir() + "/" + res::TextureLibrary::kTextureDefFileName)) {
         return false;
     }

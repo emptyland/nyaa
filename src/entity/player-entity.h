@@ -4,6 +4,7 @@
 
 #include "component/avatar-component.h"
 #include "component/movement-component.h"
+#include "component/property-components.h"
 #include "entity/entity.h"
 
 namespace nyaa {
@@ -16,13 +17,20 @@ public:
 
     DEF_VAL_PROP_RM(com::AvatarComponent, avatar);
     DEF_VAL_PROP_RM(com::MovementComponent, movement);
+    DEF_VAL_PROP_RM(com::CorePropertiesComponent, core_properties);
+    DEF_VAL_PROP_RM(com::CorePropertiesComponent, base_properties);
+    DEF_VAL_PROP_RM(com::NaturePropertiesComponent, nature_properties);
 
     float ZOrder() const final { return -movement().coord().y; }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(PlayerEntity);
+
 private:
-    com::AvatarComponent   avatar_;
-    com::MovementComponent movement_;
+    com::AvatarComponent           avatar_;
+    com::MovementComponent         movement_;
+    com::CorePropertiesComponent   core_properties_;
+    com::CorePropertiesComponent   base_properties_;
+    com::NaturePropertiesComponent nature_properties_;
 };  // class PlayerEntity
 
 }  // namespace entity

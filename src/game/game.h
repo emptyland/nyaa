@@ -28,6 +28,7 @@ class ZoneRenderSystem;
 class RandomZoneSystem;
 class ZoneLoadingSystem;
 class ActorMovementSystem;
+class ActorAISystem;
 class ActorBillboardRenderSystem;
 class AvatarRenderSystem;
 class GeometryTransformSystem;
@@ -61,6 +62,7 @@ public:
     sys::RandomZoneSystem *          random_zone() const { return random_zone_.get(); }
     sys::ActorBillboardRenderSystem *actor_billboard() const { return actor_billboard_.get(); }
     sys::ActorMovementSystem *       actor_movement() const { return actor_movement_.get(); }
+    sys::ActorAISystem *             actor_ai() const { return actor_ai_.get(); }
     sys::GeometryTransformSystem *   transform() const { return transform_.get(); }
 
     res::FontLibrary *   font_lib() const { return font_lib_.get(); }
@@ -112,6 +114,7 @@ private:
     std::unique_ptr<sys::ZoneLoadingSystem>          zone_loader_;
     std::unique_ptr<sys::RandomZoneSystem>           random_zone_;
     std::unique_ptr<sys::ActorMovementSystem>        actor_movement_;
+    std::unique_ptr<sys::ActorAISystem>              actor_ai_;
     std::unique_ptr<sys::ActorBillboardRenderSystem> actor_billboard_;
     std::unique_ptr<sys::SpriteRenderSystem>         sprite_render_;
     std::unique_ptr<sys::AvatarRenderSystem>         avatar_render_;

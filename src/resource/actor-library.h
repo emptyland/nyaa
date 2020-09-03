@@ -31,6 +31,13 @@ public:
     DEF_VAL_GETTER(float, move_speed);
     DEF_VAL_GETTER(float, patrol_radius);
 
+    DEF_VAL_GETTER(int, max_hp);
+    DEF_VAL_GETTER(int, max_sp);
+    DEF_VAL_GETTER(int, attack);
+    DEF_VAL_GETTER(int, defense);
+    DEF_VAL_GETTER(int, strength);
+    DEF_VAL_GETTER(int, agile);
+
     friend class ActorLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(Actor);
 
@@ -50,6 +57,12 @@ private:
     float    jump_speed_;
     float    move_speed_;
     float    patrol_radius_;
+    int      max_hp_;
+    int      max_sp_;
+    int      attack_;
+    int      defense_;
+    int      strength_;
+    int      agile_;
 };  // class Actor
 
 class ActorLibrary : public ResourceLibrary<Actor, ActorLibrary> {

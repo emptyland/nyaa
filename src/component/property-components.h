@@ -11,6 +11,24 @@ namespace nyaa {
 
 namespace com {
 
+class CorePropertiesComponent {
+public:
+    DEF_VAL_PROP_RW(int, max_hp);
+    DEF_VAL_PROP_RW(int, max_sp);
+    DEF_VAL_PROP_RW(int, attack);
+    DEF_VAL_PROP_RW(int, defense);
+    DEF_VAL_PROP_RW(int, strength);
+    DEF_VAL_PROP_RW(int, agile);
+
+private:
+    int max_hp_ = 0;
+    int max_sp_ = 0;
+    int attack_ = 0;
+    int defense_ = 0;
+    int strength_ = 0;
+    int agile_ = 0;
+};  // class CorePropertiesComponent
+
 class NaturePropertiesComponent {
 public:
     DEF_VAL_PROP_RW(res::TextID, name_id);
@@ -24,10 +42,10 @@ private:
     res::TextID name_id_ = res::MAX_TEXT_ID;
     std::string name_;
 
-    int   yi_;
-    int   camp_;
-    float jump_speed_;
-    float move_speed_;
+    int   yi_ = 0;
+    int   camp_ = 0;
+    float jump_speed_ = 0.0;
+    float move_speed_ = 0.0;
 };  // class NaturePropertiesComponent
 
 class NPCNaturePropertiesComponent : public NaturePropertiesComponent {

@@ -15,14 +15,6 @@ class Actor;
 
 namespace entity {
 
-// class NatureComponent {
-// public:
-
-// private:
-//     int yi_;
-//     int camp_;
-// };
-
 class ActorEntity final : public Entity {
 public:
     ActorEntity(EntityId id, ResourceId actor_id);
@@ -32,6 +24,8 @@ public:
     DEF_VAL_PROP_RM(com::AvatarComponent, avatar);
     DEF_VAL_PROP_RM(com::MovementComponent, movement);
     DEF_VAL_PROP_RM(com::AIStateComponent, ai_state);
+    DEF_VAL_PROP_RM(com::CorePropertiesComponent, core_properties);
+    DEF_VAL_PROP_RM(com::CorePropertiesComponent, base_properties);
     DEF_VAL_PROP_RM(com::NPCNaturePropertiesComponent, nature_properties);
 
     void set_spawn_point(const Vector3f &point) {
@@ -49,6 +43,8 @@ private:
     com::MovementComponent movement_;
     com::AIStateComponent  ai_state_;
 
+    com::CorePropertiesComponent core_properties_;
+    com::CorePropertiesComponent base_properties_;
     com::NPCNaturePropertiesComponent nature_properties_;
 };  // class ActorEntity
 

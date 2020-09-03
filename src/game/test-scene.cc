@@ -17,6 +17,7 @@
 #include "system/avatar-render-system.h"
 #include "system/sprite-render-system.h"
 #include "system/actor-billboard-render-system.h"
+#include "system/actor-ai-system.h"
 #include "game/game.h"
 #include "game/matrix.h"
 #include "game/entity-grid-set.h"
@@ -52,7 +53,7 @@ void TestScene::Reset() {
     player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;
 
     entity::ActorEntity *actor =
-        game()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100020));
+        game()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100010));
     *actor->mutable_movement() = player_->movement();
     actor->mutable_movement()->mutable_coord()->x += 1;
     actor->mutable_movement()->mutable_coord()->y += 1;
@@ -92,21 +93,12 @@ void TestScene::Render(double delta) {
     if (glfwGetKey(game()->window(), GLFW_KEY_S) == GLFW_PRESS) {
         player_->mutable_movement()->mutable_speed()->y = -speed;
         command++;
-        // if (zone_->mutable_viewport()->mutable_center_coord()->y > 0) {
-        //     zone_->mutable_viewport()->mutable_center_coord()->y -= 0.5;
-        //     command++;
-        // }
     }
     if (glfwGetKey(game()->window(), GLFW_KEY_A) == GLFW_PRESS) {
         player_->mutable_movement()->mutable_speed()->x = -speed;
         command++;
-        // if (zone_->mutable_viewport()->mutable_center_coord()->x > 0) {
-        //     zone_->mutable_viewport()->mutable_center_coord()->x -= 0.5;
-        //     command++;
-        // }
     }
     if (glfwGetKey(game()->window(), GLFW_KEY_D) == GLFW_PRESS) {
-        // zone_->mutable_viewport()->mutable_center_coord()->x += 0.5;
         player_->mutable_movement()->mutable_speed()->x = speed;
         command++;
     }
@@ -128,22 +120,16 @@ void TestScene::Render(double delta) {
     } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
         z_rolated_ += 2;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_H) == GLFW_PRESS) {
-        // if (ambient_light_ < 1) { ambient_light_ += 0.01; }
         directional_light_.y -= 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_J) == GLFW_PRESS) {
-        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.y += 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_K) == GLFW_PRESS) {
-        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.z -= 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_L) == GLFW_PRESS) {
-        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.z += 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_F) == GLFW_PRESS) {
-        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.x -= 0.1;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_G) == GLFW_PRESS) {
-        // if (ambient_light_ > 0) { ambient_light_ -= 0.01; }
         directional_light_.x += 0.1;
     }
 
@@ -151,9 +137,6 @@ void TestScene::Render(double delta) {
         ambient_light_ = 1.0;
     } else if (glfwGetKey(game()->window(), GLFW_KEY_P) == GLFW_PRESS) {
         ambient_light_ = 0.1;
-        // directional_light_.z = -1;
-        // directional_light_.x = 0;
-        // directional_light_.y = 0;
     }
 
     if (zone_->center()) {
@@ -202,7 +185,7 @@ void TestScene::Render(double delta) {
     bk_shader->SetPointLightConstant(1);
     bk_shader->SetPointLightLinear(0.09);
     bk_shader->SetPointLightQuadratic(0.032);
-    bk_shader->SetPointLightColor(Vec3(0.7, 0.7, 0.7));
+    // bk_shader->SetPointLightColor(Vec3(0.7, 0.7, 0.7));
     bk_shader->SetPointLightPosition(Vec3(0, 0, 2));
     bk_shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
@@ -218,7 +201,7 @@ void TestScene::Render(double delta) {
                     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
                                                     delta);
 
-                    //bk_shader->SetPointLightColor(Vec3(0, 0, 0));
+                    // bk_shader->SetPointLightColor(Vec3(0, 0, 0));
                 } else if (obj->Is<entity::PlantEntity>()) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
@@ -226,10 +209,8 @@ void TestScene::Render(double delta) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     actor         = obj->AsOrNull<entity::ActorEntity>();
 
-                    // if (actor->movement().speed().z == 0) {
-                    //     actor->mutable_movement()->mutable_speed()->z = 7;
-                    // }
-
+                    game()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
+                                               actor->mutable_nature_properties(), zone_.get(), nullptr, delta);
                     game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
                     entity_grid_set_->UpdateActor(actor);
                     game()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
