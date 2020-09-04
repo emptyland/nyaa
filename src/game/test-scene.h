@@ -32,6 +32,7 @@ public:
 
 private:
     void UpdatePlayerMovement();
+    int HandleKeyInput();
 
     std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<entity::PlayerEntity> player_;

@@ -31,6 +31,8 @@ void ActorAISystem::Update(com::AIStateComponent *            ai_state,         
         case res::AI::FOLLOW: {
             // TODO:
         } break;
+
+        default: NOREACHED(); break;
     }
 }
 

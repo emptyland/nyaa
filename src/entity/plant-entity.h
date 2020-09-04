@@ -18,6 +18,8 @@ public:
 
     float ZOrder() const final { return -plant()->position().y; }
 
+    float RadiusOrVolume() const final { return plant()->entity_size(); }
+
     DISALLOW_IMPLICIT_CONSTRUCTORS(PlantEntity);
 
 private:

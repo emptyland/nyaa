@@ -18,6 +18,7 @@
 #include "system/sprite-render-system.h"
 #include "system/actor-billboard-render-system.h"
 #include "system/actor-ai-system.h"
+#include "system/impact-checking-system.h"
 #include "game/game.h"
 #include "game/matrix.h"
 #include "game/entity-grid-set.h"
@@ -83,7 +84,7 @@ void TestScene::OnKeyInput(int key, int code, int action, int mods) {
     }
 }
 
-void TestScene::Render(double delta) {
+int TestScene::HandleKeyInput() {
     int command = 0;
     if (glfwGetKey(game()->window(), GLFW_KEY_W) == GLFW_PRESS) {
         player_->mutable_movement()->mutable_speed()->y = speed;
@@ -138,9 +139,16 @@ void TestScene::Render(double delta) {
     } else if (glfwGetKey(game()->window(), GLFW_KEY_P) == GLFW_PRESS) {
         ambient_light_ = 0.1;
     }
+    return command;
+}
+
+void TestScene::Render(double delta) {
+    int command = HandleKeyInput();
+
+    sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
 
     if (zone_->center()) {
-        game()->actor_movement()->Update(player_->mutable_movement(), zone_.get(), 0.3, delta, false);
+        game()->actor_movement()->Update(player_->mutable_movement(), 0.3, &impact, delta);
     }
 
     if (!zone_->center() || command > 0) {
@@ -185,7 +193,6 @@ void TestScene::Render(double delta) {
     bk_shader->SetPointLightConstant(1);
     bk_shader->SetPointLightLinear(0.09);
     bk_shader->SetPointLightQuadratic(0.032);
-    // bk_shader->SetPointLightColor(Vec3(0.7, 0.7, 0.7));
     bk_shader->SetPointLightPosition(Vec3(0, 0, 2));
     bk_shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
@@ -203,15 +210,15 @@ void TestScene::Render(double delta) {
 
                     // bk_shader->SetPointLightColor(Vec3(0, 0, 0));
                 } else if (obj->Is<entity::PlantEntity>()) {
-                    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
+                    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
                 } else if (obj->Is<entity::ActorEntity>()) {
                     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
                     actor         = obj->AsOrNull<entity::ActorEntity>();
 
                     game()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
-                                               actor->mutable_nature_properties(), zone_.get(), nullptr, delta);
-                    game()->actor_movement()->Update(actor->mutable_movement(), zone_.get(), 0.3, delta, false);
+                                               actor->mutable_nature(), zone_.get(), nullptr, delta);
+                    game()->actor_movement()->Update(actor->mutable_movement(), 0.3, &impact, delta);
                     entity_grid_set_->UpdateActor(actor);
                     game()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
                 }
@@ -225,7 +232,7 @@ void TestScene::Render(double delta) {
         bb_shader->SetProjectionMatrix(proj_mat);
         Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
         game()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
-                                          actor->mutable_nature_properties(), &view);
+                                          actor->mutable_nature(), &view);
     }
 
     bk_shader->Unuse();

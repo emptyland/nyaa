@@ -11,6 +11,16 @@ namespace nyaa {
 
 namespace com {
 
+class StatusPropertiesComponent {
+public:
+    DEF_VAL_PROP_RW(int, hp);
+    DEF_VAL_PROP_RW(int, sp);
+
+private:
+    int hp_ = 0;
+    int sp_ = 0;
+}; // class StatusPropertiesComponent
+
 class CorePropertiesComponent {
 public:
     DEF_VAL_PROP_RW(int, max_hp);

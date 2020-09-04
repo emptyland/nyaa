@@ -40,6 +40,7 @@ public:
     }
 
     virtual float ZOrder() const { return 0; }
+    virtual float RadiusOrVolume() const { return 0; }
 
     friend class ::nyaa::EntityGrid;
 

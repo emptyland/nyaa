@@ -24,28 +24,28 @@ public:
     DEF_VAL_PROP_RM(com::AvatarComponent, avatar);
     DEF_VAL_PROP_RM(com::MovementComponent, movement);
     DEF_VAL_PROP_RM(com::AIStateComponent, ai_state);
-    DEF_VAL_PROP_RM(com::CorePropertiesComponent, core_properties);
-    DEF_VAL_PROP_RM(com::CorePropertiesComponent, base_properties);
-    DEF_VAL_PROP_RM(com::NPCNaturePropertiesComponent, nature_properties);
+    DEF_VAL_PROP_RM(com::CorePropertiesComponent, core);
+    DEF_VAL_PROP_RM(com::CorePropertiesComponent, core_base);
+    DEF_VAL_PROP_RM(com::NPCNaturePropertiesComponent, nature);
 
-    void set_spawn_point(const Vector3f &point) {
-        nature_properties_.set_spawn_point(point);
-    }
+    void set_spawn_point(const Vector3f& point) { nature_.set_spawn_point(point); }
 
     float ZOrder() const final { return -movement().coord().y; }
+
+    float RadiusOrVolume() const final { return 0.5; }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ActorEntity);
 
 private:
     const res::Actor* def_;
 
-    com::AvatarComponent   avatar_;
-    com::MovementComponent movement_;
-    com::AIStateComponent  ai_state_;
-
-    com::CorePropertiesComponent core_properties_;
-    com::CorePropertiesComponent base_properties_;
-    com::NPCNaturePropertiesComponent nature_properties_;
+    com::AvatarComponent              avatar_;
+    com::MovementComponent            movement_;
+    com::AIStateComponent             ai_state_;
+    com::StatusPropertiesComponent    status_;
+    com::CorePropertiesComponent      core_;
+    com::CorePropertiesComponent      core_base_;
+    com::NPCNaturePropertiesComponent nature_;
 };  // class ActorEntity
 
 }  // namespace entity

@@ -62,6 +62,12 @@ void RandomZoneSystem::Update(com::RegionComponent *region) {
                     plant->set_position({xx, yy, kTerrainSurfaceLevel + 0.0f});
                     plant->set_sprite(sprite_lib->FindOrNull(ResourceId::Of((rand() & 0x1) ? 100000 : 100010)));
                     // DLOG(INFO) << plant->sprite();
+
+                    for (int i = 0; i < 3; i++) {
+                        com::CubeComponent *cube = &region->floor(kTerrainSurfaceLevel + 1 + i)->cubes[x][y];
+                        cube->set_hardness(2);
+                        cube->set_kind(res::Cube::CUBE_TREE_STUB);
+                    }
                 } break;
                 default: surface->cubes[x][y].set_kind(res::Cube::CUBE_AIR); break;
             }

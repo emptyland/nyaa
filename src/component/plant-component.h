@@ -18,6 +18,7 @@ public:
 
     DEF_VAL_PROP_RMW(Vector3f, position);
     DEF_VAL_PROP_RW(double, ts);
+    DEF_VAL_PROP_RW(float, entity_size);
     DEF_PTR_PROP_RW(res::Sprite, sprite);
 
     int IndexFrame(double delta) {
@@ -33,9 +34,10 @@ public:
     int round_down_position_y() const { return static_cast<int>(position().y); }
 
 private:
-    Vector3f     position_ = {0, 0, 0};
-    double       ts_       = 0;
-    res::Sprite *sprite_   = nullptr;
+    Vector3f     position_    = {0, 0, 0};
+    double       ts_          = 0;
+    float        entity_size_ = 1.0;
+    res::Sprite *sprite_      = nullptr;
 };  // class PlantComponent
 
 }  // namespace com

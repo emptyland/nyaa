@@ -65,7 +65,7 @@ void SpriteRenderSystem::RenderPlant(const Vector3f &view, com::PlantComponent *
     Vector3f d = plant->position() - view;
 
     Matrix model;
-    model.Translate(d.x, d.y, d.z + 0.5);
+    model.Translate(d.x - 1, d.y, d.z);
     Matrix mat;
     mat.Scale(3, 3, 3);
     model.Multiply(mat);

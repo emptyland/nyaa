@@ -13,12 +13,13 @@ class ZoneComponent;
 
 namespace sys {
 
+class ImpactCheckingSystem;
+
 class ActorMovementSystem {
 public:
     ActorMovementSystem() = default;
 
-    void Update(com::MovementComponent *movement, com::ZoneComponent *zone, float gravity, double delta,
-                bool stop_after_move = true);
+    void Update(com::MovementComponent *movement, float gravity, ImpactCheckingSystem *impact, double delta);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ActorMovementSystem);
 
