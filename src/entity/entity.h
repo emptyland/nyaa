@@ -2,6 +2,7 @@
 #define NYAA_ENTITY_ENTITY_H_
 
 #include "game/identifiers.h"
+#include "game/vector.h"
 #include "base/base.h"
 
 namespace nyaa {
@@ -41,6 +42,7 @@ public:
 
     virtual float ZOrder() const { return 0; }
     virtual float RadiusOrVolume() const { return 0; }
+    virtual Vector3f Coord() const { return Vector3f{0, 0, 0}; };
 
     friend class ::nyaa::EntityGrid;
 

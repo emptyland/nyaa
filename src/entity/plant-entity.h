@@ -20,6 +20,8 @@ public:
 
     float RadiusOrVolume() const final { return plant()->entity_size(); }
 
+    Vector3f Coord() const final { return plant()->position(); }
+
     DISALLOW_IMPLICIT_CONSTRUCTORS(PlantEntity);
 
 private:

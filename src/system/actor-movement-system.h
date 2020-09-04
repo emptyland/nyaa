@@ -2,6 +2,7 @@
 #ifndef NYAA_SYSTEM_ACTOR_MOVEMENT_SYSTEM_H_
 #define NYAA_SYSTEM_ACTOR_MOVEMENT_SYSTEM_H_
 
+#include "game/identifiers.h"
 #include "base/base.h"
 
 namespace nyaa {
@@ -19,7 +20,8 @@ class ActorMovementSystem {
 public:
     ActorMovementSystem() = default;
 
-    void Update(com::MovementComponent *movement, float gravity, ImpactCheckingSystem *impact, double delta);
+    void Update(EntityId id, com::MovementComponent *movement, float gravity, ImpactCheckingSystem *impact,
+                double delta);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ActorMovementSystem);
 

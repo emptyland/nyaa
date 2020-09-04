@@ -36,7 +36,7 @@ public:
 
     class iterator {
     public:
-        iterator(entity::Entity *node): node_(node) {}
+        iterator(entity::Entity *node) : node_(node) {}
         void operator++() { node_ = node_->next(); }
         void operator++(int) { node_ = node_->next(); }
         void operator--() { node_ = node_->prev(); }
@@ -50,8 +50,27 @@ public:
         entity::Entity *node_;
     };  // class iterator
 
+    class const_iterator {
+    public:
+        const_iterator(const entity::Entity *node) : node_(node) {}
+        void operator++() { node_ = node_->next(); }
+        void operator++(int) { node_ = node_->next(); }
+        void operator--() { node_ = node_->prev(); }
+        void operator--(int) { node_ = node_->prev(); }
+        bool operator==(const const_iterator &iter) const { return iter.node_ == node_; }
+        bool operator!=(const const_iterator &iter) const { return iter.node_ != node_; }
+
+        const entity::Entity *operator*() const { return node_; }
+
+    private:
+        const entity::Entity *node_;
+    };  // class const_iterator
+
     iterator begin() { return iterator(entities_dummy_.next()); }
     iterator end() { return iterator(&entities_dummy_); }
+
+    const_iterator begin() const { return const_iterator(entities_dummy_.next()); }
+    const_iterator end() const { return const_iterator(&entities_dummy_); }
 
     friend class EntityGridSet;
 
@@ -68,6 +87,7 @@ public:
     ~EntityGridSet();
 
     DEF_PTR_GETTER(entity::PlayerEntity, player);
+    const EntityGrid *empty_grid() const { return &empty_grid_; }
 
     EntityGrid *grid(int x, int y) {
         DCHECK_GE(x, 0);
@@ -102,7 +122,7 @@ private:
         }
     }
 
-    entity::PlayerEntity *player_ = nullptr;
+    entity::PlayerEntity *                                     player_ = nullptr;
     std::unordered_map<EntityId, entity::Entity *, EntityHash> entities_;
 
     EntityGrid empty_grid_;

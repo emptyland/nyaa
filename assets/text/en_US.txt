@@ -1,7 +1,7 @@
 #    ID                   # string
 ------------------------------------------------------------------------------------------------------------------------
 TEST_STRING_1             | Hello, World
-TEST_STRING_2             | <>汉字?~!@#$%^&*()_+=-,.;:'"[]{}仁义礼智信∙忠孝忍悌勇
+TEST_STRING_2             | <>汉字?~!@#$%^&*()_+=-,.;:'"[]{}
 TITLE_OPTION_1            | New Game
 TITLE_OPTION_2            | Test Mode
 TITLE_OPTION_3            | Exit
@@ -21,3 +21,17 @@ ACTOR_NIKO_CHEN           | Niko∙Chen
 ACTOR_STEVE_WANG          | Steve∙Wang
 ACTOR_TOMMY_ZHANG         | Tommy∙Zhang
 ACTOR_TIMMY_ZHANG         | Timmy∙Zhang
+------------------------------------------------------------------------------------------------------------------------
+BASIC_SWORD_SKILL         | Basic Sword Skill
+MIDDLE_SWORD_SKILL        | Middle-Level Sword Skill
+ADVANCE_SWORD_SKILL       | Advance Sword Skill
+MASTER_SWORD_SKILL        | Master Sword Skill
+BASIC_LANCE_SKILL         | Basic Lance Skill
+MIDDLE_LANCE_SKILL        | Middle-Level Lance Skill
+ADVANCE_LANCE_SKILL       | Advance Lance Skill
+MASTER_LANCE_SKILL        | Master Lance Skill
+BASIC_SHOOTING_SKILL      | Basic Shooting Skill
+MIDDLE_SHOOTING_SKILL     | Middle-Level Shooting Skill
+ADVANCE_SHOOTING_SKILL    | Advance Shooting Skill
+MASTER_SHOOTING_SKILL     | Master Shooting Skill
+MASTER_ATTACK_ZERO        | Master Attack Type Zero

@@ -148,7 +148,7 @@ void TestScene::Render(double delta) {
     sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
 
     if (zone_->center()) {
-        game()->actor_movement()->Update(player_->mutable_movement(), 0.3, &impact, delta);
+        game()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
     }
 
     if (!zone_->center() || command > 0) {
@@ -218,7 +218,7 @@ void TestScene::Render(double delta) {
 
                     game()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
                                                actor->mutable_nature(), zone_.get(), nullptr, delta);
-                    game()->actor_movement()->Update(actor->mutable_movement(), 0.3, &impact, delta);
+                    game()->actor_movement()->Update(actor->id(), actor->mutable_movement(), 0.3, &impact, delta);
                     entity_grid_set_->UpdateActor(actor);
                     game()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
                 }

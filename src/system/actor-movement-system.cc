@@ -9,8 +9,8 @@ namespace nyaa {
 
 namespace sys {
 
-void ActorMovementSystem::Update(com::MovementComponent *movement, float gravity, ImpactCheckingSystem *impact,
-                                 double delta) {
+void ActorMovementSystem::Update(EntityId id, com::MovementComponent *movement, float gravity,
+                                 ImpactCheckingSystem *impact, double delta) {
     DCHECK_GE(movement->coord().z, 0);
     DCHECK_LT(movement->coord().z, kTerrainMaxLevels);
 
@@ -39,7 +39,7 @@ void ActorMovementSystem::Update(com::MovementComponent *movement, float gravity
     body.w = 0.5;
     body.h = 0.2;
 
-    bool stop = impact->PredictTest(body, next, movement->speed());
+    bool stop = impact->PredictTest(body, next, movement->speed(), id);
     if (!stop) { movement->set_coord(next); }
 }
 

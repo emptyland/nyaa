@@ -20,6 +20,7 @@ class CubeLibrary;
 class ShaderLibrary;
 class SpriteLibrary;
 class ActorLibrary;
+class SkillLibrary;
 }  // namespace res
 
 namespace sys {
@@ -70,6 +71,7 @@ public:
     res::AvatarLibrary * avatar_lib() const { return avatar_lib_.get(); }
     res::TextureLibrary *texture_lib() const { return texture_lib_.get(); }
     res::SpriteLibrary * sprite_lib() const { return sprite_lib_.get(); }
+    res::SkillLibrary *  skill_lib() const { return skill_lib_.get(); }
     res::CubeLibrary *   cube_lib() const { return cube_lib_.get(); }
     res::ShaderLibrary * shader_lib() const { return shader_lib_.get(); }
     res::ActorLibrary *  actor_lib() const { return actor_lib_.get(); }
@@ -128,6 +130,7 @@ private:
     std::unique_ptr<res::AvatarLibrary>  avatar_lib_;
     std::unique_ptr<res::CubeLibrary>    cube_lib_;
     std::unique_ptr<res::ShaderLibrary>  shader_lib_;
+    std::unique_ptr<res::SkillLibrary>   skill_lib_;
     std::unique_ptr<res::ActorLibrary>   actor_lib_;
 
     std::unique_ptr<Properties> properties_;

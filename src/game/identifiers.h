@@ -11,6 +11,7 @@ class Identifier {
 public:
     // break
     bool operator==(const Identifier &other) const { return value_ == other.value(); }
+    bool operator!=(const Identifier &other) const { return value_ != other.value(); }
     bool operator<(const Identifier &other) const { return value_ < other.value(); }
     DEF_VAL_GETTER(T, value);
 

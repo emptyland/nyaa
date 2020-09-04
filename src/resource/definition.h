@@ -252,6 +252,16 @@ int Definition<T>::ParseValue(std::string_view input, DefValType type, void *rec
 
 template <class T> /*static*/ const int Definition<T>::class_ = 0;
 
+#ifndef NDEBUG
+#define CHECKED_PARSE(kind, field)                                    \
+    do {                                                              \
+        int __r__ = ParseValue<DefValType::kind>(items[i++], &field); \
+        DCHECK_EQ(__r__, 0) << "Parse field: " << #field << " fail";  \
+    } while (0)
+#else
+#define CHECKED_PARSE(kind, field) ParseValue<DefValType::kind>(items[i++], &field)
+#endif
+
 }  // namespace res
 
 }  // namespace nyaa

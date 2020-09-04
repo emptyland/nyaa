@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_RESOURCE_TEXT_DEF_INL_H_
-#define NYAA_RESOURCE_TEXT_DEF_INL_H_
+#ifndef NYAA_RESOURCE_TEXT_IDS_INL_H_
+#define NYAA_RESOURCE_TEXT_IDS_INL_H_
 
 namespace nyaa {
 namespace res {
@@ -25,6 +25,19 @@ namespace res {
     V(ACTOR_STEVE_WANG) \
     V(ACTOR_TOMMY_ZHANG) \
     V(ACTOR_TIMMY_ZHANG) \
+    V(BASIC_SWORD_SKILL) \
+    V(MIDDLE_SWORD_SKILL) \
+    V(ADVANCE_SWORD_SKILL) \
+    V(MASTER_SWORD_SKILL) \
+    V(BASIC_LANCE_SKILL) \
+    V(MIDDLE_LANCE_SKILL) \
+    V(ADVANCE_LANCE_SKILL) \
+    V(MASTER_LANCE_SKILL) \
+    V(BASIC_SHOOTING_SKILL) \
+    V(MIDDLE_SHOOTING_SKILL) \
+    V(ADVANCE_SHOOTING_SKILL) \
+    V(MASTER_SHOOTING_SKILL) \
+    V(MASTER_ATTACK_ZERO) \
 
 
 enum TextID {
@@ -37,4 +50,4 @@ enum TextID {
 } // namespace res
 } // namespace nyaa
 
-#endif // NYAA_RESOURCE_TEXT_DEF_INL_H_
+#endif // NYAA_RESOURCE_TEXT_IDS_INL_H_

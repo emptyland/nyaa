@@ -14,9 +14,13 @@ namespace res {
 class TextLibrary;
 class AvatarLibrary;
 class Avatar;
+class SkillLibrary;
+class Skill;
 
 class Actor : public base::ArenaObject {
 public:
+    static constexpr int kMaxSkills = 8;
+
     DEF_VAL_GETTER(ResourceId, id);
     DEF_VAL_GETTER(res::TextID, name_id);
     DEF_PTR_GETTER(const char, name);
@@ -38,12 +42,18 @@ public:
     DEF_VAL_GETTER(int, strength);
     DEF_VAL_GETTER(int, agile);
 
+    DEF_VAL_GETTER(int, skill_count);
+    Skill *skill(int i) const {
+        DCHECK_GE(i, 0);
+        DCHECK_LT(i, skill_count());
+        return skills_[i];
+    }
+
     friend class ActorLibrary;
     DISALLOW_IMPLICIT_CONSTRUCTORS(Actor);
 
 private:
-    Actor(ResourceId id, res::TextID name_id, const char *name, Avatar *avatar)
-        : id_(id), name_id_(name_id), name_(name), avatar_(avatar) {}
+    Actor(ResourceId id, res::TextID name_id, const char *name, Avatar *avatar);
 
     const ResourceId  id_;
     const res::TextID name_id_;
@@ -63,6 +73,9 @@ private:
     int      defense_;
     int      strength_;
     int      agile_;
+
+    int    skill_count_;
+    Skill *skills_[kMaxSkills];
 };  // class Actor
 
 class ActorLibrary : public ResourceLibrary<Actor, ActorLibrary> {
@@ -70,7 +83,8 @@ public:
     static const char kActorDir[];
     static const char kActorDefFileName[];
 
-    ActorLibrary(const AvatarLibrary *avatar_lib, const TextLibrary *text_lib, base::Arena *arena);
+    ActorLibrary(const AvatarLibrary *avatar_lib, const SkillLibrary *skill_lib, const TextLibrary *text_lib,
+                 base::Arena *arena);
 
     bool Load(DefinitionReader *rd);
 
@@ -78,6 +92,7 @@ public:
 
 private:
     const AvatarLibrary *const avatar_lib_;
+    const SkillLibrary *const  skill_lib_;
     const TextLibrary *const   text_lib_;
 };  // class ActorLibrary
 

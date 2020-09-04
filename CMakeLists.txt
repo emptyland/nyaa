@@ -77,6 +77,7 @@ set(GAME_SRC
     src/resource/avatar-library.cc
     src/resource/shader-library.cc
     src/resource/actor-library.cc
+    src/resource/skill-library.cc
     src/resource/definition.cc
     src/resource/ai-def.cc
     src/base/arena-utils.cc

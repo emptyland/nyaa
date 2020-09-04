@@ -1,5 +1,6 @@
 #include "resource/actor-library.h"
 #include "resource/text-library.h"
+#include "resource/skill-library.h"
 #include "resource/avatar-library.h"
 #include "resource/definition.h"
 
@@ -28,24 +29,32 @@ public:
     DEF_VAL_GETTER(int, strength);
     DEF_VAL_GETTER(int, agile);
 
+    DEF_VAL_GETTER(int, skill_count);
+    ResourceId skill(int i) const {
+        DCHECK_GE(i, 0);
+        DCHECK_LT(i, skill_count());
+        return skills_[i];
+    }
+
     void Parse(const std::vector<std::string_view> items) {
-        ParseValue<DefValType::ID>(items[0], &id_);
-        ParseValue<DefValType::STRING>(items[1], &name_);
-        ParseValue<DefValType::ID>(items[2], &avatar_);
-        ParseValue<DefValType::I32>(items[3], &difficulty_);
-        ParseValue<DefValType::I32>(items[4], &yi_);
-        ParseValue<DefValType::I32>(items[5], &camp_);
-        ParseValue<DefValType::STRING>(items[6], &ai_);
-        ParseValue<DefValType::F32>(items[7], &jump_speed_);
-        ParseValue<DefValType::F32>(items[8], &move_speed_);
-        ParseValue<DefValType::F32>(items[9], &patrol_radius_);
-        ParseValue<DefValType::I32>(items[10], &max_hp_);
-        ParseValue<DefValType::I32>(items[11], &max_sp_);
-        ParseValue<DefValType::I32>(items[12], &attack_);
-        ParseValue<DefValType::I32>(items[13], &defense_);
-        ParseValue<DefValType::I32>(items[14], &strength_);
-        ParseValue<DefValType::I32>(items[15], &agile_);
-        // TODO:
+        int i = 0;
+        CHECKED_PARSE(ID, id_);
+        CHECKED_PARSE(STRING, name_);
+        CHECKED_PARSE(ID, avatar_);
+        CHECKED_PARSE(I32, difficulty_);
+        CHECKED_PARSE(I32, yi_);
+        CHECKED_PARSE(I32, camp_);
+        CHECKED_PARSE(STRING, ai_);
+        CHECKED_PARSE(F32, jump_speed_);
+        CHECKED_PARSE(F32, move_speed_);
+        CHECKED_PARSE(F32, patrol_radius_);
+        CHECKED_PARSE(I32, max_hp_);
+        CHECKED_PARSE(I32, max_sp_);
+        CHECKED_PARSE(I32, attack_);
+        CHECKED_PARSE(I32, defense_);
+        CHECKED_PARSE(I32, strength_);
+        CHECKED_PARSE(I32, agile_);
+        CHECKED_PARSE(ARRAY_U32, skill_count_);
     }
 
 private:
@@ -65,14 +74,21 @@ private:
     int         defense_       = 0;
     int         strength_      = 0;
     int         agile_         = 0;
-
+    int         skill_count_   = 0;
+    ResourceId  skills_[Actor::kMaxSkills];
 };  // class ActorDef
+
+Actor::Actor(ResourceId id, res::TextID name_id, const char *name, Avatar *avatar)
+    : id_(id), name_id_(name_id), name_(name), avatar_(avatar) {
+    ::memset(skills_, 0, sizeof(skills_));
+}
 
 const char ActorLibrary::kActorDir[]         = "actor";
 const char ActorLibrary::kActorDefFileName[] = "actor/def.txt";
 
-ActorLibrary::ActorLibrary(const AvatarLibrary *avatar_lib, const TextLibrary *text_lib, base::Arena *arena)
-    : ResourceLibrary(arena), avatar_lib_(avatar_lib), text_lib_(text_lib) {}
+ActorLibrary::ActorLibrary(const AvatarLibrary *avatar_lib, const SkillLibrary *skill_lib, const TextLibrary *text_lib,
+                           base::Arena *arena)
+    : ResourceLibrary(arena), avatar_lib_(avatar_lib), skill_lib_(skill_lib), text_lib_(text_lib) {}
 
 bool ActorLibrary::Load(DefinitionReader *rd) {
     ActorDef row;
@@ -99,7 +115,16 @@ bool ActorLibrary::Load(DefinitionReader *rd) {
             return false;
         }
 
-        Actor *actor          = new (arena()) Actor(row.id(), name_id, text_lib_->Load(name_id).data(), avatar);
+        Skill *skills[Actor::kMaxSkills] = {nullptr};
+        for (int i = 0; i < row.skill_count(); i++) {
+            if (skills[i] = skill_lib_->FindOrNull(row.skill(i)); !skills[i]) {
+                DLOG(ERROR) << "Can not find skill: " << row.skill(i).value();
+                return false;
+            }
+        }
+
+        Actor *actor = new (arena()) Actor(row.id(), name_id, text_lib_->Load(name_id).data(), avatar);
+
         actor->yi_            = row.yi();
         actor->difficulty_    = row.difficulty();
         actor->camp_          = row.camp();
@@ -113,6 +138,8 @@ bool ActorLibrary::Load(DefinitionReader *rd) {
         actor->defense_       = row.defense();
         actor->strength_      = row.strength();
         actor->agile_         = row.agile();
+        actor->skill_count_   = row.skill_count();
+        ::memcpy(actor->skills_, skills, sizeof(skills));
 
         Put(row.id(), actor);
     }

@@ -34,6 +34,8 @@ public:
 
     float RadiusOrVolume() const final { return 0.5; }
 
+    Vector3f Coord() const final { return movement_.coord(); }
+
     DISALLOW_IMPLICIT_CONSTRUCTORS(ActorEntity);
 
 private:

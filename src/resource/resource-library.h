@@ -6,12 +6,13 @@
 #include "game/identifiers.h"
 #include "base/arena-utils.h"
 #include "base/base.h"
+#include <type_traits>
 
 namespace nyaa {
 
 namespace res {
 
-template <class T, class D>
+template <class T, class D, class = std::enable_if_t<std::is_base_of<base::ArenaObject, T>::value>>
 class ResourceLibrary {
 public:
     ResourceLibrary(base::Arena *arena) : arena_(arena), resource_(arena) {}
@@ -35,7 +36,7 @@ public:
     }
 
     T *FindOrNull(ResourceId id) const {
-        //DCHECK(initialized());
+        // DCHECK(initialized());
         auto iter = resource_.find(id);
         return iter == resource_.end() ? nullptr : iter->second;
     }

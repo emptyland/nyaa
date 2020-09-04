@@ -1,0 +1,15 @@
+#  ID  # Name                    # Icon    # Weapon   # Range #   Speed   #   Attack   #   Crit  #
+------------------------------------------------------------------------------------------------------------------------
+100000 | BASIC_SWORD_SKILL       | 0       | SWORD    | 1.7   | 0.01      | 0.01       | 0.01
+100010 | MIDDLE_SWORD_SKILL      | 0       | SWORD    | 2.1   | 0.02      | 0.05       | 0.02
+100020 | ADVANCE_SWORD_SKILL     | 0       | SWORD    | 2.4   | 0.04      | 0.1        | 0.04
+100030 | MASTER_SWORD_SKILL      | 0       | SWORD    | 2.7   | 0.08      | 0.2        | 0.08
+100040 | BASIC_LANCE_SKILL       | 0       | LANCE    | 2.1   | 0         | 0          | 0
+100050 | MIDDLE_LANCE_SKILL      | 0       | LANCE    | 2.4   | 0         | 0          | 0
+100060 | ADVANCE_LANCE_SKILL     | 0       | LANCE    | 2.7   | 0         | 0          | 0
+100070 | MASTER_LANCE_SKILL      | 0       | LANCE    | 3.1   | 0         | 0          | 0
+100080 | BASIC_SHOOTING_SKILL    | 0       | LANCE    | 20    | 0         | 0          | 0
+100090 | MIDDLE_SHOOTING_SKILL   | 0       | RANGE    | 25    | 0         | 0          | 0
+100100 | ADVANCE_SHOOTING_SKILL  | 0       | RANGE    | 30    | 0         | 0          | 0
+100110 | MASTER_SHOOTING_SKILL   | 0       | RANGE    | 35    | 0         | 0          | 0
+200000 | MASTER_ATTACK_ZERO      | 0       | NONE     | 5     | 0         | 2          | 0.5
