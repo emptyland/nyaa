@@ -99,15 +99,6 @@ void BootScene::OnKeyInput(int key, int code, int action, int mods) {
             TestScene *test_scene = new TestScene(game());
             test_scene->SwitchTo(this);
         } break;
-
-        case GLFW_KEY_UP:
-            // :format
-            game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() + 2);
-            break;
-        case GLFW_KEY_DOWN: game()->transform()->set_rotate_angle_y(game()->transform()->rotate_angle_y() - 2); break;
-        case GLFW_KEY_LEFT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() - 2); break;
-        case GLFW_KEY_RIGHT: game()->transform()->set_rotate_angle_z(game()->transform()->rotate_angle_z() + 2); break;
-
         default: break;
     }
 }

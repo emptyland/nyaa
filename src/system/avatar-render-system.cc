@@ -117,7 +117,7 @@ void AvatarRenderSystem::Render(com::MovementComponent *movement, com::AvatarCom
         mat.Translate(0, 0, z);
     } else {
         Vector3f pos = movement->coord() - *view;
-        mat.Translate(pos.x, pos.y, pos.z + 0.5);
+        mat.Translate(pos.x, pos.y, pos.z);
     }
     shader->SetModelMatrix(mat);
     shader->SetSpecularMaterial({0.9, 0.9, 0.7});

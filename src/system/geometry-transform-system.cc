@@ -22,45 +22,22 @@ void GeometryTransformSystem::Exit2DProjection() {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void GeometryTransformSystem::EnterRotatedProjection() {
-    //------------------------------------------------------------------------------------------------------------------
-    // glFrontFace(GL_CW);
-    // glCullFace(GL_BACK);
-    // glEnable(GL_CULL_FACE);
-    //------------------------------------------------------------------------------------------------------------------
+Vector4f GeometryTransformSystem::TransformToScreen(const Matrix<float> &projection, const Matrix<float> &view,
+                                                    const Matrix<float> &model, const Vector4f &coord,
+                                                    const Vector2i viewport) {
+    Vector4f result;
+    Matrix<float>::Multiply(model, coord, &result);
+    Matrix<float>::Multiply(view, result, &result);
+    Matrix<float>::Multiply(projection, result, &result);
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glFrustum(0, Game::This()->fb_w(), 0, Game::This()->fb_h(), -100.0, 100.0);
-    glGetFloatv(GL_PROJECTION, projection_mat());
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    result.x /= result.w;
+    result.y /= result.w;
+    result.z /= result.w;
 
-    glPushMatrix();
-    glRotated(rotate_angle_y(), -1, 0, 0);
+    result.x = viewport.x / 2 + result.x + viewport.x / 2 * result.x;
+    result.y = viewport.y / 2 + result.y + viewport.y / 2 * result.y;
 
-    glPushMatrix();
-    glRotated(rotate_angle_z(), 0.0, 1.0, 0.0);
-
-    glPushMatrix();
-    glScaled(scale(), scale(), scale());
-
-    glGetFloatv(GL_MODELVIEW, modelview_mat());
-}
-
-void GeometryTransformSystem::ExitRotatedProjection() {
-    glPopMatrix();  // glScaled
-    glPopMatrix();  // glRotated
-    glPopMatrix();  // glRotated
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-    //------------------------------------------------------------------------------------------------------------------
-    // glDisable(GL_CULL_FACE);
-    //------------------------------------------------------------------------------------------------------------------
+    return result;
 }
 
 }  // namespace sys

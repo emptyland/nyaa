@@ -147,6 +147,8 @@ void TestScene::Render(double delta) {
 
     sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
 
+    //glViewport()
+
     if (zone_->center()) {
         game()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
     }
@@ -198,6 +200,8 @@ void TestScene::Render(double delta) {
 
     game()->zone_render()->RenderTerrain(zone_.get());
 
+    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel);
+
     entity::ActorEntity *actor = nullptr;
     // for (int y = 0; y < zone_->viewport().bound().y; y++) {
     for (int y = zone_->viewport().bound().y - 1; y >= 0; y--) {
@@ -207,14 +211,10 @@ void TestScene::Render(double delta) {
                 if (obj->Is<entity::PlayerEntity>()) {
                     game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
                                                     delta);
-
-                    // bk_shader->SetPointLightColor(Vec3(0, 0, 0));
                 } else if (obj->Is<entity::PlantEntity>()) {
-                    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel);
                     game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
                 } else if (obj->Is<entity::ActorEntity>()) {
-                    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
-                    actor         = obj->AsOrNull<entity::ActorEntity>();
+                    actor = obj->AsOrNull<entity::ActorEntity>();
 
                     game()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
                                                actor->mutable_nature(), zone_.get(), nullptr, delta);
@@ -226,22 +226,45 @@ void TestScene::Render(double delta) {
         }
     }
 
+    Vector4f coord = {0, 0, 0, 0};
     if (actor) {
         bb_shader->Use();
         bb_shader->SetViewMatrix(view_mat);
         bb_shader->SetProjectionMatrix(proj_mat);
-        Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel + 0.5);
         game()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
                                           actor->mutable_nature(), &view);
+
+        //Matrix<float> model_view;
+        Vector3f d = actor->movement().coord() - view;
+        model_mat.Scale(0.5, 0.5, 0.5);
+        mat.Translate(d.x, d.y, d.z);
+        model_mat.Multiply(mat);
+
+        Matrix<float>::Multiply(model_mat, Vec4(d, 1), &coord);
+        Matrix<float>::Multiply(view_mat, coord, &coord);
+        Matrix<float>::Multiply(proj_mat, coord, &coord);
+
+        coord.x /= coord.w;
+        coord.y /= coord.w;
+        coord.z /= coord.w;
+
+        //coord.x = -coord.x;
+        //coord.y = -coord.y;
+        coord.x = game()->fb_w() / 2 + coord.x + game()->fb_w() / 2 * coord.x;
+        coord.y = game()->fb_h() / 2 + coord.y + game()->fb_h() / 2 * coord.y;
+
+        //DLOG(INFO) << "coord = " << coord.x << ", " << coord.y << ", " << coord.z;
     }
 
     bk_shader->Unuse();
     {
         char buf[128];
-        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f, z=%0.2f, light=%0.2f,%0.2f,%0.2f",
+        ::snprintf(buf, arraysize(buf), "x=%0.2f, y=%0.2f, z=%0.2f, light=%0.0f,%0.0f,%0.0f",
                    zone_->viewport().center_coord().x, zone_->viewport().center_coord().y,
-                   player_->movement().coord().z, directional_light_.x, directional_light_.y, directional_light_.z);
+                   player_->movement().coord().z, coord.x, coord.y, coord.z);
         game()->font_lib()->default_face()->Render(buf, 0, 32, {1, 0, 0});
+
+        game()->font_lib()->default_face()->Render("X", coord.x, coord.y, {0, 1, 1});
     }
 }
 

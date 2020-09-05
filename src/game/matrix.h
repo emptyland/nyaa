@@ -20,6 +20,25 @@ public:
         for (int i = 0; i < arraysize(value_); i++) { value_[i] = initial; }
     }
 
+    Matrix(const Matrix &other) {
+        value_[0]  = other.value_[0];
+        value_[1]  = other.value_[1];
+        value_[2]  = other.value_[2];
+        value_[3]  = other.value_[3];
+        value_[4]  = other.value_[4];
+        value_[5]  = other.value_[5];
+        value_[6]  = other.value_[6];
+        value_[7]  = other.value_[7];
+        value_[8]  = other.value_[8];
+        value_[9]  = other.value_[9];
+        value_[10] = other.value_[10];
+        value_[11] = other.value_[11];
+        value_[12] = other.value_[12];
+        value_[13] = other.value_[13];
+        value_[14] = other.value_[14];
+        value_[15] = other.value_[15];
+    }
+
     T const *values() const { return &value_[0]; }
 
     T value(int i) const {
@@ -178,9 +197,34 @@ public:
         T const *f = &a.x;
         for (int c = 0; c < kDimX; c++) {
             T total = 0;
-            for (int i = 0; i < 4; i++) { total += f[i] * b.value(i, c); }
+            for (int r = 0; r < 4; r++) { total += f[r] * b.value(r, c); }
             result[c] = total;
         }
+        vec->x = result[0];
+        vec->y = result[1];
+        vec->z = result[2];
+        vec->w = result[3];
+    }
+
+    // c[0][0] = a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0] + a[0][3] * b[3][0]
+    // c[1][0] = a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0] + a[1][3] * b[3][0]
+    // c[2][0] = a[2][0] * b[0][0] + a[2][1] * b[1][0] + a[2][2] * b[2][0] + a[2][3] * b[3][0]
+    // c[3][0] = a[3][0] * b[0][0] + a[3][1] * b[1][0] + a[3][2] * b[2][0] + a[3][3] * b[3][0]
+    //
+    // c[0] = a[0][0] * b[0] + a[0][1] * b[1] + a[0][2] * b[2] + a[0][3] * b[3]
+    // c[1] = a[1][0] * b[0] + a[1][1] * b[1] + a[1][2] * b[2] + a[1][3] * b[3]
+    // c[2] = a[2][0] * b[0] + a[2][1] * b[1] + a[2][2] * b[2] + a[2][3] * b[3]
+    // c[3] = a[3][0] * b[0] + a[3][1] * b[1] + a[3][2] * b[2] + a[3][3] * b[3]
+    static void Multiply(const Matrix &a, const Vector4<T> &b, Vector4<T> *vec) {
+        T result[4];
+
+        T const *v = &b.x;
+        for (int c = 0; c < kDimX; c++) {
+            T total = 0;
+            for (int r = 0; r < 4; r++) { total += a.value(c, r) * v[r]; }
+            result[c] = total;
+        }
+
         vec->x = result[0];
         vec->y = result[1];
         vec->z = result[2];
@@ -214,6 +258,27 @@ public:
 private:
     T value_[kMaxValues];
 };  // class Matrix
+
+template <class T>
+inline Matrix<T> operator*(const Matrix<T> &a, const Matrix<T> &b) {
+    Matrix<T> c;
+    Matrix<T>::Multiply(a, b, &c);
+    return c;
+}
+
+template <class T>
+inline Vector4<T> operator*(const Matrix<T> &a, const Vector4<T> &b) {
+    Vector4<T> c;
+    Matrix<T>::Multiply(a, b, &c);
+    return c;
+}
+
+template <class T>
+inline Vector4<T> operator*(const Vector4<T> &a, const Matrix<T> &b) {
+    Vector4<T> c;
+    Matrix<T>::Multiply(a, b, &c);
+    return c;
+}
 
 }  // namespace nyaa
 
