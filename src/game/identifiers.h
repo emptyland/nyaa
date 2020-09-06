@@ -42,6 +42,15 @@ private:
     ResourceId(uint64_t value) : Identifier<uint32_t>(value) {}
 };  // class ResourceId
 
+class ControllerId final : public Identifier<uint32_t> {
+public:
+    ControllerId() : ControllerId(0) {}
+    static ControllerId Of(uint32_t value) { return ControllerId(value); }
+
+private:
+    ControllerId(uint64_t value) : Identifier<uint32_t>(value) {}
+}; // class ControllerId
+
 struct EntityHash : public std::unary_function<EntityId, size_t> {
     inline size_t operator()(EntityId value) const { return value.value(); }
 };
