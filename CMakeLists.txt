@@ -55,6 +55,8 @@ set(GAME_SRC
     src/game/matrix.cc
     src/game/world.cc
     src/ui/controller.cc
+    src/ui/ui-service.cc
+    src/ui/input-box.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
     src/component/cube-component.cc

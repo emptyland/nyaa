@@ -55,6 +55,10 @@ struct EntityHash : public std::unary_function<EntityId, size_t> {
     inline size_t operator()(EntityId value) const { return value.value(); }
 };
 
+struct ControllerHash : public std::unary_function<ControllerId, size_t> {
+    inline size_t operator()(ControllerId value) const { return value.value(); }
+};
+
 namespace base {
 
 template <>

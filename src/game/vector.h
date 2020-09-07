@@ -104,6 +104,11 @@ inline float Distance(const Vector3f &a, const Vector3f &b) {
     return ::powf(Square(a.x - b.x) + Square(a.y - b.y) + Square(a.z - b.z), 1.0/3.0);
 }
 
+template<class T>
+inline bool InBound(const Bound<T> &bound, T x, T y) {
+    return x >= bound.x && x < bound.x + bound.w && y >= bound.y && y < bound.y + bound.h;
+}
+
 }  // namespace nyaa
 
 #endif  // NYAA_GAME_VECTOR_H_

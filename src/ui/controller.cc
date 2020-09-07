@@ -16,12 +16,14 @@ Controller::~Controller() {
     }
 }
 
-/*virtual*/ void Controller::Render(double delta) {
-    if (!IsEnable() || !IsVisible()) {
-        return; // Ignore;
-    }
-    // TODO:
-}
+/*virtual*/ void Controller::HandleMouseEvent(double x, double y, bool *did) {}
+
+/*virtual*/ void Controller::HandleKeyEvent(bool *did) {}
+
+/*virtual*/ void Controller::DidFocus(bool focus) {}
+
+/*virtual*/ void Controller::OnMouseMove(double x, double y) {}
+
 
 }  // namespace ui
 

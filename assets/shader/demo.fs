@@ -12,6 +12,7 @@ const vec3 specularMaterial = vec3(0.1, 0.1, 0.1);
 const vec3 specularLight    = vec3(0.4, 0.4, 0.4);
 const vec3 directionalLight = vec3(-0.2, -1.0, -0.3);
 const vec3 cameraPosition   = vec3(0, 0, 2);
+const vec4 diffuseSegment   = vec4(0.1, 0.3, 0.6, 1.0);
 
 varying vec2 fragmentUV;
 varying vec3 worldPosition;
@@ -21,11 +22,20 @@ void main() {
     vec4 ambientColor = vec4(ambientMaterial * ambientLight, 1.0);
 
     vec3 norDirLight       = normalize(-directionalLight);  //单位化
-    vec3 norFragmentNormal = normalize(fragmentNormal);    //单位化
+    vec3 norFragmentNormal = normalize(fragmentNormal);     //单位化
 
     //漫反射强度
     float diffuseIntensity = max(0.0, dot(norDirLight, norFragmentNormal));
-    vec4  diffuseColor     = vec4(diffuseLight * diffuseMaterial * diffuseIntensity, 1.0);
+    if (diffuseIntensity < diffuseSegment.x) {
+        diffuseIntensity = diffuseSegment.x;
+    } else if (diffuseIntensity < diffuseSegment.y) {
+        diffuseIntensity = diffuseSegment.y;
+    } else if (diffuseIntensity < diffuseSegment.z) {
+        diffuseIntensity = diffuseSegment.z;
+    } else {
+        diffuseIntensity = diffuseSegment.w;
+    }
+    vec4 diffuseColor = vec4(diffuseLight * diffuseMaterial * diffuseIntensity, 1.0);
 
     vec4 specularColor = vec4(0.0, 0.0, 0.0, 1.0);  //黑色
                                                     //当镜面反射不为零的时候我们才认为它具有反射光
