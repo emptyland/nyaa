@@ -23,7 +23,6 @@ public:
     virtual const char *Name() const = 0;
     virtual void Reset();
     virtual void OnKeyInput(int key, int code, int action, int mods);
-    virtual void OnMouseInput(double x, double y);
     virtual void Render(double delta);
 
     DISALLOW_ALL_CONSTRUCTORS(Scene);

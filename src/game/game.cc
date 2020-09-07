@@ -22,6 +22,8 @@
 #include "resource/shader-library.h"
 #include "resource/skill-library.h"
 #include "resource/actor-library.h"
+#include "ui/ui-service.h"
+#include "ui/input-box.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -30,6 +32,26 @@
 namespace nyaa {
 
 base::LazyInstance<Game> ThisGame;
+
+class Game::UIComponent {
+public:
+    UIComponent() : service_(new ui::UIService(1) /*TODO*/) {
+        input_box_ = service_->NewInputBox("", nullptr);
+        input_box_->set_bound({0, 0, 300, 32});
+    }
+
+    void HandleInput(bool *did) { service_->HandleInput(did); }
+
+    void HandleCharInput(uint32_t code, bool *did) { service_->HandleCharInput(code, did); }
+
+    void Render(double delta) { service_->Render(delta); }
+
+    void set_dip_factor(float factor) { service_->set_dpi_factor(factor); }
+
+private:
+    std::unique_ptr<ui::UIService> service_;
+    ui::InputBox *                 input_box_ = nullptr;
+};  // class Game::UIComponent
 
 Game::Game()
     : boot_scene_(new BootScene(this))
@@ -52,6 +74,7 @@ Game::Game()
     , shader_lib_(new res::ShaderLibrary(&arena_))
     , skill_lib_(new res::SkillLibrary(sprite_lib_.get(), text_lib_.get(), &arena_))
     , actor_lib_(new res::ActorLibrary(avatar_lib_.get(), skill_lib_.get(), text_lib_.get(), &arena_))
+    , console_ui_(new UIComponent())
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
@@ -61,16 +84,6 @@ Game::Game()
 Game::~Game() { ::glfwTerminate(); }
 
 void Game::SetWindowTitle(const char *title) { ::glfwSetWindowTitle(window_, title); }
-
-void FrustumResizeCallback(GLFWwindow *window, int w, int h) {
-    glViewport(0, 0, w, h);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(0, w, 0, h, -100.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
 
 bool Game::Prepare(const std::string &properties_file_name) {
     FILE *fp = ::fopen(properties_file_name.c_str(), "rb");
@@ -96,8 +109,13 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwMakeContextCurrent(window_);
     glfwSetWindowUserPointer(window_, this);
     glfwSetKeyCallback(window_, OnKeyInput);
-    glfwSetCursorPosCallback(window_, OnMouseInput);
-    // glfwSetWindowRefreshCallback(window_, FrustumResizeCallback);
+    glfwSetCharCallback(window_, OnCharInput);
+
+    glfwGetWindowSize(window_, &window_w_, &window_h_);
+    glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
+    dpi_factor_ = static_cast<float>(fb_w_) / static_cast<float>(window_w_);
+    console_ui_->set_dip_factor(dpi_factor());
+
     glewExperimental = GL_TRUE;
     GLenum err       = glewInit();
     if (err != GLEW_OK) {
@@ -117,8 +135,8 @@ bool Game::Prepare(const std::string &properties_file_name) {
     res::FontLibrary::Options options;
     options.default_font_file = properties()->assets_dir() + "/" + properties()->default_font_file();
     options.default_font_size = properties()->default_font_size();
-    options.system_font_file = properties()->assets_dir() + "/" + properties()->system_font_file();
-    options.system_font_size = properties()->system_font_size();
+    options.system_font_file  = properties()->assets_dir() + "/" + properties()->system_font_file();
+    options.system_font_size  = properties()->system_font_size();
     if (!font_lib_->Prepare(options)) { return false; }
     if (!texture_lib_->Prepare(properties()->assets_dir() + "/" + res::TextureLibrary::kTextureDefFileName)) {
         return false;
@@ -167,11 +185,14 @@ void Game::Run() {
         glfwGetWindowSize(window_, &window_w_, &window_h_);
         glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
 
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        console_ui_->HandleInput(&break_input_);
 
         frame_delta_time_ = delta;
         scene_->Render(delta);
+
+        console_ui_->Render(delta);
 
         if (properties()->show_fps()) {
             char fps_buf[120];
@@ -201,9 +222,10 @@ void Game::Run() {
     if (game->scene_) { game->scene_->OnKeyInput(key, code, action, mods); }
 }
 
-/*static*/ void Game::OnMouseInput(GLFWwindow *window, double x, double y) {
+/*static*/ void Game::OnCharInput(GLFWwindow *window, unsigned int codepoint) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
-    if (game->scene_) { game->scene_->OnMouseInput(x, y); }
+    bool did = false;
+    game->console_ui_->HandleCharInput(codepoint, &did);
 }
 
 void Game::DelayDeleteScene(Scene *scene) {

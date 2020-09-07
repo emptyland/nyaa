@@ -103,8 +103,6 @@ void BootScene::OnKeyInput(int key, int code, int action, int mods) {
     }
 }
 
-void BootScene::OnMouseInput(double x, double y) {}
-
 void BootScene::Render(double d) {
     glViewport(0, 0, game()->fb_w(), game()->fb_w());
     glClearColor(0.2, 0.2, 0.4, 0.0);
@@ -148,6 +146,8 @@ void BootScene::Render(double d) {
     glDrawArrays(GL_QUADS, 0, 24);
     shader->Disable();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    shader->Unuse();
 }
 
 }  // namespace nyaa

@@ -20,8 +20,6 @@ void Scene::DelayDispose() { game()->DelayDeleteScene(this); }
 
 /*virtual*/ void Scene::OnKeyInput(int key, int code, int action, int mods) {}
 
-/*virtual*/ void Scene::OnMouseInput(double x, double y) {}
-
 /*virtual*/ void Scene::Render(double delta) {}
 
 }  // namespace nyaa

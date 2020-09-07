@@ -17,8 +17,10 @@ class Controller;
 
 class UIService {
 public:
-    UIService();
+    UIService(float dpi_factor);
     ~UIService();
+
+    DEF_VAL_PROP_RW(float, dpi_factor);
 
     InputBox *NewInputBox(std::string_view text, Controller *parent);
 
@@ -55,10 +57,13 @@ private:
     void HandleKeyEvent(bool *did);
     void HandleMouseEvent(bool *did);
 
-    uint32_t                  next_id_ = 0;
-    std::vector<Controller *> roots_;
+    double   last_time_;
+    uint32_t last_codepoint_ = 0;
+    uint32_t next_id_        = 0;
+    float    dpi_factor_     = 1;
 
-    Controller *focus_ = nullptr;
+    std::vector<Controller *> roots_;
+    Controller *              focus_ = nullptr;
 
     std::unordered_map<ControllerId, Controller *, ControllerHash> id_to_ctrl_;
 };  // class UIService

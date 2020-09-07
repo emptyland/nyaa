@@ -179,6 +179,7 @@ public:
 
     virtual void HandleMouseEvent(double x, double y, bool *did);
     virtual void HandleKeyEvent(bool *did);
+    virtual void HandleCharInput(uint32_t code, bool *did);
     virtual void DidFocus(bool focus);
     virtual void OnMouseMove(double x, double y);
 

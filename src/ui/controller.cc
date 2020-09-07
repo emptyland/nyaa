@@ -20,6 +20,8 @@ Controller::~Controller() {
 
 /*virtual*/ void Controller::HandleKeyEvent(bool *did) {}
 
+/*virtual*/ void Controller::HandleCharInput(uint32_t code, bool *did) {}
+
 /*virtual*/ void Controller::DidFocus(bool focus) {}
 
 /*virtual*/ void Controller::OnMouseMove(double x, double y) {}

@@ -52,6 +52,8 @@ public:
     DEF_VAL_GETTER(double, frame_delta_time);
     DEF_PTR_PROP_RW(Scene, scene);
     DEF_PTR_GETTER(GLFWwindow, window);
+    DEF_VAL_GETTER(bool, break_input);
+    DEF_VAL_GETTER(float, dpi_factor);
 
     const Properties *properties() const { return properties_.get(); }
 
@@ -103,8 +105,10 @@ private:
         uint64_t sequence_number_ = 0;
     };
 
+    class UIComponent;
+
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
-    static void OnMouseInput(GLFWwindow *window, double x, double y);
+    static void OnCharInput(GLFWwindow *window, unsigned int codepoint);
 
     base::StandaloneArena  arena_;
     Scene *                scene_ = nullptr;
@@ -133,10 +137,14 @@ private:
     std::unique_ptr<res::SkillLibrary>   skill_lib_;
     std::unique_ptr<res::ActorLibrary>   actor_lib_;
 
+    std::unique_ptr<UIComponent> console_ui_;
+
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;
     base::StdFilePrinter        stdout_;
 
+    bool        break_input_      = false;
+    float       dpi_factor_       = 1.0;
     double      ts_               = 0;
     double      frame_delta_time_ = 0;
     GLFWwindow *window_           = nullptr;

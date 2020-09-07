@@ -2,6 +2,7 @@
 #include "ui/input-box.h"
 #include "game/game.h"
 #include "game/vector.h"
+#include "system/geometry-transform-system.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +12,7 @@ namespace nyaa {
 
 namespace ui {
 
-UIService::UIService() {}
+UIService::UIService(float dpi_factor) : last_time_(glfwGetTime()), dpi_factor_(dpi_factor) {}
 
 UIService::~UIService() {
     for (auto [id, ctrl] : id_to_ctrl_) { delete ctrl; }
@@ -34,10 +35,19 @@ void UIService::Destroy(Controller *ctrl) {
     delete ctrl;
 }
 
-void UIService::HandleCharInput(unsigned int, bool *did) {}
+void UIService::HandleCharInput(unsigned int codepoint, bool *did) {
+    if (focus_) {
+        if (last_codepoint_ == codepoint && glfwGetTime() - last_time_ < 0.1) { return; }
+        last_time_      = glfwGetTime();
+        last_codepoint_ = codepoint;
+        focus_->HandleCharInput(codepoint, did);
+    }
+}
 
 void UIService::HandleKeyEvent(bool *did) {
-    if (focus_) { focus_->HandleKeyEvent(did); }
+    if (focus_) {
+        focus_->HandleKeyEvent(did);
+    }
 }
 
 void UIService::HandleMouseEvent(bool *did) {
@@ -45,6 +55,9 @@ void UIService::HandleMouseEvent(bool *did) {
 
     double x = 0, y = 0;
     glfwGetCursorPos(win, &x, &y);
+
+    y = Game::This()->fb_h() - y * dpi_factor_;
+    x *= dpi_factor_;
     for (Controller *ctrl : roots_) {
         for (Controller *node : *ctrl->mutable_children()) {
             if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
@@ -69,7 +82,7 @@ void UIService::HandleMouseEvent(bool *did) {
     }
 
     for (Controller *ctrl : roots_) {
-        if (InBound<int>(ctrl->bound(), x, y)) {
+        if (ctrl != focus_ && InBound<int>(ctrl->bound(), x, y)) {
             if (ctrl->children().empty()) {
                 focus_ = ctrl;
                 focus_->SetFocus(true);
@@ -77,7 +90,7 @@ void UIService::HandleMouseEvent(bool *did) {
                 break;
             }
             for (Controller *node : *ctrl->mutable_children()) {
-                if (InBound<int>(node->bound(), x, y)) {
+                if (node != focus_ && InBound<int>(node->bound(), x, y)) {
                     focus_ = node;
                     focus_->SetFocus(true);
                     focus_->DidFocus(true);
@@ -89,18 +102,25 @@ void UIService::HandleMouseEvent(bool *did) {
 }
 
 void UIService::Render(double delta) {
+    Game::This()->transform()->Enter2DProjection();
+
     for (Controller *ctrl : roots_) {
         if (ctrl->IsVisible()) {
+            ctrl->OnPaint(delta);
             for (Controller *node : *ctrl->mutable_children()) {
                 if (node->IsVisible()) { node->OnPaint(delta); }
             }
         }
     }
+
+    Game::This()->transform()->Exit2DProjection();
 }
 
 void UIService::PutController(Controller *ctrl) {
     if (!ctrl->parent()) { roots_.push_back(ctrl); }
     id_to_ctrl_[ctrl->id()] = ctrl;
+    ctrl->SetEnable(true);
+    ctrl->SetVisible(true);
 }
 
 }  // namespace ui
