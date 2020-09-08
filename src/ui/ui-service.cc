@@ -44,6 +44,21 @@ void UIService::Destroy(Component *ctrl) {
     delete ctrl;
 }
 
+void UIService::SetFocus(Component *ctrl) {
+    if (ctrl == focus_) { return; }
+
+    if (focus_) {
+        focus_->SetFocus(false);
+        focus_->DidFocus(false);
+    }
+
+    focus_ = ctrl;
+    if (focus_) {
+        focus_->SetFocus(true);
+        focus_->DidFocus(true);
+    }
+}
+
 void UIService::HandleCharInput(unsigned int codepoint, bool *did) {
     if (focus_) {
         double time = Game::This()->ts();

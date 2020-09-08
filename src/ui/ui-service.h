@@ -29,6 +29,8 @@ public:
 
     void Destroy(Component *ctrl);
 
+    void SetFocus(Component *ctrl);
+
     template <class T, class = std::enable_if_t<std::is_base_of<Component, T>::value>>
     T *Find(UIComponentId id) const {
         auto iter = id_to_ctrl_.find(id);

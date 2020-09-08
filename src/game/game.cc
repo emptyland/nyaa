@@ -36,44 +36,76 @@ base::LazyInstance<Game> ThisGame;
 
 class Game::UIController : public ui::InputBox::Delegate {
 public:
-    UIController() : service_(new ui::UIService(1) /*TODO*/) {}
+    UIController(Game *owns) : owns_(owns), service_(new ui::UIService(1) /*TODO*/) {}
 
     void Prepare() {
         input_box_ = service_->NewInputBox("", nullptr);
         input_box_->AddDelegate(this);
-        input_box_->set_bound({4, 4, 500, 48});
+        input_box_->set_bound({4, 4, owns_->fb_w() / 2, 48});
         input_box_->set_font_scale(0.7);
-        input_box_->set_font(Game::This()->font_lib()->system_face());
+        input_box_->set_font(owns_->font_lib()->system_face());
+        input_box_->SetVisible(false);
 
         list_box_ = service_->NewListBox(100, nullptr);
-        list_box_->set_bound({4, 52, 500, 400});
+        list_box_->set_bound({4, 52, owns_->fb_w() / 2, 400});
         list_box_->set_font_scale(0.7);
-        list_box_->set_font(Game::This()->font_lib()->system_face());
+        list_box_->set_font(owns_->font_lib()->system_face());
+        list_box_->SetVisible(false);
+
+        last_time_ = owns_->ts();
     }
 
     void DidEnter(ui::InputBox *sender) override {
         std::string text = sender->Utf8Text();
         if (!text.empty()) {
             sender->ClearText();
-            list_box_->Append(text);
+            //list_box_->Append(text);
+            owns_->ProcessConsoleCommand(text);
         }
     }
 
-    void HandleInput(bool *did) { service_->HandleInput(did); }
+    void HandleInput(bool *did) {
+        if (glfwGetKey(owns_->window(), GLFW_KEY_ENTER) == GLFW_PRESS &&
+            glfwGetKey(owns_->window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+            owns_->ts() - last_time_ > 0.2) {
+            SwitchVisible();
+            last_time_ = owns_->ts();
+        } else {
+            service_->HandleInput(did);
+        }
+    }
 
     void HandleCharInput(uint32_t code, bool *did) { service_->HandleCharInput(code, did); }
 
-    void Render(double delta) { service_->Render(delta); }
+    void Render(double delta) {
+        input_box_->set_bound({4, 4, owns_->fb_w() / 2, 48});
+        list_box_->set_bound({4, 52, owns_->fb_w() / 2, 400});
+        service_->Render(delta);
+    }
+
+    void SwitchVisible() {
+        input_box_->SetVisible(!input_box_->IsVisible());
+        list_box_->SetVisible(!list_box_->IsVisible());
+        if (input_box_->IsVisible()) {
+            service_->SetFocus(input_box_);
+        } else {
+            service_->SetFocus(nullptr);
+        }
+    }
+
+    DEF_PTR_GETTER(ui::ListBox, list_box);
 
     void set_dip_factor(float factor) { service_->set_dpi_factor(factor); }
 
     bool has_focus() const { return service_->focus() != nullptr; }
 
 private:
+    Game *const                    owns_;
     std::unique_ptr<ui::UIService> service_;
 
     ui::InputBox *input_box_ = nullptr;
     ui::ListBox * list_box_  = nullptr;
+    double last_time_ = 0;
 };  // class Game::UIComponent
 
 Game::Game()
@@ -97,7 +129,7 @@ Game::Game()
     , shader_lib_(new res::ShaderLibrary(&arena_))
     , skill_lib_(new res::SkillLibrary(sprite_lib_.get(), text_lib_.get(), &arena_))
     , actor_lib_(new res::ActorLibrary(avatar_lib_.get(), skill_lib_.get(), text_lib_.get(), &arena_))
-    , console_ui_(new UIController())
+    , console_ui_(new UIController(this))
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
@@ -270,6 +302,17 @@ uint64_t Game::IdGenerator::New() {
     uint64_t mills = time_val.tv_sec * 1000 + time_val.tv_usec / 1000;
     return (static_cast<uint64_t>(bucket_id_ & 0x3ff) << 54) | ((mills & 0x7ffffffffff) << 12) |
            (sequence_number_ & 0x1fff);
+}
+
+
+void Game::ProcessConsoleCommand(std::string_view text) {
+
+    if (text.compare("time") == 0) {
+        console_ui_->list_box()->Printf(Vec3(0, 1, 0), "time = %f", ts());    
+        return;
+    }
+
+    console_ui_->list_box()->Printf(Vec3(1, 1, 1), text.data());
 }
 
 }  // namespace nyaa

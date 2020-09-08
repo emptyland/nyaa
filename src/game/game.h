@@ -112,6 +112,8 @@ private:
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
     static void OnCharInput(GLFWwindow *window, unsigned int codepoint);
 
+    void ProcessConsoleCommand(std::string_view text);
+
     base::StandaloneArena  arena_;
     Scene *                scene_ = nullptr;
     std::unique_ptr<Scene> boot_scene_;

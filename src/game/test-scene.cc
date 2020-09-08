@@ -68,23 +68,16 @@ void TestScene::Reset() {
 
 static constexpr float speed = 5;
 
-void TestScene::OnKeyInput(int key, int code, int action, int mods) {
-
-    switch (key) {
-        case GLFW_KEY_ESCAPE:
-        case GLFW_KEY_R:
-            DelayDispose();
-            DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
-            break;
-        case GLFW_KEY_SPACE: {
-            if (player_->movement().speed().z == 0) { player_->mutable_movement()->mutable_speed()->z = 10; }
-            // UpdatePlayerMovement();
-        } break;
-        default: break;
-    }
-}
+void TestScene::OnKeyInput(int key, int code, int action, int mods) {}
 
 int TestScene::HandleKeyInput() {
+    if (glfwGetKey(game()->window(), GLFW_KEY_R) == GLFW_PRESS ||
+        glfwGetKey(game()->window(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        DelayDispose();
+        DCHECK_NOTNULL(prev())->SwitchTo(nullptr);
+        return 0;
+    }
+
     int command = 0;
     if (glfwGetKey(game()->window(), GLFW_KEY_W) == GLFW_PRESS) {
         player_->mutable_movement()->mutable_speed()->y = speed;
@@ -143,11 +136,11 @@ int TestScene::HandleKeyInput() {
 }
 
 void TestScene::Render(double delta) {
-    int command = HandleKeyInput();
+    int command = !game()->break_input() ? HandleKeyInput() : 0;
 
     sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
 
-    //glViewport()
+    // glViewport()
 
     if (zone_->center()) {
         game()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
@@ -234,7 +227,7 @@ void TestScene::Render(double delta) {
         game()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
                                           actor->mutable_nature(), &view);
 
-        //Matrix<float> model_view;
+        // Matrix<float> model_view;
         Vector3f d = actor->movement().coord() - view;
         model_mat.Scale(0.5, 0.5, 0.5);
         mat.Translate(d.x, d.y, d.z);
@@ -248,12 +241,12 @@ void TestScene::Render(double delta) {
         coord.y /= coord.w;
         coord.z /= coord.w;
 
-        //coord.x = -coord.x;
-        //coord.y = -coord.y;
+        // coord.x = -coord.x;
+        // coord.y = -coord.y;
         coord.x = game()->fb_w() / 2 + coord.x + game()->fb_w() / 2 * coord.x;
         coord.y = game()->fb_h() / 2 + coord.y + game()->fb_h() / 2 * coord.y;
 
-        //DLOG(INFO) << "coord = " << coord.x << ", " << coord.y << ", " << coord.z;
+        // DLOG(INFO) << "coord = " << coord.x << ", " << coord.y << ", " << coord.z;
     }
 
     bk_shader->Unuse();

@@ -4,6 +4,7 @@
 
 #include "ui/component.h"
 #include "game/vector.h"
+#include <stdarg.h>
 #include <string>
 #include <deque>
 
@@ -23,6 +24,9 @@ public:
     DEF_VAL_PROP_RW(int, limit_rows);
 
     void Append(std::string_view text, Vector3f color = Vec3(1, 1, 1));
+
+    void Printf(const Vector3f &color, const char *fmt, ...);
+    void Sprintf(const Vector3f &color, const char *fmt, va_list ap);
 
     void HandleKeyEvent(bool *did) override;
     void OnPaint(double delta) override;

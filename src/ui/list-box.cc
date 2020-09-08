@@ -15,6 +15,17 @@ ListBox::ListBox(Id id, Component *parent /*= nullptr*/)
 
 ListBox::~ListBox() {}
 
+void ListBox::Printf(const Vector3f &color, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Sprintf(color, fmt, ap);
+    va_end(ap);
+}
+
+void ListBox::Sprintf(const Vector3f &color, const char *fmt, va_list ap) {
+    Append(base::Vsprintf(fmt, ap), color);
+}
+
 // Auto ling warp
 void ListBox::Append(std::string_view text, Vector3f color /* = Vec3(1, 1, 1)*/) {
     base::CodePointIteratorUtf8 iter(text);
