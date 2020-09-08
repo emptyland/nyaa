@@ -52,8 +52,10 @@ public:
     DEF_VAL_GETTER(double, frame_delta_time);
     DEF_PTR_PROP_RW(Scene, scene);
     DEF_PTR_GETTER(GLFWwindow, window);
-    DEF_VAL_GETTER(bool, break_input);
     DEF_VAL_GETTER(float, dpi_factor);
+    DEF_VAL_GETTER(double, ts);
+
+    bool break_input() const;
 
     const Properties *properties() const { return properties_.get(); }
 
@@ -105,7 +107,7 @@ private:
         uint64_t sequence_number_ = 0;
     };
 
-    class UIComponent;
+    class UIController;
 
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
     static void OnCharInput(GLFWwindow *window, unsigned int codepoint);
@@ -137,7 +139,7 @@ private:
     std::unique_ptr<res::SkillLibrary>   skill_lib_;
     std::unique_ptr<res::ActorLibrary>   actor_lib_;
 
-    std::unique_ptr<UIComponent> console_ui_;
+    std::unique_ptr<UIController> console_ui_;
 
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;

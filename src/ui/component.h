@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_UI_CONTROLLER_H_
-#define NYAA_UI_CONTROLLER_H_
+#ifndef NYAA_UI_COMPONENT_H_
+#define NYAA_UI_COMPONENT_H_
 
 #include "game/vector.h"
 #include "game/identifiers.h"
@@ -43,43 +43,44 @@ private:
         }                                                  \
     }
 
-class Controller;
+class Component;
 
-class ControllerDelegate {
+class ComponentDelegate {
 public:
-    inline ControllerDelegate() = default;
-    inline ControllerDelegate(Controller *owns) : owns_(owns) {}
-    virtual ~ControllerDelegate();
+    inline ComponentDelegate() = default;
+    inline ComponentDelegate(Component *owns) : owns_(owns) {}
+    virtual ~ComponentDelegate();
 
-    DEF_PTR_GETTER(Controller, owns);
+    DEF_PTR_GETTER(Component, owns);
 
-    virtual void DidForce(Controller *sender);
+    virtual void DidForce(Component *sender);
 
-    friend class Controller;
-    DISALLOW_IMPLICIT_CONSTRUCTORS(ControllerDelegate);
+    friend class Component;
+    DISALLOW_IMPLICIT_CONSTRUCTORS(ComponentDelegate);
 
 private:
-    Controller *owns_ = nullptr;
+    Component *owns_ = nullptr;
 };  // class ControllerDelegate
 
-class Controller {
+class Component {
 public:
-    using Id       = ControllerId;
-    using Delegate = ControllerDelegate;
+    using Id       = UIComponentId;
+    using Delegate = ComponentDelegate;
 
     static constexpr int kMaxDelegates = 8;
 
-    inline explicit Controller(Id id) : Controller(id, nullptr) {}
-    inline Controller(Id id, Controller *parent) : next_(this), prev_(this), id_(id), parent_(parent) {
-        if (parent_) { parent_->mutable_children()->Append(this); }
-    }
-    virtual ~Controller();
+    inline explicit Component(Id id) : Component(id, nullptr) {}
+    Component(Id id, Component *parent);
+    virtual ~Component();
 
     DEF_VAL_GETTER(Id, id);
     DEF_VAL_PROP_RW(std::string, name);
     DEF_VAL_PROP_RMW(Boundi, bound);
     DEF_VAL_PROP_RW(int, z_order);
-    DEF_PTR_PROP_RW(Controller, parent);
+    DEF_PTR_PROP_RW(Component, parent);
+    DEF_VAL_PROP_RW(double, last_time);
+
+    bool DeltaTest(double delta);
 
     bool is_root() const { return parent() == nullptr; }
 
@@ -113,15 +114,15 @@ public:
 
         bool empty() const { return dummy_->next_ == dummy_; }
 
-        void Append(Controller *child) { QUEUE_INSERT_TAIL(dummy_, child); }
+        void Append(Component *child) { QUEUE_INSERT_TAIL(dummy_, child); }
 
-        void Remove(Controller *child) {
+        void Remove(Component *child) {
             DCHECK(Exist(child));
             QUEUE_REMOVE(child);
         }
 
-        bool Exist(Controller *child) const {
-            for (Controller *i = dummy_->next_; i != dummy_; i = i->next_) {
+        bool Exist(Component *child) const {
+            for (Component *i = dummy_->next_; i != dummy_; i = i->next_) {
                 if (i == child) { return true; }
             }
             return false;
@@ -131,10 +132,10 @@ public:
 
     private:
         struct DummyStub {
-            Controller *next;
-            Controller *prev;
+            Component *next;
+            Component *prev;
         } stub_;
-        Controller *dummy_ = reinterpret_cast<Controller *>(&stub_);
+        Component *dummy_ = reinterpret_cast<Component *>(&stub_);
     };  // class Children
 
     class Delegates {
@@ -175,33 +176,37 @@ public:
 
     void AddDelegate(Delegate *value, bool ownership = false) { delegates_.AddDelegate(value, ownership); }
 
-    void AddChild(Controller *child) { children_.Append(child); }
+    void AddChild(Component *child) { children_.Append(child); }
 
     virtual void HandleMouseEvent(double x, double y, bool *did);
     virtual void HandleKeyEvent(bool *did);
-    virtual void HandleCharInput(uint32_t code, bool *did);
+    virtual void HandleCharInput(char32_t code, bool *did);
     virtual void DidFocus(bool focus);
     virtual void OnMouseMove(double x, double y);
 
     virtual void OnPaint(double delta) = 0;
 
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Controller);
+    DISALLOW_IMPLICIT_CONSTRUCTORS(Component);
+
+protected:
+    bool TestKeyPress(int key);
 
 private:
-    Controller *           next_;
-    Controller *           prev_;
+    Component *            next_;
+    Component *            prev_;
     Id                     id_;
     std::string            name_;
     Boundi                 bound_   = {0, 0, 0, 0};
     int                    z_order_ = 0;
-    Controller *           parent_  = nullptr;
+    Component *            parent_  = nullptr;
+    double                 last_time_;
     Flags<State, uint32_t> flags_;
 
     Children  children_;
     Delegates delegates_;
 };  // class Controller
 
-class Controller::Delegates::iterator {
+class Component::Delegates::iterator {
 public:
     iterator(DelegateBundle *delegates, int i) : delegates_(delegates), i_(i) {}
 
@@ -210,7 +215,7 @@ public:
     void operator--(int) { i_--; }
     void operator--() { i_--; }
     bool operator==(const iterator &other) const { return i_ == other.i_ && delegates_ == other.delegates_; }
-    bool operator!=(const iterator &other) const { return i_ != other.i_ && delegates_ != other.delegates_; }
+    bool operator!=(const iterator &other) const { return i_ != other.i_ || delegates_ != other.delegates_; }
 
     std::pair<Delegate *, bool> operator*() const {
         return std::make_pair(delegates_[i_].value, delegates_[i_].ownership);
@@ -221,10 +226,10 @@ private:
     int             i_;
 };  // class Controller::Delegates::iterator
 
-inline Controller::Delegates::iterator Controller::Delegates::begin() { return iterator(delegates_, 0); }
-inline Controller::Delegates::iterator Controller::Delegates::end() { return iterator(delegates_, delegate_size()); }
+inline Component::Delegates::iterator Component::Delegates::begin() { return iterator(delegates_, 0); }
+inline Component::Delegates::iterator Component::Delegates::end() { return iterator(delegates_, delegate_size()); }
 
-class Controller::Delegates::const_iterator {
+class Component::Delegates::const_iterator {
 public:
     const_iterator(const DelegateBundle *delegates, int i) : delegates_(delegates), i_(i) {}
 
@@ -244,16 +249,16 @@ private:
     int                   i_;
 };  // class Controller::Delegates::const_iterator
 
-inline Controller::Delegates::const_iterator Controller::Delegates::begin() const {
+inline Component::Delegates::const_iterator Component::Delegates::begin() const {
     return const_iterator(&delegates_[0], 0);
 }
-inline Controller::Delegates::const_iterator Controller::Delegates::end() const {
+inline Component::Delegates::const_iterator Component::Delegates::end() const {
     return const_iterator(&delegates_[0], delegate_size());
 }
 
-class Controller::Children::iterator {
+class Component::Children::iterator {
 public:
-    iterator(Controller *cursor) : cursor_(cursor) {}
+    iterator(Component *cursor) : cursor_(cursor) {}
 
     void operator++(int) { cursor_ = cursor_->next_; }
     void operator++() { cursor_ = cursor_->next_; }
@@ -262,18 +267,18 @@ public:
     bool operator==(const iterator &other) const { return cursor_ == other.cursor_; }
     bool operator!=(const iterator &other) const { return cursor_ != other.cursor_; }
 
-    Controller *operator*() const { return cursor_; }
+    Component *operator*() const { return cursor_; }
 
 private:
-    Controller *cursor_;
+    Component *cursor_;
 };  // class Controller::Delegates::iterator
 
-inline Controller::Children::iterator Controller::Children::begin() { return iterator(dummy_->next_); }
-inline Controller::Children::iterator Controller::Children::end() { return iterator(dummy_); }
+inline Component::Children::iterator Component::Children::begin() { return iterator(dummy_->next_); }
+inline Component::Children::iterator Component::Children::end() { return iterator(dummy_); }
 
-class Controller::Children::const_iterator {
+class Component::Children::const_iterator {
 public:
-    const_iterator(const Controller *cursor) : cursor_(cursor) {}
+    const_iterator(const Component *cursor) : cursor_(cursor) {}
 
     void operator++(int) { cursor_ = cursor_->next_; }
     void operator++() { cursor_ = cursor_->next_; }
@@ -282,20 +287,18 @@ public:
     bool operator==(const const_iterator &other) const { return cursor_ == other.cursor_; }
     bool operator!=(const const_iterator &other) const { return cursor_ != other.cursor_; }
 
-    const Controller *operator*() const { return cursor_; }
+    const Component *operator*() const { return cursor_; }
 
 private:
-    const Controller *cursor_;
+    const Component *cursor_;
 };  // class Controller::Delegates::const_iterator
 
-inline Controller::Children::const_iterator Controller::Children::begin() const {
-    return const_iterator(dummy_->next_);
-}
+inline Component::Children::const_iterator Component::Children::begin() const { return const_iterator(dummy_->next_); }
 
-inline Controller::Children::const_iterator Controller::Children::end() const { return const_iterator(dummy_); }
+inline Component::Children::const_iterator Component::Children::end() const { return const_iterator(dummy_); }
 
 }  // namespace ui
 
 }  // namespace nyaa
 
-#endif  // NYAA_UI_CONTROLLER_H_
+#endif  // NYAA_UI_COMPONENT_H_

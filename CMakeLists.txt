@@ -54,7 +54,7 @@ set(GAME_SRC
     src/game/entity-grid-set.cc
     src/game/matrix.cc
     src/game/world.cc
-    src/ui/controller.cc
+    src/ui/component.cc
     src/ui/ui-service.cc
     src/ui/input-box.cc
     src/entity/player-entity.cc

@@ -2,32 +2,52 @@
 #ifndef NYAA_UI_INPUT_BOX_H_
 #define NYAA_UI_INPUT_BOX_H_
 
-#include "ui/controller.h"
+#include "ui/component.h"
+#include <string>
+#include <vector>
 
 namespace nyaa {
 
+namespace res {
+class FontFace;
+}  // namespace res
+
 namespace ui {
 
-class InputBox : public Controller {
+class InputBox : public Component {
 public:
-    class Delegate : public Controller::Delegate {
+    class Delegate : public Component::Delegate {
     public:
-        Delegate(InputBox *owns): Controller::Delegate(owns) {}
-        virtual void OnChange(InputBox *sender, std::string_view text) = 0;
-        virtual void OnChanged(InputBox *sender, std::string_view text) = 0;
-        virtual void DidEnter(InputBox *sender) = 0;
-    }; // class Delegate
+        explicit Delegate(InputBox *owns = nullptr) : Component::Delegate(owns) {}
+        virtual void OnChange(InputBox *sender){};
+        virtual void OnChanged(InputBox *sender){};
+        virtual void DidEnter(InputBox *sender){};
+    };  // class Delegate
 
-    explicit InputBox(Id id, Controller *parent = nullptr);
+    explicit InputBox(Id id, Component *parent = nullptr);
     ~InputBox() override;
 
+    DEF_PTR_PROP_RW(res::FontFace, font);
+    DEF_VAL_PROP_RW(int, font_bearing);
+    DEF_VAL_PROP_RW(float, font_scale);
+
+    void ClearText() {
+        text_.clear();
+        cursor_ = 0;
+    }
+
     void HandleKeyEvent(bool *did) override;
-    void HandleCharInput(uint32_t code, bool *did) override;
+    void HandleCharInput(char32_t code, bool *did) override;
     void DidFocus(bool focus) override;
     void OnPaint(double delta) override;
 
 private:
-    std::string text_;
+    res::FontFace *font_ = nullptr;
+    std::u32string text_;
+    int            cursor_       = 0;
+    int            font_bearing_ = 10;
+    float          font_scale_   = 0.8;
+    double         time_         = 0;
 };  // class InputBox
 
 }  // namespace ui

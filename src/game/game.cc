@@ -33,12 +33,15 @@ namespace nyaa {
 
 base::LazyInstance<Game> ThisGame;
 
-class Game::UIComponent {
+class Game::UIController : public ui::InputBox::Delegate {
 public:
-    UIComponent() : service_(new ui::UIService(1) /*TODO*/) {
+    UIController() : service_(new ui::UIService(1) /*TODO*/) {
         input_box_ = service_->NewInputBox("", nullptr);
-        input_box_->set_bound({0, 0, 300, 32});
+        input_box_->AddDelegate(this);
+        input_box_->set_bound({4, 4, 500, 48});
     }
+
+    void DidEnter(ui::InputBox *sender) override { sender->ClearText(); }
 
     void HandleInput(bool *did) { service_->HandleInput(did); }
 
@@ -47,6 +50,8 @@ public:
     void Render(double delta) { service_->Render(delta); }
 
     void set_dip_factor(float factor) { service_->set_dpi_factor(factor); }
+
+    bool has_focus() const { return service_->focus() != nullptr; }
 
 private:
     std::unique_ptr<ui::UIService> service_;
@@ -74,7 +79,7 @@ Game::Game()
     , shader_lib_(new res::ShaderLibrary(&arena_))
     , skill_lib_(new res::SkillLibrary(sprite_lib_.get(), text_lib_.get(), &arena_))
     , actor_lib_(new res::ActorLibrary(avatar_lib_.get(), skill_lib_.get(), text_lib_.get(), &arena_))
-    , console_ui_(new UIComponent())
+    , console_ui_(new UIController())
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
@@ -84,6 +89,8 @@ Game::Game()
 Game::~Game() { ::glfwTerminate(); }
 
 void Game::SetWindowTitle(const char *title) { ::glfwSetWindowTitle(window_, title); }
+
+bool Game::break_input() const { return break_input_ || console_ui_->has_focus(); }
 
 bool Game::Prepare(const std::string &properties_file_name) {
     FILE *fp = ::fopen(properties_file_name.c_str(), "rb");
@@ -224,8 +231,7 @@ void Game::Run() {
 
 /*static*/ void Game::OnCharInput(GLFWwindow *window, unsigned int codepoint) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
-    bool did = false;
-    game->console_ui_->HandleCharInput(codepoint, &did);
+    game->console_ui_->HandleCharInput(codepoint, &game->break_input_);
 }
 
 void Game::DelayDeleteScene(Scene *scene) {

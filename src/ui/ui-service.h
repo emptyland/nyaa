@@ -13,7 +13,7 @@ namespace nyaa {
 namespace ui {
 
 class InputBox;
-class Controller;
+class Component;
 
 class UIService {
 public:
@@ -21,19 +21,20 @@ public:
     ~UIService();
 
     DEF_VAL_PROP_RW(float, dpi_factor);
+    DEF_PTR_GETTER(Component, focus);
 
-    InputBox *NewInputBox(std::string_view text, Controller *parent);
+    InputBox *NewInputBox(std::string_view text, Component *parent);
 
-    void Destroy(Controller *ctrl);
+    void Destroy(Component *ctrl);
 
-    template <class T, class = std::enable_if_t<std::is_base_of<Controller, T>::value>>
-    T *Find(ControllerId id) const {
+    template <class T, class = std::enable_if_t<std::is_base_of<Component, T>::value>>
+    T *Find(UIComponentId id) const {
         auto iter = id_to_ctrl_.find(id);
         DCHECK(iter != id_to_ctrl_.end());
         return down_cast<T *>(iter->second);
     }
 
-    Controller *FindOrNull(ControllerId id) const {
+    Component *FindOrNull(UIComponentId id) const {
         auto iter = id_to_ctrl_.find(id);
         return iter == id_to_ctrl_.end() ? nullptr : iter->second;
     }
@@ -52,7 +53,7 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(UIService);
 
 private:
-    void PutController(Controller *ctrl);
+    void PutController(Component *ctrl);
 
     void HandleKeyEvent(bool *did);
     void HandleMouseEvent(bool *did);
@@ -62,10 +63,10 @@ private:
     uint32_t next_id_        = 0;
     float    dpi_factor_     = 1;
 
-    std::vector<Controller *> roots_;
-    Controller *              focus_ = nullptr;
+    std::vector<Component *> roots_;
+    Component *              focus_ = nullptr;
 
-    std::unordered_map<ControllerId, Controller *, ControllerHash> id_to_ctrl_;
+    std::unordered_map<UIComponentId, Component *, ControllerHash> id_to_ctrl_;
 };  // class UIService
 
 }  // namespace ui

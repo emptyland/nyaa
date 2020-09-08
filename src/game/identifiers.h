@@ -42,21 +42,21 @@ private:
     ResourceId(uint64_t value) : Identifier<uint32_t>(value) {}
 };  // class ResourceId
 
-class ControllerId final : public Identifier<uint32_t> {
+class UIComponentId final : public Identifier<uint32_t> {
 public:
-    ControllerId() : ControllerId(0) {}
-    static ControllerId Of(uint32_t value) { return ControllerId(value); }
+    UIComponentId() : UIComponentId(0) {}
+    static UIComponentId Of(uint32_t value) { return UIComponentId(value); }
 
 private:
-    ControllerId(uint64_t value) : Identifier<uint32_t>(value) {}
+    UIComponentId(uint64_t value) : Identifier<uint32_t>(value) {}
 }; // class ControllerId
 
 struct EntityHash : public std::unary_function<EntityId, size_t> {
     inline size_t operator()(EntityId value) const { return value.value(); }
 };
 
-struct ControllerHash : public std::unary_function<ControllerId, size_t> {
-    inline size_t operator()(ControllerId value) const { return value.value(); }
+struct ControllerHash : public std::unary_function<UIComponentId, size_t> {
+    inline size_t operator()(UIComponentId value) const { return value.value(); }
 };
 
 namespace base {

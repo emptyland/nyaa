@@ -18,14 +18,14 @@ UIService::~UIService() {
     for (auto [id, ctrl] : id_to_ctrl_) { delete ctrl; }
 }
 
-InputBox *UIService::NewInputBox(std::string_view text, Controller *parent) {
-    Controller::Id id   = Controller::Id::Of(next_id_++);
-    InputBox *     ctrl = new InputBox(id, parent);
+InputBox *UIService::NewInputBox(std::string_view text, Component *parent) {
+    Component::Id id   = Component::Id::Of(next_id_++);
+    InputBox *    ctrl = new InputBox(id, parent);
     PutController(ctrl);
     return ctrl;
 }
 
-void UIService::Destroy(Controller *ctrl) {
+void UIService::Destroy(Component *ctrl) {
     id_to_ctrl_.erase(ctrl->id());
     if (!ctrl->parent()) {
         roots_.erase(std::find(roots_.begin(), roots_.end(), ctrl));
@@ -37,17 +37,17 @@ void UIService::Destroy(Controller *ctrl) {
 
 void UIService::HandleCharInput(unsigned int codepoint, bool *did) {
     if (focus_) {
-        if (last_codepoint_ == codepoint && glfwGetTime() - last_time_ < 0.1) { return; }
-        last_time_      = glfwGetTime();
+        double time = Game::This()->ts();
+
+        if (last_codepoint_ == codepoint && time - last_time_ < 0.07) { return; }
+        last_time_      = time;
         last_codepoint_ = codepoint;
         focus_->HandleCharInput(codepoint, did);
     }
 }
 
 void UIService::HandleKeyEvent(bool *did) {
-    if (focus_) {
-        focus_->HandleKeyEvent(did);
-    }
+    if (focus_) { focus_->HandleKeyEvent(did); }
 }
 
 void UIService::HandleMouseEvent(bool *did) {
@@ -58,8 +58,8 @@ void UIService::HandleMouseEvent(bool *did) {
 
     y = Game::This()->fb_h() - y * dpi_factor_;
     x *= dpi_factor_;
-    for (Controller *ctrl : roots_) {
-        for (Controller *node : *ctrl->mutable_children()) {
+    for (Component *ctrl : roots_) {
+        for (Component *node : *ctrl->mutable_children()) {
             if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
         }
     }
@@ -81,7 +81,7 @@ void UIService::HandleMouseEvent(bool *did) {
         }
     }
 
-    for (Controller *ctrl : roots_) {
+    for (Component *ctrl : roots_) {
         if (ctrl != focus_ && InBound<int>(ctrl->bound(), x, y)) {
             if (ctrl->children().empty()) {
                 focus_ = ctrl;
@@ -89,7 +89,7 @@ void UIService::HandleMouseEvent(bool *did) {
                 focus_->DidFocus(true);
                 break;
             }
-            for (Controller *node : *ctrl->mutable_children()) {
+            for (Component *node : *ctrl->mutable_children()) {
                 if (node != focus_ && InBound<int>(node->bound(), x, y)) {
                     focus_ = node;
                     focus_->SetFocus(true);
@@ -103,20 +103,22 @@ void UIService::HandleMouseEvent(bool *did) {
 
 void UIService::Render(double delta) {
     Game::This()->transform()->Enter2DProjection();
+    glDisable(GL_DEPTH_TEST);
 
-    for (Controller *ctrl : roots_) {
+    for (Component *ctrl : roots_) {
         if (ctrl->IsVisible()) {
             ctrl->OnPaint(delta);
-            for (Controller *node : *ctrl->mutable_children()) {
+            for (Component *node : *ctrl->mutable_children()) {
                 if (node->IsVisible()) { node->OnPaint(delta); }
             }
         }
     }
 
     Game::This()->transform()->Exit2DProjection();
+    glEnable(GL_DEPTH_TEST);
 }
 
-void UIService::PutController(Controller *ctrl) {
+void UIService::PutController(Component *ctrl) {
     if (!ctrl->parent()) { roots_.push_back(ctrl); }
     id_to_ctrl_[ctrl->id()] = ctrl;
     ctrl->SetEnable(true);

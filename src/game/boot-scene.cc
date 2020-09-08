@@ -92,29 +92,31 @@ void BootScene::Reset() {
 }
 
 void BootScene::OnKeyInput(int key, int code, int action, int mods) {
-    switch (key) {
-        case GLFW_KEY_ESCAPE: game()->Exit(); break;
-
-        case GLFW_KEY_T: {
-            TestScene *test_scene = new TestScene(game());
-            test_scene->SwitchTo(this);
-        } break;
-        default: break;
-    }
 }
 
 void BootScene::Render(double d) {
     glViewport(0, 0, game()->fb_w(), game()->fb_w());
     glClearColor(0.2, 0.2, 0.4, 0.0);
 
-    if (glfwGetKey(game()->window(), GLFW_KEY_UP) == GLFW_PRESS) {
-        z_rolated_ -= 2;
-    } else if (glfwGetKey(game()->window(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-        z_rolated_ += 2;
-    } else if (glfwGetKey(game()->window(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-        y_rolated_ -= 2;
-    } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        y_rolated_ += 2;
+    if (!game()->break_input()) {
+        if (glfwGetKey(game()->window(), GLFW_KEY_T) == GLFW_PRESS) {
+            TestScene *test_scene = new TestScene(game());
+            test_scene->SwitchTo(this);
+        }
+
+        if (glfwGetKey(game()->window(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            game()->Exit();
+        }
+
+        if (glfwGetKey(game()->window(), GLFW_KEY_UP) == GLFW_PRESS) {
+            z_rolated_ -= 2;
+        } else if (glfwGetKey(game()->window(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+            z_rolated_ += 2;
+        } else if (glfwGetKey(game()->window(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+            y_rolated_ -= 2;
+        } else if (glfwGetKey(game()->window(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            y_rolated_ += 2;
+        }
     }
 
     Matrix mat;

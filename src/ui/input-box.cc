@@ -1,4 +1,5 @@
 #include "ui/input-box.h"
+#include "resource/font-library.h"
 #include "game/game.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
@@ -8,26 +9,47 @@ namespace nyaa {
 
 namespace ui {
 
-InputBox::InputBox(Id id, Controller *parent /* = nullptr*/) : Controller(id, parent) {}
+InputBox::InputBox(Id id, Component *parent /* = nullptr*/) : Component(id, parent) {}
 
 InputBox::~InputBox() {}
 
 void InputBox::HandleKeyEvent(bool *did) {
-    if (glfwGetKey(Game::This()->window(), GLFW_KEY_ENTER) == GLFW_PRESS) {
-        for (auto [deg, _] : *mutable_delegates()) { down_cast<Delegate>(deg)->DidForce(this); }
+    if (TestKeyPress(GLFW_KEY_ENTER)) {
+        for (auto [deg, _] : *mutable_delegates()) {
+            // :format
+            down_cast<Delegate>(deg)->DidEnter(this);
+        }
         *did = true;
         return;
     }
 
-    if (glfwGetKey(Game::This()->window(), GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
-
+    if (TestKeyPress(GLFW_KEY_BACKSPACE)) {
+        if (DeltaTest(0.1) && cursor_ > 0) {
+            text_.erase(text_.begin() + cursor_ - 1);
+            cursor_--;
+        }
         *did = true;
         return;
     }
+
+    // if (TestKeyPress(GLFW_KEY_LEFT)) {
+    //     if (cursor_ > 0) { cursor_--; }
+    //     *did = true;
+    //     return;
+    // }
+
+    // if (TestKeyPress(GLFW_KEY_RIGHT)) {
+    //     if (cursor_ < text_.size()) { cursor_++; }
+    //     *did = true;
+    //     return;
+    // }
 }
 
-void InputBox::HandleCharInput(uint32_t code, bool *did) {
-    DLOG(INFO) << "char input: " << code;
+void InputBox::HandleCharInput(char32_t code, bool *did) {
+    // DLOG(INFO) << "char input: " << code << " cursor: " << cursor_;
+    text_.insert(text_.begin() + cursor_, code);
+    cursor_++;
+    *did = true;
 }
 
 void InputBox::DidFocus(bool focus) {
@@ -35,14 +57,64 @@ void InputBox::DidFocus(bool focus) {
     for (auto [deg, _] : *mutable_delegates()) { deg->DidForce(this); }
 }
 
-void InputBox::OnPaint(double /*delta*/) {
-    glColor3f(1.0, 1.0, 1.0);
+void InputBox::OnPaint(double delta) {
+    if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
+
+    glColor3f(0, 0, 0);
     glBegin(GL_QUADS);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
     glVertex2f(bound().x + bound().w, bound().y + bound().h);
     glVertex2f(bound().x, bound().y + bound().h);
     glEnd();
+
+    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(bound().x, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y + bound().h);
+    glVertex2f(bound().x, bound().y + bound().h);
+
+    glVertex2f(bound().x + 2, bound().y + 2);
+    glVertex2f(bound().x + bound().w - 2, bound().y + 2);
+    glVertex2f(bound().x + bound().w - 2, bound().y + bound().h - 2);
+    glVertex2f(bound().x + 2, bound().y + bound().h - 2);
+    glEnd();
+
+    std::vector<float> vertices;
+
+    Boundf rect =
+        font()->Render(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), font_scale(), text_, &vertices);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
+
+    glBegin(GL_QUADS);
+
+    for (int i = 0; i < vertices.size(); i += 5) {
+        glTexCoord2f(vertices[i + 3], vertices[i + 4]);
+        glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+
+    time_ += delta;
+    uint64_t mills = time_ * 1000;
+    if (IsFocus() && mills % 1000 > 500) {
+        rect.x += rect.w;
+        rect.y = bound().y + 4;
+        rect.h = bound().h - 8;
+        glColor3f(1, 1, 1);
+        glBegin(GL_QUADS);
+        glVertex2f(rect.x, rect.y);
+        glVertex2f(rect.x + 4, rect.y);
+        glVertex2f(rect.x + 4, rect.y + rect.h);
+        glVertex2f(rect.x, rect.y + rect.h);
+        glEnd();
+    }
 }
 
 }  // namespace ui
