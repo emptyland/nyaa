@@ -13,6 +13,7 @@ namespace nyaa {
 namespace ui {
 
 class InputBox;
+class ListBox;
 class Component;
 
 class UIService {
@@ -24,6 +25,7 @@ public:
     DEF_PTR_GETTER(Component, focus);
 
     InputBox *NewInputBox(std::string_view text, Component *parent);
+    ListBox *NewListBox(int limit_rows, Component *parent);
 
     void Destroy(Component *ctrl);
 

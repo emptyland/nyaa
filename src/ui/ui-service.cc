@@ -1,5 +1,6 @@
 #include "ui/ui-service.h"
 #include "ui/input-box.h"
+#include "ui/list-box.h"
 #include "game/game.h"
 #include "game/vector.h"
 #include "system/geometry-transform-system.h"
@@ -21,6 +22,14 @@ UIService::~UIService() {
 InputBox *UIService::NewInputBox(std::string_view text, Component *parent) {
     Component::Id id   = Component::Id::Of(next_id_++);
     InputBox *    ctrl = new InputBox(id, parent);
+    PutController(ctrl);
+    return ctrl;
+}
+
+ListBox *UIService::NewListBox(int limit_rows, Component *parent) {
+    Component::Id id   = Component::Id::Of(next_id_++);
+    ListBox *     ctrl = new ListBox(id, parent);
+    ctrl->set_limit_rows(limit_rows);
     PutController(ctrl);
     return ctrl;
 }

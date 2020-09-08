@@ -84,7 +84,7 @@ ActorBillboardRenderSystem::VboEntry *  // :format
 
     std::vector<float> vertices;
 
-    Boundf bound = Game::This()->font_lib()->system_face()->Render(name, 0, 0, 0, &vertices);
+    Boundf bound = Game::This()->font_lib()->system_face()->Render(Vec3(0,0,0), 1.0, name, &vertices);
 
     entry->count  = vertices.size() / 5;
     entry->size.x = bound.w;

@@ -13,6 +13,14 @@ InputBox::InputBox(Id id, Component *parent /* = nullptr*/) : Component(id, pare
 
 InputBox::~InputBox() {}
 
+std::string InputBox::Utf8Text() {
+    std::string buf;
+    for (char32_t codepoint : text_) {
+        buf.append(1, static_cast<char>(codepoint & 0xff));
+    }
+    return buf;
+}
+
 void InputBox::HandleKeyEvent(bool *did) {
     if (TestKeyPress(GLFW_KEY_ENTER)) {
         for (auto [deg, _] : *mutable_delegates()) {

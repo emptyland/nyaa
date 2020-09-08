@@ -24,6 +24,7 @@
 #include "resource/actor-library.h"
 #include "ui/ui-service.h"
 #include "ui/input-box.h"
+#include "ui/list-box.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -35,13 +36,28 @@ base::LazyInstance<Game> ThisGame;
 
 class Game::UIController : public ui::InputBox::Delegate {
 public:
-    UIController() : service_(new ui::UIService(1) /*TODO*/) {
+    UIController() : service_(new ui::UIService(1) /*TODO*/) {}
+
+    void Prepare() {
         input_box_ = service_->NewInputBox("", nullptr);
         input_box_->AddDelegate(this);
         input_box_->set_bound({4, 4, 500, 48});
+        input_box_->set_font_scale(0.7);
+        input_box_->set_font(Game::This()->font_lib()->system_face());
+
+        list_box_ = service_->NewListBox(100, nullptr);
+        list_box_->set_bound({4, 52, 500, 400});
+        list_box_->set_font_scale(0.7);
+        list_box_->set_font(Game::This()->font_lib()->system_face());
     }
 
-    void DidEnter(ui::InputBox *sender) override { sender->ClearText(); }
+    void DidEnter(ui::InputBox *sender) override {
+        std::string text = sender->Utf8Text();
+        if (!text.empty()) {
+            sender->ClearText();
+            list_box_->Append(text);
+        }
+    }
 
     void HandleInput(bool *did) { service_->HandleInput(did); }
 
@@ -55,7 +71,9 @@ public:
 
 private:
     std::unique_ptr<ui::UIService> service_;
-    ui::InputBox *                 input_box_ = nullptr;
+
+    ui::InputBox *input_box_ = nullptr;
+    ui::ListBox * list_box_  = nullptr;
 };  // class Game::UIComponent
 
 Game::Game()
@@ -170,6 +188,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
         // :format
         return false;
     }
+    console_ui_->Prepare();
 
     // System Prepare
     // Initial tiles texture id

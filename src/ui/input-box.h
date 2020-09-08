@@ -31,6 +31,8 @@ public:
     DEF_VAL_PROP_RW(int, font_bearing);
     DEF_VAL_PROP_RW(float, font_scale);
 
+    std::string Utf8Text();
+
     void ClearText() {
         text_.clear();
         cursor_ = 0;

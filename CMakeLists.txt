@@ -57,6 +57,7 @@ set(GAME_SRC
     src/ui/component.cc
     src/ui/ui-service.cc
     src/ui/input-box.cc
+    src/ui/list-box.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
     src/component/cube-component.cc

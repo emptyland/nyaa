@@ -361,6 +361,10 @@ public:
 
     void Next();
 
+    ptrdiff_t position() const { return p_ - start_; }
+
+    char32_t operator*() const { return value(); }
+
     char32_t value() const { return value_; }
     uint32_t ToU32() const { return static_cast<uint32_t>(value()); }
 

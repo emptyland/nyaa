@@ -61,12 +61,18 @@ public:
 
     Vector2f ApproximateSize(TextID id);
     Vector2f ApproximateSize(std::string_view text);
-    Vector2f ApproximateSize(std::u32string_view text);
+
+    Vector2f ApproximateSize(char32_t codepoint) {
+        const Character *info = FindOrInsertCharacter(codepoint);
+        return Vec2(info->advance >> 6, info->bearing.y);
+    }
 
     Boundf Render(std::string_view text, float x, float y, Vector3f color = {1, 1, 1});
     Boundf Render(TextID id, float x, float y, Vector3f color = {1, 1, 1});
-    Boundf Render(std::string_view text, float x, float y, float z, std::vector<float> *vertices);
+    Boundf Render(const Vector3f &pos, float scale, std::string_view text, std::vector<float> *vertices);
     Boundf Render(const Vector3f &pos, float scale, std::u32string_view text, std::vector<float> *vertices);
+
+    Vector2f Render(const Vector3f &pos, float scale, char32_t codepoint, float vertices[20]);
 
     struct Character : public base::ArenaObject {
         Character *next_ = nullptr;

@@ -76,9 +76,9 @@ Vector2f FontFace::ApproximateSize(std::string_view text) {
     Vector2f                    size{0, 0};
     base::CodePointIteratorUtf8 iter(text);
     for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
-        const Character *info = FindOrInsertCharacter(iter.ToU32());
-        size.x += (info->glyph.w + (info->advance >> 6));
-        size.y = std::max(size.y, static_cast<float>(info->glyph.y + info->bearing.y));
+        Vector2f s = ApproximateSize(*iter);
+        size.x += s.x;
+        size.y = std::max(size.y, s.y);
     }
     return size;
 }
@@ -91,7 +91,7 @@ Boundf FontFace::Render(TextID id, float x, float y, Vector3f color) {
 Boundf FontFace::Render(std::string_view text, float x, float y, Vector3f color) {
     std::vector<float> vertices;
     vertices.reserve(text.size() * 5 * 4);
-    Boundf bound = Render(text, x, y, 0, &vertices);
+    Boundf bound = Render(Vec3(x, y, 0), 1.0, text, &vertices);
 
     Game::This()->transform()->Enter2DProjection();
 
@@ -115,101 +115,77 @@ Boundf FontFace::Render(std::string_view text, float x, float y, Vector3f color)
     return bound;
 }
 
-Boundf FontFace::Render(std::string_view text, float x, float y, float z, std::vector<float> *receiver) {
-    Boundf                      bound{x, y, 0, 0};
+Boundf FontFace::Render(const Vector3f &position, float scale, std::string_view text, std::vector<float> *receiver) {
+    Boundf bound{position.x, position.y, 0, 0};
+
+    float cx = position.x;
+
     base::CodePointIteratorUtf8 iter(text);
     for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
-        const Character *info = FindOrInsertCharacter(iter.ToU32());
-        if (!info) { continue; }
-        float x_pos = x + info->bearing.x;
-        float y_pos = y - (info->glyph.h - info->bearing.y);
-
         size_t pos = receiver->size();
         receiver->resize(pos + 5 * 4);
         float *vertices = &receiver->at(pos);
 
-        vertices[0] = x_pos;
-        vertices[1] = y_pos + info->glyph.h;
-        vertices[2] = z;
-        vertices[3] = static_cast<float>(info->glyph.x) / kBufferTexWf;
-        vertices[4] = static_cast<float>(info->glyph.y) / kBufferTexHf;
+        Vector2f size = Render(Vec3(cx, position.y, position.z), scale, *iter, vertices);
 
-        vertices[5] = x_pos + info->glyph.w;
-        vertices[6] = y_pos + info->glyph.h;
-        vertices[7] = z;
-        vertices[8] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        vertices[9] = static_cast<float>(info->glyph.y) / kBufferTexHf;
-
-        vertices[10] = x_pos + info->glyph.w;
-        vertices[11] = y_pos;
-        vertices[12] = z;
-        vertices[13] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        vertices[14] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-
-        vertices[15] = x_pos;
-        vertices[16] = y_pos;
-        vertices[17] = z;
-        vertices[18] = static_cast<float>(info->glyph.x) / kBufferTexWf;
-        vertices[19] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-
-        x += (info->advance >> 6);
-        bound.h = std::max(bound.h, static_cast<float>(y_pos + info->glyph.h - y));
-
-        // y - (info->glyph.h - info->bearing.y) + info->glyph.h
-        // y - info->glyph.h + info->bearing.y + info->glyph.h
-        // y + info->bearing.y
+        cx += size.x;
+        bound.h = std::max(bound.h, size.y);
     }
-    bound.w = x - bound.x;
+    bound.w = cx - bound.x;
     return bound;
 }
 
-Boundf FontFace::Render(const Vector3f &position, float scale, std::u32string_view text,
-                        std::vector<float> *receiver) {
+Boundf FontFace::Render(const Vector3f &position, float scale, std::u32string_view text, std::vector<float> *receiver) {
     Boundf bound{position.x, position.y, 0, 0};
 
     float cx = position.x;
 
     for (char32_t codepoint : text) {
-        const Character *info = FindOrInsertCharacter(codepoint);
-        if (!info) { continue; }
-
-        float x = cx + info->bearing.x * scale;
-        float y = position.y - (info->glyph.h - info->bearing.y) * scale;
-
         size_t pos = receiver->size();
         receiver->resize(pos + 5 * 4);
         float *vertices = &receiver->at(pos);
 
-        vertices[0] = x;
-        vertices[1] = y + info->glyph.h * scale;
-        vertices[2] = position.z;
-        vertices[3] = static_cast<float>(info->glyph.x) / kBufferTexWf;
-        vertices[4] = static_cast<float>(info->glyph.y) / kBufferTexHf;
+        Vector2f size = Render(Vec3(cx, position.y, position.z), scale, codepoint, vertices);
 
-        vertices[5] = x + info->glyph.w * scale;
-        vertices[6] = y + info->glyph.h * scale;
-        vertices[7] = position.z;
-        vertices[8] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        vertices[9] = static_cast<float>(info->glyph.y) / kBufferTexHf;
-
-        vertices[10] = x + info->glyph.w * scale;
-        vertices[11] = y;
-        vertices[12] = position.z;
-        vertices[13] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
-        vertices[14] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-
-        vertices[15] = x;
-        vertices[16] = y;
-        vertices[17] = position.z;
-        vertices[18] = static_cast<float>(info->glyph.x) / kBufferTexWf;
-        vertices[19] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
-
-        cx += (info->advance >> 6) * scale;
-        bound.h = std::max(bound.h, static_cast<float>(y + info->glyph.h - y));
+        cx += size.x;
+        bound.h = std::max(bound.h, size.y);
     }
-    bound.h *= scale;
     bound.w = cx - bound.x;
     return bound;
+}
+
+Vector2f FontFace::Render(const Vector3f &position, float scale, char32_t codepoint, float vertices[20]) {
+    const Character *info = FindOrInsertCharacter(codepoint);
+    if (!info) { return Vec2(0, 0); }
+
+    float x = position.x + info->bearing.x * scale;
+    float y = position.y - (info->glyph.h - info->bearing.y) * scale;
+
+    vertices[0] = x;
+    vertices[1] = y + info->glyph.h * scale;
+    vertices[2] = position.z;
+    vertices[3] = static_cast<float>(info->glyph.x) / kBufferTexWf;
+    vertices[4] = static_cast<float>(info->glyph.y) / kBufferTexHf;
+
+    vertices[5] = x + info->glyph.w * scale;
+    vertices[6] = y + info->glyph.h * scale;
+    vertices[7] = position.z;
+    vertices[8] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+    vertices[9] = static_cast<float>(info->glyph.y) / kBufferTexHf;
+
+    vertices[10] = x + info->glyph.w * scale;
+    vertices[11] = y;
+    vertices[12] = position.z;
+    vertices[13] = static_cast<float>(info->glyph.x + info->glyph.w) / kBufferTexWf;
+    vertices[14] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
+
+    vertices[15] = x;
+    vertices[16] = y;
+    vertices[17] = position.z;
+    vertices[18] = static_cast<float>(info->glyph.x) / kBufferTexWf;
+    vertices[19] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
+
+    return Vec2((info->advance >> 6) * scale, info->bearing.y * scale);
 }
 
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {
