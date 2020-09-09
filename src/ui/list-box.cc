@@ -90,6 +90,7 @@ void ListBox::OnPaint(double delta) {
 
     float y = bound().y + 4;
     for (const auto &row : rows_) {
+        
         Boundf rect = font()->Render(Vec3(bound().x + 4, y, 0), font_scale(), row.text, &vertices);
 
         y += 8 + rect.h;
@@ -106,7 +107,8 @@ void ListBox::OnPaint(double delta) {
         }
         glEnd();
         glDisable(GL_TEXTURE_2D);
-        glFlush();
+
+        vertices.clear();
     }
 }
 
