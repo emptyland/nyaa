@@ -108,6 +108,7 @@ private:
     };
 
     class UIController;
+    class CommandDispatcher;
 
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
     static void OnCharInput(GLFWwindow *window, unsigned int codepoint);

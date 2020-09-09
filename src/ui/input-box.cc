@@ -68,7 +68,7 @@ void InputBox::DidFocus(bool focus) {
 void InputBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    glColor3f(0, 0, 0);
+    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
     glBegin(GL_QUADS);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
@@ -95,8 +95,6 @@ void InputBox::OnPaint(double delta) {
         font()->Render(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), font_scale(), text_, &vertices);
 
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
 
     glBegin(GL_QUADS);
@@ -106,7 +104,6 @@ void InputBox::OnPaint(double delta) {
         glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
     }
     glEnd();
-    glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
     time_ += delta;

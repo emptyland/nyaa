@@ -73,7 +73,8 @@
         "iostream": "cpp",
         "__memory": "cpp",
         "queue": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "python.linting.enabled": false,

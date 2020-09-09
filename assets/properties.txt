@@ -6,7 +6,7 @@ show_fps          | 1
 window_width      | 300
 window_height     | 300
 language          | text/en_US.txt
-default_font_file | SourceHanSansSC-Medium.otf
+default_font_file | SourceHanSansHWSC-Regular.otf
 default_font_size | 48
 system_font_file  | DinkieBitmap-9pxDemo.ttf
 system_font_size  | 48

@@ -67,7 +67,7 @@ void ListBox::HandleKeyEvent(bool *did) {}
 void ListBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    glColor3f(0, 0, 0);
+    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
     glBegin(GL_QUADS);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
@@ -89,8 +89,6 @@ void ListBox::OnPaint(double delta) {
     glEnd();
 
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
     glBegin(GL_QUADS);
 
@@ -111,7 +109,6 @@ void ListBox::OnPaint(double delta) {
     }
 
     glEnd();
-    glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 }
 

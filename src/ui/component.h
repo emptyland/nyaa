@@ -79,6 +79,8 @@ public:
     DEF_VAL_PROP_RW(int, z_order);
     DEF_PTR_PROP_RW(Component, parent);
     DEF_VAL_PROP_RW(double, last_time);
+    DEF_VAL_PROP_RW(Vector4f, bg_color);
+    DEF_VAL_PROP_RW(Vector4f, fg_color);
 
     bool DeltaTest(double delta);
 
@@ -196,6 +198,8 @@ private:
     Component *            prev_;
     Id                     id_;
     std::string            name_;
+    Vector4f               bg_color_ = {0, 0, 0, 0.5};
+    Vector4f               fg_color_ = {1, 1, 1, 0};
     Boundi                 bound_   = {0, 0, 0, 0};
     int                    z_order_ = 0;
     Component *            parent_  = nullptr;

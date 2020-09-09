@@ -29,6 +29,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <sys/time.h>
+#include <ctype.h>
+#include <variant>
 
 namespace nyaa {
 
@@ -47,27 +49,26 @@ public:
         input_box_->SetVisible(false);
 
         list_box_ = service_->NewListBox(100, nullptr);
-        list_box_->set_bound({4, 52, owns_->fb_w() / 2, 400});
+        list_box_->set_bound({4, 52, owns_->fb_w() / 2, h()});
         list_box_->set_font_scale(0.7);
-        list_box_->set_font(owns_->font_lib()->system_face());
+        list_box_->set_font(owns_->font_lib()->default_face());
         list_box_->SetVisible(false);
 
-        last_time_ = owns_->ts();
+        // last_time_ = owns_->ts();
     }
 
     void DidEnter(ui::InputBox *sender) override {
         std::string text = sender->Utf8Text();
         if (!text.empty()) {
             sender->ClearText();
-            //list_box_->Append(text);
+            // list_box_->Append(text);
             owns_->ProcessConsoleCommand(text);
         }
     }
 
     void HandleInput(bool *did) {
         if (glfwGetKey(owns_->window(), GLFW_KEY_ENTER) == GLFW_PRESS &&
-            glfwGetKey(owns_->window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-            owns_->ts() - last_time_ > 0.2) {
+            glfwGetKey(owns_->window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && owns_->ts() - last_time_ > 0.2) {
             SwitchVisible();
             last_time_ = owns_->ts();
         } else {
@@ -79,7 +80,7 @@ public:
 
     void Render(double delta) {
         input_box_->set_bound({4, 4, owns_->fb_w() / 2, 48});
-        list_box_->set_bound({4, 52, owns_->fb_w() / 2, 400});
+        list_box_->set_bound({4, 52, owns_->fb_w() / 2, h()});
         service_->Render(delta);
     }
 
@@ -94,6 +95,7 @@ public:
     }
 
     DEF_PTR_GETTER(ui::ListBox, list_box);
+    DEF_VAL_PROP_RW(int, h);
 
     void set_dip_factor(float factor) { service_->set_dpi_factor(factor); }
 
@@ -105,7 +107,8 @@ private:
 
     ui::InputBox *input_box_ = nullptr;
     ui::ListBox * list_box_  = nullptr;
-    double last_time_ = 0;
+    double        last_time_ = -1;
+    int           h_         = 400;
 };  // class Game::UIComponent
 
 Game::Game()
@@ -304,15 +307,164 @@ uint64_t Game::IdGenerator::New() {
            (sequence_number_ & 0x1fff);
 }
 
+class Game::CommandDispatcher {
+public:
+    static constexpr int kMaxArgs = 4;
 
-void Game::ProcessConsoleCommand(std::string_view text) {
+    using Argument = std::variant<uint32_t, int32_t, float, double, std::string_view>;
 
-    if (text.compare("time") == 0) {
-        console_ui_->list_box()->Printf(Vec3(0, 1, 0), "time = %f", ts());    
+    struct Command {
+        std::string_view name;
+        std::string_view extra;
+        int              argc;
+        Argument         args[kMaxArgs];
+
+        const char *str(int i) const { return Arg<std::string_view>(i).data(); }
+        int32_t     i32(int i) const { return Arg<int32_t>(i); }
+        uint32_t    u32(int i) const { return Arg<uint32_t>(i); }
+
+        template <class T>
+        inline T Arg(int i) const {
+            DCHECK_GE(i, 0);
+            DCHECK_LT(i, argc);
+            return std::get<T>(args[i]);
+        }
+    };  // struct Command
+
+#define CONSOLE(color, fmt, ...) owns->console_ui_->list_box()->Printf(color, fmt, __VA_ARGS__)
+
+    static int Cmd_Time(Game *owns, Command *cmd) {
+        CONSOLE(Vec3(0, 1, 0), "time: %f", owns->ts());
+        return 0;
+    }
+
+    static int Cmd_Echo(Game *owns, Command *cmd) {
+        CONSOLE(Vec3(0, 1, 1), "%s", cmd->str(0));
+        return 0;
+    }
+
+    static int Cmd_Console_H(Game *owns, Command *cmd) {
+        if (cmd->argc > 0) {
+            owns->console_ui_->set_h(cmd->u32(0));
+        } else {
+            CONSOLE(Vec3(0, 1, 0), "console.h: %d", owns->console_ui_->h());
+        }
+        return 0;
+    }
+
+    static void ProcessCommand(Game *owns, std::string_view text);
+
+    DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
+
+private:
+    static int I32(std::string_view input, Argument *arg) {
+        int32_t val = 0;
+
+        int rv = base::Slice::ParseI32(input.data(), input.size(), &val);
+        *arg   = val;
+        return rv;
+    }
+
+    static int U32(std::string_view input, Argument *arg) {
+        int32_t val = 0;
+
+        int rv = base::Slice::ParseI32(input.data(), input.size(), &val);
+        *arg   = static_cast<uint32_t>(val);
+        return rv;
+    }
+
+    static int Str(std::string_view input, Argument *arg) {
+        *arg = input;
+        return 0;
+    }
+
+    struct CommandDesc {
+        const char *name;
+        int (*handler)(Game *owns, Command *cmd);
+        int (*args[kMaxArgs])(std::string_view, Argument *);
+    };  // struct CommandDesc
+
+    static const CommandDesc kCommandTable[];
+};  // class Game::CommandDispatcher
+
+const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTable[] = {
+    {"time", Cmd_Time, {nullptr}},
+    {"echo", Cmd_Echo, {Str, nullptr}},
+    {"console.h", Cmd_Console_H, {U32, nullptr}},
+    {nullptr},
+};  // static const CommandDesc kCommandTable
+
+/*static*/ void Game::CommandDispatcher::ProcessCommand(Game *owns, std::string_view text) {
+    const char *const end = text.data() + text.size();
+
+    const char *s = text.data();
+    while (s < end) {
+        if (::isalpha(*s)) { break; }
+        s++;
+    }
+    if (s == end) { return; }
+
+    const char *name = s;
+    while (s < end) {
+        if (::isspace(*s)) { break; }
+        s++;
+    }
+    Command cmd;
+    cmd.name = std::string_view(name, s - name);
+
+    const CommandDesc *desc = nullptr;
+    for (int i = 0; kCommandTable[i].name != nullptr; i++) {
+        if (cmd.name.compare(kCommandTable[i].name) == 0) {
+            desc = &kCommandTable[i];
+            break;
+        }
+    }
+    if (!desc) {
+        CONSOLE(Vec3(1, 0, 0), "%s", text.data());
+        return;
+    }
+    while (::isspace(*s) && s < end) { s++; }
+
+    int i = 0, err = 0;
+
+    const char *a = s;
+    while (s < end) {
+        if (::isspace(*s)) {
+            auto fun = desc->args[i];
+            if (!fun) {
+                cmd.extra = std::string_view(a, end - a);
+                break;
+            } else {
+                if (err = fun(std::string_view(a, s - a), &cmd.args[i]); err != 0) { break; }
+                i++;
+            }
+
+            while (::isspace(*s) && s < end) { s++; }
+        } else {
+            s++;
+        }
+    }
+    if (!err && cmd.extra.empty() && a < s) {
+        if (auto fun = desc->args[i]) {
+            err = fun(std::string_view(a, s - a), &cmd.args[i]);
+            if (!err) { i++; }
+        } else {
+            cmd.extra = std::string_view(a, end - a);
+        }
+    }
+
+    if (err) {
+        CONSOLE(Vec3(1, 0, 0), "%s", text.data());
         return;
     }
 
-    console_ui_->list_box()->Printf(Vec3(1, 1, 1), text.data());
+    cmd.argc = i;
+    if (err = desc->handler(owns, &cmd); err != 0) {
+        CONSOLE(Vec3(1, 0, 0), "%s", text.data());
+        return;
+    }
 }
+
+void Game::ProcessConsoleCommand(std::string_view text) { CommandDispatcher::ProcessCommand(this, text); }
 
 }  // namespace nyaa
