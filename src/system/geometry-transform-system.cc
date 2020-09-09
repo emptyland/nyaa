@@ -13,10 +13,13 @@ void GeometryTransformSystem::Enter2DProjection() {
     glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 10);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glDisable(GL_CULL_FACE);
-    glClear(GL_DEPTH_BUFFER_BIT);
+
+    //glClear(GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
 }
 void GeometryTransformSystem::Exit2DProjection() {
+    glEnable(GL_DEPTH_TEST);
+
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);

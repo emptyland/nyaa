@@ -352,6 +352,15 @@ public:
         return 0;
     }
 
+    static int Cmd_Scene(Game *owns, Command *cmd) {
+        if (!owns->scene()) {
+            CONSOLE(Vec3(0, 1, 1), "%s", "scene: null");
+        } else {
+            CONSOLE(Vec3(0, 1, 1), "scene: %s", owns->scene()->Name());
+        }
+        return 0;
+    }
+
     static void ProcessCommand(Game *owns, std::string_view text);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
@@ -391,6 +400,7 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"time", Cmd_Time, {nullptr}},
     {"echo", Cmd_Echo, {Str, nullptr}},
     {"console.h", Cmd_Console_H, {U32, nullptr}},
+    {"scene", Cmd_Scene, {nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 

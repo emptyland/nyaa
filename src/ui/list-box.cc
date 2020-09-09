@@ -22,9 +22,7 @@ void ListBox::Printf(const Vector3f &color, const char *fmt, ...) {
     va_end(ap);
 }
 
-void ListBox::Sprintf(const Vector3f &color, const char *fmt, va_list ap) {
-    Append(base::Vsprintf(fmt, ap), color);
-}
+void ListBox::Sprintf(const Vector3f &color, const char *fmt, va_list ap) { Append(base::Vsprintf(fmt, ap), color); }
 
 // Auto ling warp
 void ListBox::Append(std::string_view text, Vector3f color /* = Vec3(1, 1, 1)*/) {
@@ -37,7 +35,7 @@ void ListBox::Append(std::string_view text, Vector3f color /* = Vec3(1, 1, 1)*/)
         Vector2f size = font()->ApproximateSize(*iter);
         size.x *= font_scale();
         size.y *= font_scale();
-        h             = std::max(h, size.y);
+        h = std::max(h, size.y);
         if (w + size.x > bound().w - 8) {
             Row row;
             row.text  = text.substr(start, pos - start);
@@ -67,16 +65,16 @@ void ListBox::HandleKeyEvent(bool *did) {}
 void ListBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
     glBegin(GL_QUADS);
+    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
     glVertex2f(bound().x + bound().w, bound().y + bound().h);
     glVertex2f(bound().x, bound().y + bound().h);
     glEnd();
 
-    glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_LINE_LOOP);
+    glColor3f(1.0, 1.0, 1.0);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
     glVertex2f(bound().x + bound().w, bound().y + bound().h);
@@ -88,28 +86,28 @@ void ListBox::OnPaint(double delta) {
     glVertex2f(bound().x + 2, bound().y + bound().h - 2);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
-    glBegin(GL_QUADS);
-
     std::vector<float> vertices;
 
-    float y = bound().y + 2;
-    for (const auto row : rows_) {
+    float y = bound().y + 4;
+    for (const auto &row : rows_) {
         Boundf rect = font()->Render(Vec3(bound().x + 4, y, 0), font_scale(), row.text, &vertices);
 
-        y += 4 + rect.h;
-        if (y - bound().y - 2 > bound().h) { break; }
+        y += 8 + rect.h;
+        if (y - bound().y - 4 > bound().h) { break; }
 
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
+
+        glBegin(GL_QUADS);
         glColor3f(row.color.x, row.color.y, row.color.z);
         for (int i = 0; i < vertices.size(); i += 5) {
             glTexCoord2f(vertices[i + 3], vertices[i + 4]);
-            glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
+            glVertex3fv(&vertices[i + 0]);
         }
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+        glFlush();
     }
-
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
 }
 
 }  // namespace ui

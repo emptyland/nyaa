@@ -100,8 +100,8 @@ Boundf FontFace::Render(std::string_view text, float x, float y, Vector3f color)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, buffered_tex_);
 
-    glColor3f(color.x, color.y, color.z);
     glBegin(GL_QUADS);
+    glColor3f(color.x, color.y, color.z);
 
     for (int i = 0; i < vertices.size(); i += 5) {
         glTexCoord2f(vertices[i + 3], vertices[i + 4]);

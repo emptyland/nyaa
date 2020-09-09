@@ -127,7 +127,6 @@ void UIService::HandleMouseEvent(bool *did) {
 
 void UIService::Render(double delta) {
     Game::This()->transform()->Enter2DProjection();
-    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -141,7 +140,6 @@ void UIService::Render(double delta) {
     }
 
     glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
     Game::This()->transform()->Exit2DProjection();
 }
 
