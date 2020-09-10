@@ -68,26 +68,7 @@ void InputBox::DidFocus(bool focus) {
 void InputBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    glBegin(GL_QUADS);
-    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
-    glVertex2f(bound().x, bound().y);
-    glVertex2f(bound().x + bound().w, bound().y);
-    glVertex2f(bound().x + bound().w, bound().y + bound().h);
-    glVertex2f(bound().x, bound().y + bound().h);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glColor3f(1.0, 1.0, 1.0);
-    glVertex2f(bound().x, bound().y);
-    glVertex2f(bound().x + bound().w, bound().y);
-    glVertex2f(bound().x + bound().w, bound().y + bound().h);
-    glVertex2f(bound().x, bound().y + bound().h);
-
-    glVertex2f(bound().x + 2, bound().y + 2);
-    glVertex2f(bound().x + bound().w - 2, bound().y + 2);
-    glVertex2f(bound().x + bound().w - 2, bound().y + bound().h - 2);
-    glVertex2f(bound().x + 2, bound().y + bound().h - 2);
-    glEnd();
+    DrawBorder(delta);
 
     std::vector<float> vertices;
 

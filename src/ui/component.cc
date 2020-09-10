@@ -1,5 +1,7 @@
 #include "ui/component.h"
 #include "game/game.h"
+#include "glog/logging.h"
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 namespace nyaa {
@@ -42,6 +44,29 @@ bool Component::DeltaTest(double delta) {
 /*virtual*/ void Component::OnMouseMove(double x, double y) {}
 
 bool Component::TestKeyPress(int key) { return glfwGetKey(Game::This()->window(), key) == GLFW_PRESS; }
+
+void Component::DrawBorder(double delta) {
+    glBegin(GL_QUADS);
+    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
+    glVertex2f(bound().x, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y + bound().h);
+    glVertex2f(bound().x, bound().y + bound().h);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glColor3f(1.0, 1.0, 1.0);
+    glVertex2f(bound().x, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y + bound().h);
+    glVertex2f(bound().x, bound().y + bound().h);
+
+    glVertex2f(bound().x + 2, bound().y + 2);
+    glVertex2f(bound().x + bound().w - 2, bound().y + 2);
+    glVertex2f(bound().x + bound().w - 2, bound().y + bound().h - 2);
+    glVertex2f(bound().x + 2, bound().y + bound().h - 2);
+    glEnd();
+}
 
 }  // namespace ui
 

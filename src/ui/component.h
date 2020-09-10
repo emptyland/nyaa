@@ -193,6 +193,8 @@ public:
 protected:
     bool TestKeyPress(int key);
 
+    void DrawBorder(double delta);
+
 private:
     Component *            next_;
     Component *            prev_;
