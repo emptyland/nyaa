@@ -181,9 +181,10 @@ public:
 
     void AddChild(Component *child) { children_.Append(child); }
 
-    virtual void HandleMouseEvent(double x, double y, bool *did);
-    virtual void HandleKeyEvent(bool *did);
-    virtual void HandleCharInput(char32_t code, bool *did);
+    virtual void HandleMouseButtonInput(int button, int action, int mods, bool *should_break);
+    virtual void HandleKeyInput(int key, int code, int action, int mods, bool *should_break);
+    virtual void HandleCharInput(char32_t code, bool *should_break);
+
     virtual void DidFocus(bool focus);
     virtual void OnMouseMove(double x, double y);
 

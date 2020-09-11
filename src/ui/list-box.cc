@@ -60,8 +60,6 @@ void ListBox::Append(std::string_view text, Vector3f color /* = Vec3(1, 1, 1)*/)
     while (rows_.size() >= limit_rows_) { rows_.pop_back(); }
 }
 
-void ListBox::HandleKeyEvent(bool *did) {}
-
 void ListBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 

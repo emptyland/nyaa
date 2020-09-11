@@ -46,14 +46,10 @@ public:
         return iter == id_to_ctrl_.end() ? nullptr : iter->second;
     }
 
-    void HandleCharInput(uint32_t code, bool *did);
-
-    void HandleInput(bool *did) {
-        *did = false;
-        HandleKeyEvent(did);
-        if (*did) { return; }
-        HandleMouseEvent(did);
-    }
+    void HandleMouseMove();
+    void HandleMouseButtonInput(int button, int action, int mods, bool *should_break);
+    void HandleKeyInput(int key, int code, int action, int mods, bool *should_break);
+    void HandleCharInput(char32_t code, bool *should_break);
 
     void Render(double delta);
 
@@ -61,9 +57,6 @@ public:
 
 private:
     void PutController(Component *ctrl);
-
-    void HandleKeyEvent(bool *did);
-    void HandleMouseEvent(bool *did);
 
     double   last_time_;
     uint32_t last_codepoint_ = 0;

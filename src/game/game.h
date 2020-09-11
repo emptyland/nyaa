@@ -36,6 +36,10 @@ class GeometryTransformSystem;
 class SpriteRenderSystem;
 }  // namespace sys
 
+namespace ui {
+class UIService;
+}  // namespace ui
+
 class Scene;
 class Properties;
 class Game;
@@ -95,6 +99,13 @@ public:
 
     void DelayDeleteScene(Scene *scene);
 
+    void AddUIService(ui::UIService *service) { ui_services_.push_back(service); }
+
+    void RemoveUIService(ui::UIService *service) {
+        auto iter = std::find(ui_services_.begin(), ui_services_.end(), service);
+        if (iter != ui_services_.end()) { ui_services_.erase(iter); }
+    }
+
 private:
     class IdGenerator {
     public:
@@ -112,6 +123,8 @@ private:
 
     static void OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods);
     static void OnCharInput(GLFWwindow *window, unsigned int codepoint);
+    static void OnMouseButtonInput(GLFWwindow *window, int button, int action, int mods);
+    static void OnMouseMove(GLFWwindow *window, double x, double y);
 
     void ProcessConsoleCommand(std::string_view text);
 
@@ -143,6 +156,8 @@ private:
     std::unique_ptr<res::ActorLibrary>   actor_lib_;
 
     std::unique_ptr<UIController> console_ui_;
+
+    std::vector<ui::UIService *> ui_services_;
 
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;

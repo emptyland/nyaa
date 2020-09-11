@@ -40,6 +40,8 @@ class Game::UIController : public ui::InputBox::Delegate {
 public:
     UIController(Game *owns) : owns_(owns), service_(new ui::UIService(1) /*TODO*/) {}
 
+    ~UIController() { owns_->RemoveUIService(service_.get()); }
+
     void Prepare() {
         input_box_ = service_->NewInputBox("", nullptr);
         input_box_->AddDelegate(this);
@@ -54,7 +56,7 @@ public:
         list_box_->set_font(owns_->font_lib()->default_face());
         list_box_->SetVisible(false);
 
-        // last_time_ = owns_->ts();
+        owns_->AddUIService(service_.get());
     }
 
     void DidEnter(ui::InputBox *sender) override {
@@ -71,12 +73,8 @@ public:
             glfwGetKey(owns_->window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && owns_->ts() - last_time_ > 0.2) {
             SwitchVisible();
             last_time_ = owns_->ts();
-        } else {
-            service_->HandleInput(did);
         }
     }
-
-    void HandleCharInput(uint32_t code, bool *did) { service_->HandleCharInput(code, did); }
 
     void Render(double delta) {
         input_box_->set_bound({4, 4, owns_->fb_w() / 2, 48});
@@ -170,6 +168,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     glfwSetWindowUserPointer(window_, this);
     glfwSetKeyCallback(window_, OnKeyInput);
     glfwSetCharCallback(window_, OnCharInput);
+    glfwSetMouseButtonCallback(window_, OnMouseButtonInput);
 
     glfwGetWindowSize(window_, &window_w_, &window_h_);
     glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
@@ -247,7 +246,9 @@ void Game::Run() {
         glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
         glClearColor(0.2, 0.2, 0.4, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        break_input_ = false;
 
+        for (ui::UIService *srv : ui_services_) { srv->HandleMouseMove(); }
         console_ui_->HandleInput(&break_input_);
 
         frame_delta_time_ = delta;
@@ -281,11 +282,29 @@ void Game::Run() {
 /*static*/ void Game::OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
     if (game->scene_) { game->scene_->OnKeyInput(key, code, action, mods); }
+
+    for (ui::UIService *srv : game->ui_services_) {
+        srv->HandleKeyInput(key, code, action, mods, &game->break_input_);
+        if (game->break_input_) { break; }
+    }
 }
 
 /*static*/ void Game::OnCharInput(GLFWwindow *window, unsigned int codepoint) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
-    game->console_ui_->HandleCharInput(codepoint, &game->break_input_);
+
+    for (ui::UIService *srv : game->ui_services_) {
+        srv->HandleCharInput(codepoint, &game->break_input_);
+        if (game->break_input_) { break; }
+    }
+}
+
+/*static*/ void Game::OnMouseButtonInput(GLFWwindow *window, int button, int action, int mods) {
+    Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
+
+    for (ui::UIService *srv : game->ui_services_) {
+        srv->HandleMouseButtonInput(button, action, mods, &game->break_input_);
+        if (game->break_input_) { break; }
+    }
 }
 
 void Game::DelayDeleteScene(Scene *scene) {

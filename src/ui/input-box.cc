@@ -15,49 +15,36 @@ InputBox::~InputBox() {}
 
 std::string InputBox::Utf8Text() {
     std::string buf;
-    for (char32_t codepoint : text_) {
-        buf.append(1, static_cast<char>(codepoint & 0xff));
-    }
+    for (char32_t codepoint : text_) { buf.append(1, static_cast<char>(codepoint & 0xff)); }
     return buf;
 }
 
-void InputBox::HandleKeyEvent(bool *did) {
-    if (TestKeyPress(GLFW_KEY_ENTER)) {
-        for (auto [deg, _] : *mutable_delegates()) {
-            // :format
-            down_cast<Delegate>(deg)->DidEnter(this);
-        }
-        *did = true;
-        return;
+void InputBox::HandleKeyInput(int key, int code, int action, int mods, bool *should_break) {
+    switch (key) {
+        case GLFW_KEY_ENTER:
+            for (auto [deg, _] : *mutable_delegates()) {
+                // :format
+                down_cast<Delegate>(deg)->DidEnter(this);
+            }
+            *should_break = true;
+            break;
+        case GLFW_KEY_BACKSPACE:
+            if (cursor_ > 0) {
+                text_.erase(text_.begin() + cursor_ - 1);
+                cursor_--;
+            }
+            *should_break = true;
+            break;
+
+        default: break;
     }
-
-    if (TestKeyPress(GLFW_KEY_BACKSPACE)) {
-        if (DeltaTest(0.1) && cursor_ > 0) {
-            text_.erase(text_.begin() + cursor_ - 1);
-            cursor_--;
-        }
-        *did = true;
-        return;
-    }
-
-    // if (TestKeyPress(GLFW_KEY_LEFT)) {
-    //     if (cursor_ > 0) { cursor_--; }
-    //     *did = true;
-    //     return;
-    // }
-
-    // if (TestKeyPress(GLFW_KEY_RIGHT)) {
-    //     if (cursor_ < text_.size()) { cursor_++; }
-    //     *did = true;
-    //     return;
-    // }
 }
 
-void InputBox::HandleCharInput(char32_t code, bool *did) {
+void InputBox::HandleCharInput(char32_t code, bool *should_break) {
     // DLOG(INFO) << "char input: " << code << " cursor: " << cursor_;
     text_.insert(text_.begin() + cursor_, code);
     cursor_++;
-    *did = true;
+    *should_break = true;
 }
 
 void InputBox::DidFocus(bool focus) {
