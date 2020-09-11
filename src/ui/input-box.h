@@ -38,7 +38,7 @@ public:
         cursor_ = 0;
     }
 
-    void HandleKeyEvent(bool *did) override;
+    void HandleKeyInput(int key, int code, int action, int mods, bool *should_break) override;
     void HandleCharInput(char32_t code, bool *did) override;
     void DidFocus(bool focus) override;
     void OnPaint(double delta) override;

@@ -37,11 +37,11 @@ bool Component::DeltaTest(double delta) {
     return false;
 }
 
-/*virtual*/ void Component::HandleMouseEvent(double x, double y, bool *did) {}
+/*virtual*/ void Component::HandleMouseButtonInput(int button, int action, int mods, bool *should_break) {}
 
-/*virtual*/ void Component::HandleKeyEvent(bool *did) {}
+/*virtual*/ void Component::HandleKeyInput(int key, int code, int action, int mods, bool *should_break) {}
 
-/*virtual*/ void Component::HandleCharInput(char32_t code, bool *did) {}
+/*virtual*/ void Component::HandleCharInput(char32_t code, bool *should_break) {}
 
 /*virtual*/ void Component::DidFocus(bool focus) {}
 

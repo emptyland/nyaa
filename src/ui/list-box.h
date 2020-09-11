@@ -28,7 +28,6 @@ public:
     void Printf(const Vector3f &color, const char *fmt, ...);
     void Sprintf(const Vector3f &color, const char *fmt, va_list ap);
 
-    void HandleKeyEvent(bool *did) override;
     void OnPaint(double delta) override;
 
 private:

@@ -67,50 +67,39 @@ void UIService::SetFocus(Component *ctrl) {
     }
 }
 
-void UIService::HandleCharInput(unsigned int codepoint, bool *did) {
-    if (focus_) {
-        double time = Game::This()->ts();
-
-        if (last_codepoint_ == codepoint && time - last_time_ < 0.07) { return; }
-        last_time_      = time;
-        last_codepoint_ = codepoint;
-        focus_->HandleCharInput(codepoint, did);
-    }
-}
-
-void UIService::HandleKeyEvent(bool *did) {
-    if (focus_) { focus_->HandleKeyEvent(did); }
-}
-
-void UIService::HandleMouseEvent(bool *did) {
-    auto win = Game::This()->window();
-
+void UIService::HandleMouseMove() {
     double x = 0, y = 0;
-    glfwGetCursorPos(win, &x, &y);
+    glfwGetCursorPos(Game::This()->window(), &x, &y);
 
     y = Game::This()->fb_h() - y * dpi_factor_;
     x *= dpi_factor_;
 
-    if (last_mouse_pos_.x != x || last_mouse_pos_.y != y) {
-        for (Component *ctrl : roots_) {
-            if (!ctrl->IsVisible()) { continue; }
-            for (Component *node : *ctrl->mutable_children()) {
-                if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
-            }
-            ctrl->OnMouseMove(x, y);
-        }
-        last_mouse_pos_.x = x;
-        last_mouse_pos_.y = y;
+    if (x == last_mouse_pos_.x && y == last_mouse_pos_.y) {
+        return;
     }
+    last_mouse_pos_.x = x;
+    last_mouse_pos_.y = y;
+
+    for (Component *ctrl : roots_) {
+        if (!ctrl->IsVisible()) { continue; }
+        for (Component *node : *ctrl->mutable_children()) {
+            if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
+        }
+        ctrl->OnMouseMove(x, y);
+    }
+}
+
+void UIService::HandleMouseButtonInput(int button, int action, int mods, bool *should_break) {
+    double x = 0, y = 0;
+    glfwGetCursorPos(Game::This()->window(), &x, &y);
+
+    y = Game::This()->fb_h() - y * dpi_factor_;
+    x *= dpi_factor_;
 
     if (focus_ && InBound<int>(focus_->bound(), x, y)) {
-        focus_->HandleMouseEvent(x, y, did);
-        if (*did) { return; }
+        focus_->HandleMouseButtonInput(button, action, mods, should_break);
+        if (*should_break) { return; }
     }
-
-    bool pressed = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS ||
-                   glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
-    if (!pressed) { return; }
 
     if (focus_) {
         if (!InBound<int>(focus_->bound(), x, y)) {
@@ -141,7 +130,29 @@ void UIService::HandleMouseEvent(bool *did) {
         }
     }
 
-    if (focus_) { focus_->HandleMouseEvent(x, y, did); }
+    if (focus_) { focus_->HandleMouseButtonInput(button, action, mods, should_break); }
+}
+
+void UIService::HandleKeyInput(int key, int code, int action, int mods, bool *should_break) {
+    if (focus_) {
+        double time = Game::This()->ts();
+
+        last_time_ = time;
+
+        focus_->HandleKeyInput(key, code, action, mods, should_break);
+    }
+}
+
+void UIService::HandleCharInput(char32_t codepoint, bool *should_break) {
+    if (focus_) {
+        double time = Game::This()->ts();
+
+        if (last_codepoint_ == codepoint && time - last_time_ < 0.07) { return; }
+        last_time_      = time;
+        last_codepoint_ = codepoint;
+
+        focus_->HandleCharInput(codepoint, should_break);
+    }
 }
 
 void UIService::Render(double delta) {

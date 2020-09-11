@@ -13,7 +13,7 @@ public:
     constexpr bool operator==(const Identifier &other) const { return value_ == other.value(); }
     constexpr bool operator!=(const Identifier &other) const { return value_ != other.value(); }
     constexpr bool operator<(const Identifier &other) const { return value_ < other.value(); }
-    DEF_VAL_GETTER(T, value);
+    constexpr T value() const { return value_; }
 
 protected:
     constexpr Identifier(T value) : value_(value) {}

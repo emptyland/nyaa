@@ -8,7 +8,7 @@
 
 namespace nyaa {
 
-class BootScene::UIController {
+class BootScene::UIController : public ui::ButtonGroup::Delegate {
 public:
     static constexpr auto kExitId      = UIComponentId::Of(0);
     static constexpr auto kNewGameId   = UIComponentId::Of(1);
@@ -18,12 +18,29 @@ public:
 
     UIController(BootScene *owns) : owns_(owns), service_(new ui::UIService(1)) {}
 
+    ~UIController() { owns_->game()->RemoveUIService(service_.get()); }
+
+    void OnCommand(ui::Component *sender, UIComponentId id) override {
+        switch (id.value()) {
+            case kExitId.value(): owns_->game()->Exit(); break;
+
+            case kTestSceneId.value(): {
+                Detach();
+                TestScene *test_scene = new TestScene(owns_->game());
+                test_scene->SwitchTo(owns_);
+            } break;
+
+            default: break;
+        }
+    }
+
     void Prepare() {
         if (initialized_) { return; }
 
         service_->set_dpi_factor(owns_->game()->dpi_factor());
 
         btn_group_ = service_->NewButtonGroup(3, 1, nullptr);
+        btn_group_->AddDelegate(this);
 
         ui::ButtonGroup::Button *btn = btn_group_->AddButton(kNewGameId, 0, 0);
         btn->set_name("New");
@@ -37,7 +54,9 @@ public:
         initialized_ = true;
     }
 
-    void HandleInput(bool *should_break) { service_->HandleInput(should_break); }
+    void Attach() { owns_->game()->AddUIService(service_.get()); }
+
+    void Detach() { owns_->game()->RemoveUIService(service_.get()); }
 
     void Render(double delta) {
         int w = owns_->game()->fb_w();
@@ -53,6 +72,8 @@ public:
         service_->Render(delta);
     }
 
+    bool has_focus() const { return service_->focus() != nullptr; }
+
 private:
     BootScene *                    owns_;
     std::unique_ptr<ui::UIService> service_;
@@ -66,16 +87,18 @@ BootScene::BootScene(Game *game) : Scene(game), ui_(new UIController(this)) {}
 
 BootScene::~BootScene() {}
 
-void BootScene::Reset() { ui_->Prepare(); }
+void BootScene::Reset() {
+    ui_->Prepare();
+    ui_->Attach();
+}
 
 void BootScene::OnKeyInput(int key, int code, int action, int mods) {}
 
 void BootScene::Render(double delta) {
-    bool break_input = false;
-    if (!game()->break_input()) { ui_->HandleInput(&break_input); }
-
-    if (!game()->break_input() && !break_input) {
+    if (!game()->break_input() && !ui_->has_focus()) {
         if (glfwGetKey(game()->window(), GLFW_KEY_T) == GLFW_PRESS) {
+            ui_->Detach();
+
             TestScene *test_scene = new TestScene(game());
             test_scene->SwitchTo(this);
         }

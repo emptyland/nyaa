@@ -36,23 +36,50 @@ ButtonGroup::Button *ButtonGroup::AddButton(Id id, int column, int row) {
     return btn;
 }
 
-void ButtonGroup::HandleKeyEvent(bool *did) {
-    if (TestKeyPress(GLFW_KEY_UP)) {
-        UpdateBtnFocus(cursor_.x == column_count_ ? 0 : cursor_.x, (cursor_.y - 1) % row_count_);
-    } else if (TestKeyPress(GLFW_KEY_DOWN)) {
-        UpdateBtnFocus(cursor_.x == column_count_ ? 0 : cursor_.x, (cursor_.y + 1) % row_count_);
-    } else if (TestKeyPress(GLFW_KEY_LEFT)) {
-        UpdateBtnFocus((cursor_.x - 1) % column_count_, cursor_.y == row_count_ ? 0 : cursor_.y);
-    } else if (TestKeyPress(GLFW_KEY_RIGHT)) {
-        UpdateBtnFocus((cursor_.x + 1) % column_count_, cursor_.y == row_count_ ? 0 : cursor_.y);
-    } else if (TestKeyPress(GLFW_KEY_ENTER)) {
-        // TODO:
-    } else if (TestKeyPress(GLFW_KEY_ESCAPE)) {
-        UpdateBtnFocus(column_count_, row_count_);
+void ButtonGroup::HandleKeyInput(int key, int code, int action, int mods, bool *should_break) {
+    switch (key) {
+        case GLFW_KEY_UP: {
+            int y = cursor_.y - 1 < 0 ? row_count_ - 1 : (cursor_.y - 1) % row_count_;
+            UpdateBtnFocus(cursor_.x == column_count_ ? 0 : cursor_.x, y);
+        } break;
+
+        case GLFW_KEY_DOWN:
+            UpdateBtnFocus(cursor_.x == column_count_ ? 0 : cursor_.x, (cursor_.y + 1) % row_count_);
+            break;
+
+        case GLFW_KEY_LEFT:
+            if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+                int x = cursor_.x - 1 < 0 ? column_count_ - 1 : (cursor_.x - 1) % column_count_;
+                UpdateBtnFocus(x, cursor_.y == row_count_ ? 0 : cursor_.y);
+            }
+            break;
+
+        case GLFW_KEY_RIGHT:
+            if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+                UpdateBtnFocus((cursor_.x + 1) % column_count_, cursor_.y == row_count_ ? 0 : cursor_.y);
+            }
+            break;
+
+        case GLFW_KEY_ENTER:
+            if (action == GLFW_PRESS && cursor_.x != column_count_) {
+                DCHECK_NE(cursor_.y, row_count_);
+
+                Button *btn = button(cursor_.x, cursor_.y);
+                for (auto [deg, _] : *mutable_delegates()) {
+                    // down_cast<Delegate>(deg)->OnBtnPress(this, btn->id());
+                    down_cast<Delegate>(deg)->OnCommand(this, btn->id());
+                }
+            }
+            break;
+
+        case GLFW_KEY_ESCAPE: UpdateBtnFocus(column_count_, row_count_); break;
+
+        default: *should_break = false; return;
     }
+    *should_break = true;
 }
 
-void ButtonGroup::HandleMouseEvent(double x, double y, bool *did) {
+void ButtonGroup::HandleMouseButtonInput(int button, int action, int mods, bool *should_break) {
     // OnMouseMove(x, y);
 }
 
@@ -60,7 +87,6 @@ void ButtonGroup::OnMouseMove(double x, double y) {
     if (cursor_.x != column_count_) {
         DCHECK_NE(cursor_.y, row_count_);
         button(cursor_.x, cursor_.y)->SetFocus(false);
-        DLOG(INFO) << "Un focus: " << cursor_.x << ", " << cursor_.y;
     }
 
     if (!InBound<int>(bound(), x, y)) {

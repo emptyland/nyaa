@@ -64,8 +64,8 @@ public:
 
     Button *AddButton(Id id, int column, int row);
 
-    void HandleKeyEvent(bool *did) override;
-    void HandleMouseEvent(double x, double y, bool *did) override;
+    void HandleKeyInput(int key, int code, int action, int mods, bool *should_break) override;
+    void HandleMouseButtonInput(int button, int action, int mods, bool *should_break) override;
     void OnMouseMove(double x, double y) override;
 
     void OnPaint(double delta) override;
