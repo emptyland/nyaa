@@ -3,6 +3,7 @@
 #define NYAA_UI_UI_SERVICE_H_
 
 #include "game/identifiers.h"
+#include "game/vector.h"
 #include "base/base.h"
 #include <vector>
 #include <unordered_map>
@@ -12,6 +13,7 @@ namespace nyaa {
 
 namespace ui {
 
+class ButtonGroup;
 class InputBox;
 class ListBox;
 class Component;
@@ -24,6 +26,7 @@ public:
     DEF_VAL_PROP_RW(float, dpi_factor);
     DEF_PTR_GETTER(Component, focus);
 
+    ButtonGroup *NewButtonGroup(int column, int row, Component *parent);
     InputBox *NewInputBox(std::string_view text, Component *parent);
     ListBox *NewListBox(int limit_rows, Component *parent);
 
@@ -66,6 +69,7 @@ private:
     uint32_t last_codepoint_ = 0;
     uint32_t next_id_        = 0;
     float    dpi_factor_     = 1;
+    Vector2f last_mouse_pos_ = {0, 0};
 
     std::vector<Component *> roots_;
     Component *              focus_ = nullptr;

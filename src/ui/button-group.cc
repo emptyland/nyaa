@@ -9,46 +9,144 @@ namespace nyaa {
 
 namespace ui {
 
-ButtonGroup::ButtonGroup(Id id, Component *parent)
-    : Component(id, parent), font_(Game::This()->font_lib()->default_face()) {}
-
-ButtonGroup::~ButtonGroup() {
-    for (auto row : rows_) { delete[] row; }
+ButtonGroup::ButtonGroup(Id id, int column_count, int row_count, Component *parent)
+    : Component(id, parent)
+    , column_count_(column_count)
+    , row_count_(row_count)
+    , font_(Game::This()->font_lib()->default_face())
+    , buttons_(new Button[column_count_ * row_count_]) {
+    DCHECK_GT(column_count_ * row_count_, 0);
+    cursor_.x = column_count_;
+    cursor_.y = row_count_;
 }
 
-ButtonGroup::Button *ButtonGroup::AddButton(std::string_view name, Id id, int column) {
+ButtonGroup::~ButtonGroup() {}
+
+ButtonGroup::Button *ButtonGroup::AddButton(Id id, int column, int row) {
     DCHECK_GE(column, 0);
     DCHECK_LT(column, column_count_);
-    Button *btn = nullptr;
-    for (auto row : rows_) {
-        if (!row[column].IsUsed()) {
-            btn = &row[column];
-            break;
-        }
-    }
-    if (!btn) {
-        rows_.push_back(new Button[column_count_]);
-        btn = &rows_.back()[column];
-    }
+    DCHECK_GE(row, 0);
+    DCHECK_LT(row, row_count_);
 
-    btn->SetUsed(true);
+    Button *btn = &buttons_[row * column_count_ + column];
+    if (btn->IsUsed()) { return nullptr; }
     btn->SetEnable(true);
-    btn->name_         = name;
-    btn->id_           = id;
-    id_to_buttons_[id] = btn;
+    btn->SetUsed(true);
+    btn->id_ = id;
     return btn;
 }
 
-void ButtonGroup::HandleKeyEvent(bool *did) {}
+void ButtonGroup::HandleKeyEvent(bool *did) {
+    if (TestKeyPress(GLFW_KEY_UP)) {
+        UpdateBtnFocus(cursor_.x == column_count_ ? 0 : cursor_.x, (cursor_.y - 1) % row_count_);
+    } else if (TestKeyPress(GLFW_KEY_DOWN)) {
+        UpdateBtnFocus(cursor_.x == column_count_ ? 0 : cursor_.x, (cursor_.y + 1) % row_count_);
+    } else if (TestKeyPress(GLFW_KEY_LEFT)) {
+        UpdateBtnFocus((cursor_.x - 1) % column_count_, cursor_.y == row_count_ ? 0 : cursor_.y);
+    } else if (TestKeyPress(GLFW_KEY_RIGHT)) {
+        UpdateBtnFocus((cursor_.x + 1) % column_count_, cursor_.y == row_count_ ? 0 : cursor_.y);
+    } else if (TestKeyPress(GLFW_KEY_ENTER)) {
+        // TODO:
+    } else if (TestKeyPress(GLFW_KEY_ESCAPE)) {
+        UpdateBtnFocus(column_count_, row_count_);
+    }
+}
 
-void ButtonGroup::HandleMouseEvent(double x, double y, bool *did) {}
+void ButtonGroup::HandleMouseEvent(double x, double y, bool *did) {
+    // OnMouseMove(x, y);
+}
 
-void ButtonGroup::OnMouseMove(double x, double y) {}
+void ButtonGroup::OnMouseMove(double x, double y) {
+    if (cursor_.x != column_count_) {
+        DCHECK_NE(cursor_.y, row_count_);
+        button(cursor_.x, cursor_.y)->SetFocus(false);
+        DLOG(INFO) << "Un focus: " << cursor_.x << ", " << cursor_.y;
+    }
+
+    if (!InBound<int>(bound(), x, y)) {
+        cursor_.x = column_count_;
+        cursor_.y = row_count_;
+        return;
+    }
+
+    const int dy = (bound().h - 2) / row_count_;
+    const int dx = (bound().w - 2) / column_count_;
+
+    cursor_.x = std::min(static_cast<int>((x - bound().x) / dx), column_count_ - 1);
+    cursor_.y = std::min(static_cast<int>((y - bound().y) / dy), row_count_ - 1);
+
+    Button *btn = button(cursor_.x, cursor_.y);
+    btn->SetFocus(true);
+    for (auto [deg, _] : delegates()) { down_cast<Delegate>(deg)->DidBtnFocus(this, btn); }
+}
 
 void ButtonGroup::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    DrawBorder(delta);
+    glBegin(GL_LINE_LOOP);
+    glColor3f(0.7, 0.7, 0.7);
+    glVertex2f(bound().x, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y);
+    glVertex2f(bound().x + bound().w, bound().y + bound().h);
+    glVertex2f(bound().x, bound().y + bound().h);
+    glEnd();
+
+    int i = 0;
+
+    const int dy = (bound().h - 2) / row_count_;
+    const int dx = (bound().w - 2) / column_count_;
+    for (int y = bound().y + 1; y < bound().y + bound().h - 1; y += dy) {
+        for (int x = bound().x + 1; x < bound().x + bound().w - 1; x += dx) {
+            Button *btn = &buttons_[i++];
+            if (!btn->IsUsed()) { continue; }
+
+            glBegin(GL_QUADS);
+
+            if (btn->IsFocus()) {
+                glColor4fv(&btn->fg_color().x);
+            } else {
+                glColor4fv(&btn->bg_color().x);
+            }
+            glVertex2f(x, y);
+            glVertex2f(x + dx, y);
+            glVertex2f(x + dx, y + dy);
+            glVertex2f(x, y + dy);
+            glEnd();
+
+            Vector2f font_size     = font()->ApproximateSize(btn->name());
+            Vector3f font_position = Vec3(x + (dx - font_size.x) / 2, y + (dy - font_size.y) / 2, 0);
+
+            std::vector<float> vertices;
+            font()->Render(font_position, 0.8, btn->name(), &vertices);
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
+
+            glBegin(GL_QUADS);
+            glColor3fv(&btn->font_color().x);
+            for (int i = 0; i < vertices.size(); i += 5) {
+                glTexCoord2f(vertices[i + 3], vertices[i + 4]);
+                glVertex3fv(&vertices[i + 0]);
+            }
+            glEnd();
+            glDisable(GL_TEXTURE_2D);
+        }
+    }
+}
+
+void ButtonGroup::UpdateBtnFocus(int i, int j) {
+    if (cursor_.x != column_count_) {
+        DCHECK_NE(cursor_.y, row_count_);
+        button(cursor_.x, cursor_.y)->SetFocus(false);
+    }
+    cursor_.x = i;
+    cursor_.y = j;
+    if (cursor_.x != column_count_) {
+        DCHECK_NE(cursor_.y, row_count_);
+        Button *btn = button(cursor_.x, cursor_.y);
+        btn->SetFocus(true);
+        for (auto [deg, _] : delegates()) { down_cast<Delegate>(deg)->DidBtnFocus(this, btn); }
+    }
 }
 
 }  // namespace ui

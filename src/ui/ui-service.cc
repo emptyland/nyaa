@@ -1,4 +1,5 @@
 #include "ui/ui-service.h"
+#include "ui/button-group.h"
 #include "ui/input-box.h"
 #include "ui/list-box.h"
 #include "game/game.h"
@@ -17,6 +18,13 @@ UIService::UIService(float dpi_factor) : last_time_(glfwGetTime()), dpi_factor_(
 
 UIService::~UIService() {
     for (auto [id, ctrl] : id_to_ctrl_) { delete ctrl; }
+}
+
+ButtonGroup *UIService::NewButtonGroup(int column, int row, Component *parent) {
+    Component::Id id   = Component::Id::Of(next_id_++);
+    ButtonGroup * ctrl = new ButtonGroup(id, column, row, parent);
+    PutController(ctrl);
+    return ctrl;
 }
 
 InputBox *UIService::NewInputBox(std::string_view text, Component *parent) {
@@ -82,10 +90,17 @@ void UIService::HandleMouseEvent(bool *did) {
 
     y = Game::This()->fb_h() - y * dpi_factor_;
     x *= dpi_factor_;
-    for (Component *ctrl : roots_) {
-        for (Component *node : *ctrl->mutable_children()) {
-            if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
+
+    if (last_mouse_pos_.x != x || last_mouse_pos_.y != y) {
+        for (Component *ctrl : roots_) {
+            if (!ctrl->IsVisible()) { continue; }
+            for (Component *node : *ctrl->mutable_children()) {
+                if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
+            }
+            ctrl->OnMouseMove(x, y);
         }
+        last_mouse_pos_.x = x;
+        last_mouse_pos_.y = y;
     }
 
     if (focus_ && InBound<int>(focus_->bound(), x, y)) {
@@ -106,6 +121,7 @@ void UIService::HandleMouseEvent(bool *did) {
     }
 
     for (Component *ctrl : roots_) {
+        if (!ctrl->IsEnable() || !ctrl->IsVisible()) { continue; }
         if (ctrl != focus_ && InBound<int>(ctrl->bound(), x, y)) {
             if (ctrl->children().empty()) {
                 focus_ = ctrl;
@@ -114,6 +130,7 @@ void UIService::HandleMouseEvent(bool *did) {
                 break;
             }
             for (Component *node : *ctrl->mutable_children()) {
+                if (!node->IsEnable() || !node->IsVisible()) { continue; }
                 if (node != focus_ && InBound<int>(node->bound(), x, y)) {
                     focus_ = node;
                     focus_->SetFocus(true);
@@ -123,6 +140,8 @@ void UIService::HandleMouseEvent(bool *did) {
             }
         }
     }
+
+    if (focus_) { focus_->HandleMouseEvent(x, y, did); }
 }
 
 void UIService::Render(double delta) {

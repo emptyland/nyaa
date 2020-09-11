@@ -54,6 +54,7 @@ public:
     DEF_PTR_GETTER(Component, owns);
 
     virtual void DidForce(Component *sender);
+    virtual void OnCommand(Component *sender, UIComponentId id);
 
     friend class Component;
     DISALLOW_IMPLICIT_CONSTRUCTORS(ComponentDelegate);
@@ -202,9 +203,9 @@ private:
     std::string            name_;
     Vector4f               bg_color_ = {0, 0, 0, 0.5};
     Vector4f               fg_color_ = {1, 1, 1, 0};
-    Boundi                 bound_   = {0, 0, 0, 0};
-    int                    z_order_ = 0;
-    Component *            parent_  = nullptr;
+    Boundi                 bound_    = {0, 0, 0, 0};
+    int                    z_order_  = 0;
+    Component *            parent_   = nullptr;
     double                 last_time_;
     Flags<State, uint32_t> flags_;
 

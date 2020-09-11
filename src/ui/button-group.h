@@ -17,22 +17,21 @@ namespace ui {
 
 class ButtonGroup : public Component {
 public:
+    class Button;
+
     class Delegate : public Component::Delegate {
     public:
         explicit Delegate(ButtonGroup *owns = nullptr) : Component::Delegate(owns) {}
-        virtual void OnButtonPress(ButtonGroup *sender, Id id){};
+        virtual void OnBtnPress(ButtonGroup *sender, Id id) {}
+        virtual void DidBtnFocus(ButtonGroup *sender, Button *btn) {}
     };  // class Delegate
 
-    explicit ButtonGroup(Id id, Component *parent = nullptr);
+    explicit ButtonGroup(Id id, int column_count, int row_count, Component *parent);
     ~ButtonGroup() override;
 
+    DEF_VAL_GETTER(int, column_count);
+    DEF_VAL_GETTER(int, row_count);
     DEF_PTR_PROP_RW(res::FontFace, font);
-
-    void AddColumn(int n) {
-        DCHECK(rows_.empty());
-        column_count_ += n;
-        DCHECK_GE(column_count_, 1);
-    }
 
     class Button {
     public:
@@ -60,9 +59,10 @@ public:
         Vector4f              font_color_ = {1, 1, 1, 1};
         Vector4f              bg_color_   = {0, 0, 0, 0.7};
         Vector4f              fg_color_   = {0.4, 0.4, 0.4, 0.7};
+        // std::vector<float>    vertices_;
     };  // struct Button
 
-    Button *AddButton(std::string_view name, Id id, int column);
+    Button *AddButton(Id id, int column, int row);
 
     void HandleKeyEvent(bool *did) override;
     void HandleMouseEvent(double x, double y, bool *did) override;
@@ -73,10 +73,24 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(ButtonGroup);
 
 private:
-    res::FontFace *        font_         = nullptr;
-    int                    column_count_ = 1;
+    void UpdateBtnFocus(int i, int j);
+
+    Button *button(int i, int j) {
+        DCHECK_GE(i, 0);
+        DCHECK_LT(i, column_count_);
+        DCHECK_GE(j, 0);
+        DCHECK_LT(j, row_count_);
+        return buttons_.get() + j * column_count_ + i;
+    }
+
+    const int      column_count_ = 1;
+    const int      row_count_    = 1;
+    res::FontFace *font_         = nullptr;
+    Vector2i       cursor_;
+
+    std::unique_ptr<Button[]> buttons_;
+
     std::map<Id, Button *> id_to_buttons_;
-    std::vector<Button *>  rows_;
 };  // class ButtonGroup
 
 }  // namespace ui

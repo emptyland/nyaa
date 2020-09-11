@@ -19,6 +19,10 @@ Component::Component(Id id, Component *parent)
     // Ignore
 }
 
+/*virtual*/ void ComponentDelegate::OnCommand(Component *sender, Component::Id id) {
+    // Ignore
+}
+
 Component::~Component() {
     for (auto [value, ownership] : delegates()) {
         if (ownership) { delete value; }

@@ -12,7 +12,7 @@ class AvatarComponent;
 
 class BootScene : public Scene {
 public:
-    BootScene(Game *game);
+    explicit BootScene(Game *game);
     ~BootScene() final;
 
     const char *Name() const final { return "boot-scene"; }
@@ -20,12 +20,11 @@ public:
     void OnKeyInput(int key, int code, int action, int mods) final;
     void Render(double delta) final;
 
+    DISALLOW_IMPLICIT_CONSTRUCTORS(BootScene);
 private:
-    uint32_t vao_;
-    uint32_t vbo_;
-    uint32_t billboard_vbo_ = 0;
-    float y_rolated_ = 45;
-    float z_rolated_ = 45;
+    class UIController;
+
+    std::unique_ptr<UIController> ui_;
 };  // class BootScene
 
 }  // namespace nyaa

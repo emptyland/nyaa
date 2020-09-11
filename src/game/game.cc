@@ -245,7 +245,7 @@ void Game::Run() {
 
         glfwGetWindowSize(window_, &window_w_, &window_h_);
         glfwGetFramebufferSize(window_, &fb_w_, &fb_h_);
-
+        glClearColor(0.2, 0.2, 0.4, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         console_ui_->HandleInput(&break_input_);

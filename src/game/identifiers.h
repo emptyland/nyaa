@@ -10,13 +10,13 @@ template <class T>
 class Identifier {
 public:
     // break
-    bool operator==(const Identifier &other) const { return value_ == other.value(); }
-    bool operator!=(const Identifier &other) const { return value_ != other.value(); }
-    bool operator<(const Identifier &other) const { return value_ < other.value(); }
+    constexpr bool operator==(const Identifier &other) const { return value_ == other.value(); }
+    constexpr bool operator!=(const Identifier &other) const { return value_ != other.value(); }
+    constexpr bool operator<(const Identifier &other) const { return value_ < other.value(); }
     DEF_VAL_GETTER(T, value);
 
 protected:
-    Identifier(T value) : value_(value) {}
+    constexpr Identifier(T value) : value_(value) {}
 
 private:
     T value_;
@@ -24,31 +24,31 @@ private:
 
 class EntityId final : public Identifier<uint64_t> {
 public:
-    EntityId() : EntityId(0) {}
+    constexpr EntityId() : EntityId(0) {}
     static EntityId Next();
     static EntityId New();
-    static EntityId Of(uint64_t value) { return EntityId(value); }
+    static constexpr EntityId Of(uint64_t value) { return EntityId(value); }
 
 private:
-    EntityId(uint64_t value) : Identifier<uint64_t>(value) {}
+    constexpr EntityId(uint64_t value) : Identifier<uint64_t>(value) {}
 };  // class EntityId
 
 class ResourceId final : public Identifier<uint32_t> {
 public:
-    ResourceId() : ResourceId(0) {}
-    static ResourceId Of(uint32_t value) { return ResourceId(value); }
+    constexpr ResourceId() : ResourceId(0) {}
+    static constexpr ResourceId Of(uint32_t value) { return ResourceId(value); }
 
 private:
-    ResourceId(uint64_t value) : Identifier<uint32_t>(value) {}
+    constexpr ResourceId(uint64_t value) : Identifier<uint32_t>(value) {}
 };  // class ResourceId
 
 class UIComponentId final : public Identifier<uint32_t> {
 public:
-    UIComponentId() : UIComponentId(0) {}
-    static UIComponentId Of(uint32_t value) { return UIComponentId(value); }
+    constexpr UIComponentId() : UIComponentId(0) {}
+    static constexpr UIComponentId Of(uint32_t value) { return UIComponentId(value); }
 
 private:
-    UIComponentId(uint64_t value) : Identifier<uint32_t>(value) {}
+    constexpr UIComponentId(uint64_t value) : Identifier<uint32_t>(value) {}
 }; // class ControllerId
 
 struct EntityHash : public std::unary_function<EntityId, size_t> {
