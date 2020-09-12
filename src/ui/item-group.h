@@ -40,7 +40,6 @@ public:
 
         DEF_VAL_PROP_RW(EntityId, id);
         DEF_PTR_PROP_RW(res::Texture, icon);
-        DEF_VAL_PROP_RW(std::string, name);
         DEF_PTR_PROP_RW(void, extra);
         DEF_VAL_PROP_RW(bool, full);
 
@@ -49,7 +48,6 @@ public:
     private:
         EntityId      id_;
         res::Texture *icon_ = nullptr;
-        std::string   name_;
         void *        extra_ = nullptr;
         bool          full_  = false;
     };  // class Item
@@ -60,15 +58,18 @@ public:
     DEF_VAL_GETTER(int, column_count);
     DEF_VAL_GETTER(int, row_count);
 
+    const Vector2i &drag_grid() const { return drag_; }
+
     void AddProducer(Producer *data) { data_ = data; }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ItemGroup);
 
 private:
     void HandleMouseButtonInput(int button, int action, int mods, bool *should_break) override;
-    // void OnMouseMove(double x, double y) override;
     void OnPaint(double delta) override;
     void DidFocus(bool focus) override;
+
+    void DrawIcon(const Boundf &bound, res::Texture *tex);
 
     Item *item(int i, int j) {
         DCHECK_GE(i, 0);
@@ -84,7 +85,6 @@ private:
 
     Vector2i ToUserGrid(Vector2i grid) const { return {grid.x, row_count_ - 1 - grid.y}; }
 
-    // Drag and drop
 
     const int column_count_;
     const int row_count_;

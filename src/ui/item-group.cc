@@ -116,24 +116,7 @@ void ItemGroup::OnPaint(double delta) {
 
             if (!stub->icon()) { continue; }
 
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, stub->icon()->tex_id());
-
-            glBegin(GL_QUADS);
-            glTexCoord2fv(&stub->icon()->coord(0).x);
-            glVertex2f(x, y);
-
-            glTexCoord2fv(&stub->icon()->coord(1).x);
-            glVertex2f(x, y + dy);
-
-            glTexCoord2fv(&stub->icon()->coord(2).x);
-            glVertex2f(x + dx, y + dy);
-
-            glTexCoord2fv(&stub->icon()->coord(3).x);
-            glVertex2f(x + dx, y);
-
-            glEnd();
-            glDisable(GL_TEXTURE_2D);
+            DrawIcon(Rect(x, y, dx, dy), stub->icon());
         }
     }
 
@@ -144,25 +127,29 @@ void ItemGroup::OnPaint(double delta) {
         pos.x -= dx / 2;
         pos.y -= dy / 2;
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, stub->icon()->tex_id());
-
-        glBegin(GL_QUADS);
-        glTexCoord2fv(&stub->icon()->coord(0).x);
-        glVertex2f(pos.x, pos.y);
-
-        glTexCoord2fv(&stub->icon()->coord(1).x);
-        glVertex2f(pos.x, pos.y + dy);
-
-        glTexCoord2fv(&stub->icon()->coord(2).x);
-        glVertex2f(pos.x + dx, pos.y + dy);
-
-        glTexCoord2fv(&stub->icon()->coord(3).x);
-        glVertex2f(pos.x + dx, pos.y);
-
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
+        DrawIcon(Rect(pos.x, pos.y, dx, dy), stub->icon());
     }
+}
+
+void ItemGroup::DrawIcon(const Boundf &bound, res::Texture *tex) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex->tex_id());
+
+    glBegin(GL_QUADS);
+    glTexCoord2fv(&tex->coord(0).x);
+    glVertex2f(bound.x, bound.y);
+
+    glTexCoord2fv(&tex->coord(1).x);
+    glVertex2f(bound.x, bound.y + bound.h);
+
+    glTexCoord2fv(&tex->coord(2).x);
+    glVertex2f(bound.x + bound.w, bound.y + bound.h);
+
+    glTexCoord2fv(&tex->coord(3).x);
+    glVertex2f(bound.x + bound.w, bound.y);
+
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 }  // namespace ui
