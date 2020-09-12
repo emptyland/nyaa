@@ -55,7 +55,7 @@ void InputBox::DidFocus(bool focus) {
 void InputBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    DrawBorder(delta);
+    DrawBorder(kBorderColor, delta);
 
     std::vector<float> vertices;
 

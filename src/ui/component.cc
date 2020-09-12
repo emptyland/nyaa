@@ -8,8 +8,7 @@ namespace nyaa {
 
 namespace ui {
 
-Component::Component(Id id, Component *parent)
-    : next_(this), prev_(this), id_(id), parent_(parent), last_time_(0) {
+Component::Component(Id id, Component *parent) : next_(this), prev_(this), id_(id), parent_(parent) {
     if (parent_) { parent_->mutable_children()->Append(this); }
 }
 
@@ -47,11 +46,20 @@ bool Component::DeltaTest(double delta) {
 
 /*virtual*/ void Component::OnMouseMove(double x, double y) {}
 
+/*static*/ Vector2i Component::GetCursorPosition() {
+    double x = 0, y = 0;
+    glfwGetCursorPos(Game::This()->window(), &x, &y);
+
+    y = Game::This()->fb_h() - y * Game::This()->dpi_factor();
+    x *= Game::This()->dpi_factor();
+    return {static_cast<int>(x), static_cast<int>(y)};
+}
+
 bool Component::TestKeyPress(int key) { return glfwGetKey(Game::This()->window(), key) == GLFW_PRESS; }
 
-void Component::DrawBorder(double delta) {
+void Component::DrawBorder(const Vector4f &color, double delta) {
     glBegin(GL_QUADS);
-    glColor4f(bg_color().x, bg_color().y, bg_color().z, bg_color().w);
+    glColor4fv(&bg_color().x);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
     glVertex2f(bound().x + bound().w, bound().y + bound().h);
@@ -59,7 +67,7 @@ void Component::DrawBorder(double delta) {
     glEnd();
 
     glBegin(GL_LINE_LOOP);
-    glColor3f(1.0, 1.0, 1.0);
+    glColor4fv(&color.x);
     glVertex2f(bound().x, bound().y);
     glVertex2f(bound().x + bound().w, bound().y);
     glVertex2f(bound().x + bound().w, bound().y + bound().h);

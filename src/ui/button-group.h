@@ -21,7 +21,7 @@ public:
 
     class Delegate : public Component::Delegate {
     public:
-        explicit Delegate(ButtonGroup *owns = nullptr) : Component::Delegate(owns) {}
+        inline Delegate() = default;
         virtual void OnBtnPress(ButtonGroup *sender, Id id) {}
         virtual void DidBtnFocus(ButtonGroup *sender, Button *btn) {}
     };  // class Delegate

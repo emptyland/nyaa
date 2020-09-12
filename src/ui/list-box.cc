@@ -63,7 +63,7 @@ void ListBox::Append(std::string_view text, Vector3f color /* = Vec3(1, 1, 1)*/)
 void ListBox::OnPaint(double delta) {
     if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
-    DrawBorder(delta);
+    DrawBorder(kBorderColor, delta);
 
     std::vector<float> vertices;
 

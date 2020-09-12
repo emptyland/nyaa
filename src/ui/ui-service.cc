@@ -1,4 +1,5 @@
 #include "ui/ui-service.h"
+#include "ui/item-group.h"
 #include "ui/button-group.h"
 #include "ui/input-box.h"
 #include "ui/list-box.h"
@@ -18,6 +19,13 @@ UIService::UIService(float dpi_factor) : last_time_(glfwGetTime()), dpi_factor_(
 
 UIService::~UIService() {
     for (auto [id, ctrl] : id_to_ctrl_) { delete ctrl; }
+}
+
+ItemGroup *UIService::NewItemGroup(int column, int row, Component *parent) {
+    Component::Id id   = Component::Id::Of(next_id_++);
+    ItemGroup *   ctrl = new ItemGroup(id, column, row, parent);
+    PutController(ctrl);
+    return ctrl;
 }
 
 ButtonGroup *UIService::NewButtonGroup(int column, int row, Component *parent) {
@@ -74,9 +82,7 @@ void UIService::HandleMouseMove() {
     y = Game::This()->fb_h() - y * dpi_factor_;
     x *= dpi_factor_;
 
-    if (x == last_mouse_pos_.x && y == last_mouse_pos_.y) {
-        return;
-    }
+    if (x == last_mouse_pos_.x && y == last_mouse_pos_.y) { return; }
     last_mouse_pos_.x = x;
     last_mouse_pos_.y = y;
 

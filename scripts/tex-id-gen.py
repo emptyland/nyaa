@@ -16,10 +16,12 @@ def genTileTexId(id, cx, cy, size):
             bound = (i * size, j * size, size, size)
             boundText = ('%d,%d,%d,%d' % bound).ljust(19)
             indexText = ('%d' % (index)).ljust(5)
-            print('..                  | %s | %s | %s | ' % (id, boundText, indexText))
+            print('..                  | %s | %s | %s | %d,%d' % (id, boundText, indexText, i, j))
             id = id + 10
             index = index + 1
-            
 
 if sys.argv[1] == 'tile':
+    genTileTexId(int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]))
+elif sys.argv[1] == 'item':
+    # 16 x 40 x 24
     genTileTexId(int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]))

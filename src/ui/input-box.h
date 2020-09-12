@@ -18,7 +18,7 @@ class InputBox : public Component {
 public:
     class Delegate : public Component::Delegate {
     public:
-        explicit Delegate(InputBox *owns = nullptr) : Component::Delegate(owns) {}
+        inline Delegate() = default;
         virtual void OnChange(InputBox *sender){};
         virtual void OnChanged(InputBox *sender){};
         virtual void DidEnter(InputBox *sender){};

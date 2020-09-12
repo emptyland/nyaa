@@ -79,8 +79,17 @@ void ButtonGroup::HandleKeyInput(int key, int code, int action, int mods, bool *
     *should_break = true;
 }
 
-void ButtonGroup::HandleMouseButtonInput(int button, int action, int mods, bool *should_break) {
-    // OnMouseMove(x, y);
+void ButtonGroup::HandleMouseButtonInput(int key, int action, int mods, bool *should_break) {
+    if (cursor_.x == column_count_) {
+        DCHECK_EQ(cursor_.y, row_count_);
+        return;
+    }
+
+    if (key == GLFW_MOUSE_BUTTON_LEFT) {
+        Button *btn = button(cursor_.x, cursor_.y);
+        for (auto [deg, _] : *mutable_delegates()) { down_cast<Delegate>(deg)->OnCommand(this, btn->id()); }
+        *should_break = true;
+    }
 }
 
 void ButtonGroup::OnMouseMove(double x, double y) {

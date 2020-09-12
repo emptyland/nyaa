@@ -2,6 +2,7 @@
 #ifndef NYAA_UI_COMPONENT_H_
 #define NYAA_UI_COMPONENT_H_
 
+#include "ui/ui.h"
 #include "game/vector.h"
 #include "game/identifiers.h"
 #include "base/queue-macros.h"
@@ -48,19 +49,13 @@ class Component;
 class ComponentDelegate {
 public:
     inline ComponentDelegate() = default;
-    inline ComponentDelegate(Component *owns) : owns_(owns) {}
     virtual ~ComponentDelegate();
-
-    DEF_PTR_GETTER(Component, owns);
 
     virtual void DidForce(Component *sender);
     virtual void OnCommand(Component *sender, UIComponentId id);
 
     friend class Component;
     DISALLOW_IMPLICIT_CONSTRUCTORS(ComponentDelegate);
-
-private:
-    Component *owns_ = nullptr;
 };  // class ControllerDelegate
 
 class Component {
@@ -190,24 +185,27 @@ public:
 
     virtual void OnPaint(double delta) = 0;
 
+    static Vector2i GetCursorPosition();
+
     DISALLOW_IMPLICIT_CONSTRUCTORS(Component);
 
 protected:
     bool TestKeyPress(int key);
 
-    void DrawBorder(double delta);
+    void DrawBorder(const Vector4f &color, double delta);
 
 private:
-    Component *            next_;
-    Component *            prev_;
-    Id                     id_;
-    std::string            name_;
-    Vector4f               bg_color_ = {0, 0, 0, 0.5};
-    Vector4f               fg_color_ = {1, 1, 1, 0};
-    Boundi                 bound_    = {0, 0, 0, 0};
-    int                    z_order_  = 0;
-    Component *            parent_   = nullptr;
-    double                 last_time_;
+    Component * next_;
+    Component * prev_;
+    Id          id_;
+    std::string name_;
+    Vector4f    bg_color_ = kBgColor;
+    Vector4f    fg_color_ = kFgColor;
+    Boundi      bound_    = {0, 0, 0, 0};
+    int         z_order_  = 0;
+    Component * parent_   = nullptr;
+    double      last_time_ = -1;
+
     Flags<State, uint32_t> flags_;
 
     Children  children_;
