@@ -20,6 +20,11 @@ public:
 
     static constexpr int kBtnGroupW = 500;
 
+    struct ItemGrid {
+        res::Texture *tex;
+        int stack;
+    }; // struct ItemGrid
+
     UIController(BootScene *owns) : owns_(owns), service_(new ui::UIService(1)) { ::memset(items_, 0, sizeof(items_)); }
 
     ~UIController() { owns_->game()->RemoveUIService(service_.get()); }
@@ -38,26 +43,33 @@ public:
         }
     }
 
-    void OnItemProduce(int x, int y, ui::ItemGroup::Item *item) override { item->set_icon(items_[x][y]); }
-
-    void DidItemDispose(Vector2i grid, EntityId id, bool *dropped) override {
-        items_[grid.x][grid.y] = nullptr;
-        *dropped = true;
+    void OnItemProduce(int x, int y, ui::ItemGroup::Item *item) override {
+        item->set_icon(items_[x][y].tex);
+        item->set_stack(items_[x][y].stack);
     }
 
-    void OnItemDrop(Vector2i src, Vector2i dst, EntityId id, bool *dropped) override {
-        res::Texture *tex = items_[dst.x][dst.y];
+    void DidItemDispose(Vector2i grid, EntityId id, bool *dropped) override {
+        if (items_[grid.x][grid.y].tex) {
+            if (--items_[grid.x][grid.y].stack <= 0) {
+                items_[grid.x][grid.y].tex = nullptr;
+                *dropped = true;
+            }
+        }
+    }
+
+    void OnItemDrop(Vector2i src, Vector2i dst, int stack, bool *dropped) override {
+        ItemGrid grid = items_[dst.x][dst.y];
         items_[dst.x][dst.y] = items_[src.x][src.y];
-        items_[src.x][src.y] = tex;
+        items_[src.x][src.y] = grid;
         *dropped = true;
     }
 
     void Prepare() {
         if (initialized_) { return; }
 
-        items_[0][0] = owns_->game()->texture_lib()->FindOrNull(ResourceId::Of(400480));
-        items_[1][0] = owns_->game()->texture_lib()->FindOrNull(ResourceId::Of(400490));
-        items_[1][1] = owns_->game()->texture_lib()->FindOrNull(ResourceId::Of(400020));
+        items_[0][0] = {owns_->game()->texture_lib()->FindOrNull(ResourceId::Of(400480)), 1};
+        items_[1][0] = {owns_->game()->texture_lib()->FindOrNull(ResourceId::Of(400490)), 2};
+        items_[1][1] = {owns_->game()->texture_lib()->FindOrNull(ResourceId::Of(400020)), 99};
 
         service_->set_dpi_factor(owns_->game()->dpi_factor());
 
@@ -112,7 +124,7 @@ private:
     ui::ButtonGroup *btn_group_  = nullptr;
     ui::ItemGroup *  item_group_ = nullptr;
 
-    res::Texture *items_[4][2];
+    ItemGrid items_[4][2];
 
     bool initialized_ = false;
 };  // class BootScene::UIController

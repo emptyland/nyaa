@@ -14,6 +14,7 @@ ItemGroup::ItemGroup(Id id, int column_count, int row_count, Component *parent)
     : Component(id, parent)
     , column_count_(column_count)
     , row_count_(row_count)
+    , font_(Game::This()->font_lib()->default_face())
     , cursor_({column_count_, row_count_})
     , drag_({column_count_, row_count_})
     , items_(new Item[column_count * row_count]) {
@@ -50,14 +51,23 @@ void ItemGroup::HandleMouseButtonInput(int key, int action, int mods, bool *shou
         case GLFW_MOUSE_BUTTON_LEFT:
             if (action != GLFW_PRESS) { return; }
             if (!is_drag()) {
-                if (stub->icon()) { drag_ = cursor_; }
+                if (stub->icon()) { Drag(cursor_, TestKeyPress(GLFW_KEY_LEFT_SHIFT) ? 1 : stub->stack()); }
                 *should_break = true;
                 return;
             }
 
+            if (TestKeyPress(GLFW_KEY_LEFT_SHIFT)) {
+                DCHECK(is_drag());
+                if (drag_ == cursor_ && drag_stack_ < stub->stack()) {
+                    drag_stack_++;
+                    *should_break = true;
+                    return;
+                }
+            }
+
             for (auto [deg, _] : *mutable_delegates()) {
                 bool dropped = true;
-                down_cast<Delegate>(deg)->OnItemDrop(ToUserGrid(drag_), ToUserGrid(cursor_), stub->id(), &dropped);
+                down_cast<Delegate>(deg)->OnItemDrop(ToUserGrid(drag_), ToUserGrid(cursor_), drag_stack_, &dropped);
                 if (dropped) { Drop(); }
                 break;
             }
@@ -85,6 +95,8 @@ void ItemGroup::DidFocus(bool focus) {
 void ItemGroup::OnPaint(double delta) {
     DrawBorder(border_color_, delta);
 
+    if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
+
     const int dx = (bound().w - 4) / column_count_;
     const int dy = (bound().h - 4) / row_count_;
 
@@ -109,14 +121,17 @@ void ItemGroup::OnPaint(double delta) {
             int y = bound().y + 2 + j * dy;
 
             Item *stub = item(i, j);
-
             if (!data_) { continue; }
-
             data_->OnItemProduce(i, row_count_ - 1 - j, stub);
-
             if (!stub->icon()) { continue; }
 
-            DrawIcon(Rect(x, y, dx, dy), stub->icon());
+            if (drag_.x == i && drag_.y == j) {
+                glColor4f(0.7, 0.7, 0.7, 0.5);
+                DrawIcon(Rect(x, y, dx, dy), stub->icon(), stub->stack() - drag_stack_);
+            } else {
+                glColor3f(1.0, 1.0, 1.0);
+                DrawIcon(Rect(x, y, dx, dy), stub->icon(), stub->stack());
+            }
         }
     }
 
@@ -127,15 +142,16 @@ void ItemGroup::OnPaint(double delta) {
         pos.x -= dx / 2;
         pos.y -= dy / 2;
 
-        DrawIcon(Rect(pos.x, pos.y, dx, dy), stub->icon());
+        glColor3f(1.0, 1.0, 1.0);
+        DrawIcon(Rect(pos.x, pos.y, dx, dy), stub->icon(), drag_stack_);
     }
 }
 
-void ItemGroup::DrawIcon(const Boundf &bound, res::Texture *tex) {
+void ItemGroup::DrawIcon(const Boundf &bound, res::Texture *tex, int stack) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex->tex_id());
 
-    glBegin(GL_QUADS);
+    glBegin(GL_QUADS); 
     glTexCoord2fv(&tex->coord(0).x);
     glVertex2f(bound.x, bound.y);
 
@@ -147,8 +163,31 @@ void ItemGroup::DrawIcon(const Boundf &bound, res::Texture *tex) {
 
     glTexCoord2fv(&tex->coord(3).x);
     glVertex2f(bound.x + bound.w, bound.y);
-
     glEnd();
+
+    if (stack > 1) {
+        char buf[64];
+        ::snprintf(buf, arraysize(buf), "%d", stack);
+        Vector2f font_size  = font()->ApproximateSize(buf);
+        float    font_scale = bound.h / 3 / font_size.y;
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        std::vector<float> vertices;
+        Vector3f           pos;
+        pos.x = bound.x + 4;
+        pos.y = bound.y + 4;
+        pos.z = 0;
+        font()->Render(pos, font_scale, buf, &vertices);
+        glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
+
+        glBegin(GL_QUADS);
+        glColor4fv(&font_color_.x);
+        for (int i = 0; i < vertices.size(); i += 5) {
+            glTexCoord2f(vertices[i + 3], vertices[i + 4]);
+            glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
+        }
+        glEnd();
+    }
     glDisable(GL_TEXTURE_2D);
 }
 
