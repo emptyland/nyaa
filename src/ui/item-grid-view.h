@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_UI_ITEM_GROUP_H_
-#define NYAA_UI_ITEM_GROUP_H_
+#ifndef NYAA_UI_ITEM_GRID_VIEW_H_
+#define NYAA_UI_ITEM_GRID_VIEW_H_
 
 #include "ui/component.h"
 #include "ui/ui.h"
@@ -12,14 +12,16 @@ class FontFace;
 }  // namespace res
 namespace ui {
 
-class ItemGroup : public Component {
+class ItemGridView : public Component {
 public:
     class Delegate : public Component::Delegate {
     public:
         inline Delegate() = default;
 
-        virtual void DidItemDispose(Vector2i grid, EntityId id, bool *dropped) {}
-        virtual void OnItemDrop(Vector2i src, Vector2i dst, int stack, bool *dropped) {}
+        virtual void DidItemDispose(ItemGridView *sender, Vector2i grid, bool *dropped) {}
+        virtual void OnItemDrop(ItemGridView *sender, Vector2i src, ItemGridView *receiver, Vector2i dst, int stack,
+                                bool *dropped) {}
+        virtual void OnItemDrop(ItemGridView *sender, Vector2i src, int stack, bool *dropped) {}
 
         DISALLOW_IMPLICIT_CONSTRUCTORS(Delegate);
     };  // class Delegate
@@ -30,7 +32,7 @@ public:
     public:
         inline Producer() = default;
         virtual ~Producer() {}
-        virtual void OnItemProduce(int x, int y, Item *item) = 0;
+        virtual void OnItemProduce(ItemGridView *sender, Vector2i grid, Item *item) = 0;
 
         DISALLOW_IMPLICIT_CONSTRUCTORS(Producer);
     };  // class Producer
@@ -53,8 +55,8 @@ public:
         int           stack_ = 0;
     };  // class Item
 
-    ItemGroup(Id id, int column_count, int row_count, Component *parent);
-    ~ItemGroup() override;
+    ItemGridView(Id id, int column_count, int row_count, Component *parent);
+    ~ItemGridView() override;
 
     DEF_VAL_GETTER(int, column_count);
     DEF_VAL_GETTER(int, row_count);
@@ -62,11 +64,13 @@ public:
     DEF_VAL_PROP_RW(Vector4f, font_color);
     DEF_VAL_PROP_RW(Vector4f, border_color);
 
-    const Vector2i &drag_grid() const { return drag_; }
+    const Vector2i &drag_grid() const { return drag_.grid; }
 
     void AddProducer(Producer *data) { data_ = data; }
 
-    DISALLOW_IMPLICIT_CONSTRUCTORS(ItemGroup);
+    void Drop(ItemGridView *sender, Vector2i src, int stack, bool *dropped);
+
+    DISALLOW_IMPLICIT_CONSTRUCTORS(ItemGridView);
 
 private:
     void HandleMouseButtonInput(int button, int action, int mods, bool *should_break) override;
@@ -83,17 +87,21 @@ private:
         return &items_[j * column_count_ + i];
     }
 
-    bool is_drag() const { return drag_.x != column_count_ && drag_.y != row_count_; }
+    struct DragContext {
+        Vector2i      grid;
+        int           stack;
+        ItemGridView *sender;
+    };  // struct DragContext
 
-    void Drag(Vector2i src, int stack) {
-        drag_       = src;
-        drag_stack_ = stack;
+    bool is_drag() const { return drag_.sender != nullptr; }
+
+    void Drag(Vector2i src, int stack, ItemGridView *sender) {
+        drag_.grid   = src;
+        drag_.stack  = stack;
+        drag_.sender = sender;
     }
 
-    void Drop() {
-        drag_       = {column_count_, row_count_};
-        drag_stack_ = 0;
-    }
+    void Drop() { ::memset(&drag_, 0, sizeof(drag_)); }
 
     Vector2i ToUserGrid(Vector2i grid) const { return {grid.x, row_count_ - 1 - grid.y}; }
 
@@ -101,8 +109,7 @@ private:
     const int      row_count_;
     res::FontFace *font_;
     Vector2i       cursor_;
-    Vector2i       drag_;
-    int            drag_stack_   = 0;
+    DragContext    drag_;
     Vector4f       font_color_   = kFontColor;
     Vector4f       border_color_ = kBorderColor;
 
@@ -114,4 +121,4 @@ private:
 
 }  // namespace nyaa
 
-#endif  // NYAA_UI_ITEM_GROUP_H_
+#endif  // NYAA_UI_ITEM_GRID_VIEW_H_

@@ -13,7 +13,7 @@ namespace nyaa {
 
 namespace ui {
 
-class ItemGroup;
+class ItemGridView;
 class ButtonGroup;
 class InputBox;
 class ListBox;
@@ -27,7 +27,7 @@ public:
     DEF_VAL_PROP_RW(float, dpi_factor);
     DEF_PTR_GETTER(Component, focus);
 
-    ItemGroup *NewItemGroup(int column, int row, Component *parent);
+    ItemGridView *NewItemGroup(int column, int row, Component *parent);
     ButtonGroup *NewButtonGroup(int column, int row, Component *parent);
     InputBox *NewInputBox(std::string_view text, Component *parent);
     ListBox *NewListBox(int limit_rows, Component *parent);

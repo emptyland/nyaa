@@ -1,5 +1,5 @@
 #include "ui/ui-service.h"
-#include "ui/item-group.h"
+#include "ui/item-grid-view.h"
 #include "ui/button-group.h"
 #include "ui/input-box.h"
 #include "ui/list-box.h"
@@ -21,9 +21,9 @@ UIService::~UIService() {
     for (auto [id, ctrl] : id_to_ctrl_) { delete ctrl; }
 }
 
-ItemGroup *UIService::NewItemGroup(int column, int row, Component *parent) {
+ItemGridView *UIService::NewItemGroup(int column, int row, Component *parent) {
     Component::Id id   = Component::Id::Of(next_id_++);
-    ItemGroup *   ctrl = new ItemGroup(id, column, row, parent);
+    ItemGridView *   ctrl = new ItemGridView(id, column, row, parent);
     PutController(ctrl);
     return ctrl;
 }

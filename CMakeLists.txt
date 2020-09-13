@@ -59,7 +59,7 @@ set(GAME_SRC
     src/ui/input-box.cc
     src/ui/list-box.cc
     src/ui/button-group.cc
-    src/ui/item-group.cc
+    src/ui/item-grid-view.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
     src/component/cube-component.cc
