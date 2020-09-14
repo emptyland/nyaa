@@ -13,6 +13,7 @@ namespace nyaa {
 
 namespace ui {
 
+class FlatMenu;
 class ItemGridView;
 class ButtonGroup;
 class InputBox;
@@ -27,10 +28,13 @@ public:
     DEF_VAL_PROP_RW(float, dpi_factor);
     DEF_PTR_GETTER(Component, focus);
 
-    ItemGridView *NewItemGroup(int column, int row, Component *parent);
-    ButtonGroup *NewButtonGroup(int column, int row, Component *parent);
-    InputBox *NewInputBox(std::string_view text, Component *parent);
-    ListBox *NewListBox(int limit_rows, Component *parent);
+    template <class T, class = std::enable_if_t<std::is_base_of<Component, T>::value>, class... Args>
+    inline T *New(Args... args) {
+        UIComponentId id   = UIComponentId::Of(next_id_++);
+        T *           ctrl = new T(id, args...);
+        PutController(ctrl);
+        return ctrl;
+    }
 
     void Destroy(Component *ctrl);
 

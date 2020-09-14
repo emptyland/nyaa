@@ -140,17 +140,17 @@ public:
 
         service_->set_dpi_factor(owns_->game()->dpi_factor());
 
-        item_group_ = service_->NewItemGroup(4, 2, nullptr);
+        item_group_ = service_->New<ui::ItemGridView>(4, 2, nullptr);  // NewItemGroup(4, 2, nullptr);
         item_group_->AddDelegate(static_cast<ui::ItemGridView::Delegate *>(this));
         item_group_->AddProducer(this);
         item_group_->SetVisible(false);
 
-        item_group2_ = service_->NewItemGroup(1, 4, nullptr);
+        item_group2_ = service_->New<ui::ItemGridView>(1, 4, nullptr);  // NewItemGroup(1, 4, nullptr);
         item_group2_->AddDelegate(static_cast<ui::ItemGridView::Delegate *>(this));
         item_group2_->AddProducer(this);
         item_group2_->SetVisible(false);
 
-        btn_group_ = service_->NewButtonGroup(3, 1, nullptr);
+        btn_group_ = service_->New<ui::ButtonGroup>(3, 1, nullptr);  // NewButtonGroup(3, 1, nullptr);
         btn_group_->AddDelegate(static_cast<ui::ButtonGroup::Delegate *>(this));
 
         ui::ButtonGroup::Button *btn = btn_group_->AddButton(kNewGameId, 0, 0);
@@ -198,9 +198,9 @@ private:
     BootScene *                    owns_;
     std::unique_ptr<ui::UIService> service_;
 
-    ui::ButtonGroup *btn_group_   = nullptr;
-    ui::ItemGridView *   item_group_  = nullptr;
-    ui::ItemGridView *   item_group2_ = nullptr;
+    ui::ButtonGroup * btn_group_   = nullptr;
+    ui::ItemGridView *item_group_  = nullptr;
+    ui::ItemGridView *item_group2_ = nullptr;
 
     ItemGrid items_[4][2];
     ItemGrid slots_[4];

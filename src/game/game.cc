@@ -44,14 +44,14 @@ public:
     ~UIController() { owns_->RemoveUIService(service_.get()); }
 
     void Prepare() {
-        input_box_ = service_->NewInputBox("", nullptr);
+        input_box_ = service_->New<ui::InputBox>(nullptr);  // NewInputBox("", nullptr);
         input_box_->AddDelegate(this);
         input_box_->set_bound({4, 4, owns_->fb_w() / 2, 48});
         input_box_->set_font_scale(0.7);
         input_box_->set_font(owns_->font_lib()->system_face());
         input_box_->SetVisible(false);
 
-        list_box_ = service_->NewListBox(100, nullptr);
+        list_box_ = service_->New<ui::ListBox>(100, nullptr); // NewListBox(100, nullptr);
         list_box_->set_bound({4, 52, owns_->fb_w() / 2, h()});
         list_box_->set_font_scale(0.7);
         list_box_->set_font(owns_->font_lib()->default_face());

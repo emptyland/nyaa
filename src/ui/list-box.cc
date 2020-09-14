@@ -10,8 +10,8 @@ namespace nyaa {
 
 namespace ui {
 
-ListBox::ListBox(Id id, Component *parent /*= nullptr*/)
-    : Component(id, parent), font_(Game::This()->font_lib()->default_face()) {}
+ListBox::ListBox(Id id, int limit, Component *parent /*= nullptr*/)
+    : Component(id, parent), font_(Game::This()->font_lib()->default_face()), limit_rows_(limit) {}
 
 ListBox::~ListBox() {}
 
@@ -69,7 +69,7 @@ void ListBox::OnPaint(double delta) {
 
     float y = bound().y + 4;
     for (const auto &row : rows_) {
-        
+
         Boundf rect = font()->Render(Vec3(bound().x + 4, y, 0), font_scale(), row.text, &vertices);
 
         y += 8 + rect.h;

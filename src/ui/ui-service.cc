@@ -1,8 +1,5 @@
 #include "ui/ui-service.h"
-#include "ui/item-grid-view.h"
-#include "ui/button-group.h"
-#include "ui/input-box.h"
-#include "ui/list-box.h"
+#include "ui/component.h"
 #include "game/game.h"
 #include "game/vector.h"
 #include "system/geometry-transform-system.h"
@@ -19,35 +16,6 @@ UIService::UIService(float dpi_factor) : last_time_(glfwGetTime()), dpi_factor_(
 
 UIService::~UIService() {
     for (auto [id, ctrl] : id_to_ctrl_) { delete ctrl; }
-}
-
-ItemGridView *UIService::NewItemGroup(int column, int row, Component *parent) {
-    Component::Id id   = Component::Id::Of(next_id_++);
-    ItemGridView *   ctrl = new ItemGridView(id, column, row, parent);
-    PutController(ctrl);
-    return ctrl;
-}
-
-ButtonGroup *UIService::NewButtonGroup(int column, int row, Component *parent) {
-    Component::Id id   = Component::Id::Of(next_id_++);
-    ButtonGroup * ctrl = new ButtonGroup(id, column, row, parent);
-    PutController(ctrl);
-    return ctrl;
-}
-
-InputBox *UIService::NewInputBox(std::string_view text, Component *parent) {
-    Component::Id id   = Component::Id::Of(next_id_++);
-    InputBox *    ctrl = new InputBox(id, parent);
-    PutController(ctrl);
-    return ctrl;
-}
-
-ListBox *UIService::NewListBox(int limit_rows, Component *parent) {
-    Component::Id id   = Component::Id::Of(next_id_++);
-    ListBox *     ctrl = new ListBox(id, parent);
-    ctrl->set_limit_rows(limit_rows);
-    PutController(ctrl);
-    return ctrl;
 }
 
 void UIService::Destroy(Component *ctrl) {

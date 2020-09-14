@@ -16,7 +16,7 @@ namespace ui {
 
 class ListBox : public Component {
 public:
-    explicit ListBox(Id id, Component *parent = nullptr);
+    explicit ListBox(Id id, int limit, Component *parent = nullptr);
     ~ListBox() override;
 
     DEF_PTR_PROP_RW(res::FontFace, font);
