@@ -49,6 +49,7 @@ set(GAME_SRC
     src/game/scene.cc
     src/game/boot-scene.cc
     src/game/test-scene.cc
+    src/game/avatar-view-scene.cc
     src/game/properties.cc
     src/game/entity-virtual-db.cc
     src/game/entity-grid-set.cc

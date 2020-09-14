@@ -143,10 +143,12 @@ public:
         item_group_ = service_->NewItemGroup(4, 2, nullptr);
         item_group_->AddDelegate(static_cast<ui::ItemGridView::Delegate *>(this));
         item_group_->AddProducer(this);
+        item_group_->SetVisible(false);
 
         item_group2_ = service_->NewItemGroup(1, 4, nullptr);
         item_group2_->AddDelegate(static_cast<ui::ItemGridView::Delegate *>(this));
         item_group2_->AddProducer(this);
+        item_group2_->SetVisible(false);
 
         btn_group_ = service_->NewButtonGroup(3, 1, nullptr);
         btn_group_->AddDelegate(static_cast<ui::ButtonGroup::Delegate *>(this));

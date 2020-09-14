@@ -48,12 +48,12 @@ def genAvatarSpriteId(id, aid, cx, cy):
     r = aid + 30
     d = aid + 60
     l = aid + 90
-    upText = '%d,%d,%d' % (u, u + 10, u + 20)
-    rightText = '%d,%d,%d' % (r, r + 10, r + 20)
-    downText = '%d,%d,%d' % (d, d + 10, d + 20)
-    leftText = '%d,%d,%d' % (l, l + 10, l + 20)
+    upText = '%d,%d,%d' % (u + 10, u, u + 20)
+    rightText = '%d,%d,%d' % (r + 10, r, r + 20)
+    downText = '%d,%d,%d' % (d + 10, d, d + 20)
+    leftText = '%d,%d,%d' % (l + 10, l, l + 20)
     sizeText = ('%d,%d' % (cx, cy)).ljust(7)
-    print('%d | %s | %s | %s | %s | %s | 0.2     | 1,1,1,1    | ' % (id, sizeText, upText, rightText, downText, leftText))
+    print('%d | %s | %s | %s | %s | %s | 0.2     | 0,0,0,0    | ' % (id, sizeText, upText, rightText, downText, leftText))
     return id + 10
 
 if sys.argv[1] == 'tile':

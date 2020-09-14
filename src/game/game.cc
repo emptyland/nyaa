@@ -1,6 +1,7 @@
 #include "game/game.h"
 #include "game/properties.h"
 #include "game/boot-scene.h"
+#include "game/avatar-view-scene.h"
 #include "game/scene.h"
 #include "system/entity-allocation-system.h"
 #include "system/geometry-transform-system.h"
@@ -281,12 +282,13 @@ void Game::Run() {
 
 /*static*/ void Game::OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
-    if (game->scene_) { game->scene_->OnKeyInput(key, code, action, mods); }
 
     for (ui::UIService *srv : game->ui_services_) {
         srv->HandleKeyInput(key, code, action, mods, &game->break_input_);
         if (game->break_input_) { break; }
     }
+
+    if (game->scene_ && !game->break_input()) { game->scene_->OnKeyInput(key, code, action, mods); }
 }
 
 /*static*/ void Game::OnCharInput(GLFWwindow *window, unsigned int codepoint) {
@@ -380,6 +382,13 @@ public:
         return 0;
     }
 
+    static int Cmd_AvatarShow(Game *owns, Command *cmd) {
+        AvatarViewScene *scene = new AvatarViewScene(owns);
+        scene->SwitchTo(owns->scene());
+        CONSOLE(Vec3(0, 1, 0), "%s open.", scene->Name());
+        return 0;
+    }
+
     static void ProcessCommand(Game *owns, std::string_view text);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
@@ -420,6 +429,7 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"echo", Cmd_Echo, {Str, nullptr}},
     {"console.h", Cmd_Console_H, {U32, nullptr}},
     {"scene", Cmd_Scene, {nullptr}},
+    {"avatar.show", Cmd_AvatarShow, {nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 
