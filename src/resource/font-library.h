@@ -74,6 +74,8 @@ public:
 
     Vector2f Render(const Vector3f &pos, float scale, char32_t codepoint, float vertices[20]);
 
+    Vector2f RenderOutline(char32_t codepoint, int outline_w, std::vector<uint8_t> *pixels);
+
     struct Character : public base::ArenaObject {
         Character *next_ = nullptr;
         Character *prev_ = nullptr;
@@ -88,14 +90,15 @@ public:
     friend class FontLibrary;
 
 private:
-    FontFace(FT_FaceRec_ *face, int pixel_size, base::Arena *arena)
-        : face_(face), arena_(arena), pixel_size_(pixel_size) {
+    FontFace(FT_LibraryRec_ *owns, FT_FaceRec_ *face, int pixel_size, base::Arena *arena)
+        : owns_(owns), face_(face), arena_(arena), pixel_size_(pixel_size) {
         chars_dummy_.next_ = &chars_dummy_;
         chars_dummy_.prev_ = &chars_dummy_;
     }
 
     void Prepare();
 
+    FT_LibraryRec_ *const                     owns_;
     FT_FaceRec_ *                             face_;
     base::Arena *const                        arena_;
     const int                                 pixel_size_;

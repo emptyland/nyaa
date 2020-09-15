@@ -6,6 +6,7 @@
 #include "base/queue-macros.h"
 #include "freetype2/ft2build.h"
 #include FT_FREETYPE_H
+#include FT_STROKER_H
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <numeric>
@@ -30,7 +31,7 @@ bool FontLibrary::Prepare(const FontLibrary::Options &options) {
     }
     FT_Select_Charmap(face, ft_encoding_unicode);
     FT_Set_Pixel_Sizes(face, 0, options.default_font_size);
-    default_face_.reset(new FontFace(face, options.default_font_size, arena_));
+    default_face_.reset(new FontFace(lib_, face, options.default_font_size, arena_));
     default_face_->Prepare();
 
     if (err = FT_New_Face(lib_, options.system_font_file.c_str(), 0, &face); err) {
@@ -39,7 +40,7 @@ bool FontLibrary::Prepare(const FontLibrary::Options &options) {
     }
     FT_Select_Charmap(face, ft_encoding_unicode);
     FT_Set_Pixel_Sizes(face, 0, options.system_font_size);
-    system_face_.reset(new FontFace(face, options.system_font_size, arena_));
+    system_face_.reset(new FontFace(lib_, face, options.system_font_size, arena_));
     system_face_->Prepare();
 
     return true;
@@ -186,6 +187,94 @@ Vector2f FontFace::Render(const Vector3f &position, float scale, char32_t codepo
     vertices[19] = static_cast<float>(info->glyph.y + info->glyph.h) / kBufferTexHf;
 
     return Vec2((info->advance >> 6) * scale, info->bearing.y * scale);
+}
+
+struct Span {
+    int x;
+    int y;
+    int width;
+    int coverage;
+};
+
+struct Rect {
+    int x0;
+    int x1;
+    int y0;
+    int y1;
+
+    void Include(Vector2i r) {
+        x0 = std::min(x0, r.x);
+        x1 = std::max(x1, r.x);
+        y0 = std::min(y0, r.y);
+        y1 = std::max(y1, r.y);
+    }
+
+    int w() const { return x1 - x0 + 1; }
+    int h() const { return y1 - y0 + 1; }
+};
+
+void RasterCallback(const int y, const int count, const FT_Span *const spans, void *const user) {
+    auto receiver = static_cast<std::vector<Span> *>(user);
+
+    for (int i = 0; i < count; ++i) { receiver->push_back(Span{spans[i].x, y, spans[i].len, spans[i].coverage}); }
+}
+
+Vector2f FontFace::RenderOutline(char32_t codepoint, int outline_w, std::vector<uint8_t> *pixels) {
+    // FT_Set_Char_Size()
+
+    FT_UInt  index = FT_Get_Char_Index(face_, codepoint);
+    FT_Error err   = FT_Load_Glyph(face_, index, FT_LOAD_NO_BITMAP);
+    DCHECK_NE(err, 0);
+    if (face_->glyph->format != FT_GLYPH_FORMAT_OUTLINE) { return {0, 0}; }
+
+    std::vector<Span> spans;
+
+    FT_Raster_Params params;
+    memset(&params, 0, sizeof(params));
+    params.flags      = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
+    params.gray_spans = RasterCallback;
+    params.user       = &spans;
+
+    FT_Outline_Render(owns_, &face_->glyph->outline, &params);
+
+    // Next we need the spans for the outline.
+
+    // Set up a stroker.
+    FT_Stroker stroker;
+    FT_Stroker_New(owns_, &stroker);
+    FT_Stroker_Set(stroker, static_cast<int>(outline_w * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+
+    FT_Glyph glyph;
+    err = FT_Get_Glyph(face_->glyph, &glyph);
+    DCHECK_NE(err, 0);
+
+    FT_Glyph_StrokeBorder(&glyph, stroker, 0, 1);
+    // Again, this needs to be an outline to work.
+    if (glyph->format != FT_GLYPH_FORMAT_OUTLINE) { return {0, 0}; }
+    // Render the outline spans to the span list
+
+    FT_Outline *outline = &reinterpret_cast<FT_OutlineGlyph>(glyph)->outline;
+
+    std::vector<Span> outline_spans;
+    params.user = &outline_spans;
+    FT_Outline_Render(owns_, outline, &params);
+
+    // Clean up afterwards.
+    FT_Stroker_Done(stroker);
+    FT_Done_Glyph(glyph);
+
+    Rect rect{spans.front().x, spans.front().y, spans.front().x, spans.front().y};
+    for (const auto  &span : spans) {
+        rect.Include({span.x, span.y});
+    }
+    for (const auto  &span : outline_spans) {
+        rect.Include({span.x, span.y});
+    }
+
+    pixels->resize(rect.w() * rect.h() * 4);
+
+    // TODO:
+    return {0, 0};
 }
 
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {
