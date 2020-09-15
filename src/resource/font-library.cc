@@ -264,11 +264,13 @@ Vector2f FontFace::RenderOutline(char32_t codepoint, int outline_w, std::vector<
     FT_Done_Glyph(glyph);
 
     Rect rect{spans.front().x, spans.front().y, spans.front().x, spans.front().y};
-    for (const auto  &span : spans) {
+    for (const auto &span : spans) {
         rect.Include({span.x, span.y});
+        rect.Include({span.x + span.width - 1, span.y});
     }
-    for (const auto  &span : outline_spans) {
+    for (const auto &span : outline_spans) {
         rect.Include({span.x, span.y});
+        rect.Include({span.x + span.width - 1, span.y});
     }
 
     pixels->resize(rect.w() * rect.h() * 4);
