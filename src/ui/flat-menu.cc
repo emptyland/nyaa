@@ -48,6 +48,10 @@ void FlatMenu::OnPaint(double delta) {
     }
 
     glDisable(GL_TEXTURE_2D);
+
+    // std::vector<uint8_t> pixels;
+    // Vector2i size = font()->RenderOutline(U'国', Vec3(1.0, 0.0, 0.0), 3, Vec3(0.7, 0.7, 0.7), &pixels);
+    // glDrawPixels(size.x, size.y, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
 }
 
 void FlatMenu::DrawText(float x, float y, float scale, Item *item) const {

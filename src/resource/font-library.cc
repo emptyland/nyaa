@@ -219,12 +219,14 @@ void RasterCallback(const int y, const int count, const FT_Span *const spans, vo
     for (int i = 0; i < count; ++i) { receiver->push_back(Span{spans[i].x, y, spans[i].len, spans[i].coverage}); }
 }
 
-Vector2f FontFace::RenderOutline(char32_t codepoint, int outline_w, std::vector<uint8_t> *pixels) {
+Vector2i FontFace::RenderOutline(char32_t codepoint, const Vector3f &font_color, int outline_w,
+                                 const Vector3f &outline_color, std::vector<uint8_t> *pixels) {
     // FT_Set_Char_Size()
+    //FT_Set_Pixel_Sizes(face_, 128, 0);
 
     FT_UInt  index = FT_Get_Char_Index(face_, codepoint);
     FT_Error err   = FT_Load_Glyph(face_, index, FT_LOAD_NO_BITMAP);
-    DCHECK_NE(err, 0);
+    DCHECK_EQ(err, 0);
     if (face_->glyph->format != FT_GLYPH_FORMAT_OUTLINE) { return {0, 0}; }
 
     std::vector<Span> spans;
@@ -246,7 +248,7 @@ Vector2f FontFace::RenderOutline(char32_t codepoint, int outline_w, std::vector<
 
     FT_Glyph glyph;
     err = FT_Get_Glyph(face_->glyph, &glyph);
-    DCHECK_NE(err, 0);
+    DCHECK_EQ(err, 0);
 
     FT_Glyph_StrokeBorder(&glyph, stroker, 0, 1);
     // Again, this needs to be an outline to work.
@@ -275,8 +277,45 @@ Vector2f FontFace::RenderOutline(char32_t codepoint, int outline_w, std::vector<
 
     pixels->resize(rect.w() * rect.h() * 4);
 
+    for (const Span &span : outline_spans) {
+        for (int w = 0; w < span.width; ++w) {
+            int index = (rect.h() - 1 - (span.y - rect.y0)) * rect.w() + span.x - rect.x0 + w;
+
+            (*pixels)[index * 4 + 0] = 255 * outline_color.x;
+            (*pixels)[index * 4 + 1] = 255 * outline_color.y;
+            (*pixels)[index * 4 + 2] = 255 * outline_color.z;
+            (*pixels)[index * 4 + 3] = span.coverage;
+        }
+    }
+    for (const Span &span : spans) {
+        for (int w = 0; w < span.width; ++w) {
+            int      index = (rect.h() - 1 - (span.y - rect.y0)) * rect.w() + span.x - rect.x0 + w;
+            Vector4i src;
+            src.x = 255 * font_color.x;
+            src.y = 255 * font_color.y;
+            src.z = 255 * font_color.z;
+            src.w = span.coverage;
+
+            Vector4i dst;
+            dst.x = (*pixels)[index * 4 + 0];
+            dst.y = (*pixels)[index * 4 + 1];
+            dst.z = (*pixels)[index * 4 + 2];
+            dst.w = (*pixels)[index * 4 + 3];
+
+            dst.x = static_cast<int>(dst.x + ((src.x - dst.x) * src.w) / 255.0f);
+            dst.y = static_cast<int>(dst.y + ((src.y - dst.y) * src.w) / 255.0f);
+            dst.z = static_cast<int>(dst.z + ((src.z - dst.z) * src.w) / 255.0f);
+            dst.w = std::min(255, dst.w + src.w);
+
+            (*pixels)[index * 4 + 0] = dst.x;
+            (*pixels)[index * 4 + 1] = dst.y;
+            (*pixels)[index * 4 + 2] = dst.z;
+            (*pixels)[index * 4 + 3] = dst.w;
+        }
+    }
+
     // TODO:
-    return {0, 0};
+    return {rect.w(), rect.h()};
 }
 
 const FontFace::Character *FontFace::FindOrInsertCharacter(uint32_t code_point) {

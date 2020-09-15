@@ -74,7 +74,8 @@ public:
 
     Vector2f Render(const Vector3f &pos, float scale, char32_t codepoint, float vertices[20]);
 
-    Vector2f RenderOutline(char32_t codepoint, int outline_w, std::vector<uint8_t> *pixels);
+    Vector2i RenderOutline(char32_t codepoint, const Vector3f &font_color, int outline_w, const Vector3f &outline_color,
+                           std::vector<uint8_t> *pixels);
 
     struct Character : public base::ArenaObject {
         Character *next_ = nullptr;
