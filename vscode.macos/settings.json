@@ -74,7 +74,9 @@
         "__memory": "cpp",
         "queue": "cpp",
         "numeric": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "fstream": "cpp",
+        "stack": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "python.linting.enabled": false,

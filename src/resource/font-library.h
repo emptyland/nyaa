@@ -18,6 +18,7 @@ namespace nyaa {
 namespace res {
 
 class FontFace;
+class Texture;
 
 class FontLibrary final {
 public:
@@ -74,17 +75,21 @@ public:
 
     Vector2f Render(const Vector3f &pos, float scale, char32_t codepoint, float vertices[20]);
 
-    Vector2i RenderOutline(char32_t codepoint, const Vector3f &font_color, int outline_w, const Vector3f &outline_color,
-                           std::vector<uint8_t> *pixels);
+    Vector2i MakeOutlineTexture(std::string_view text, const Vector3f &font_color, int outline_w,
+                                const Vector3f &outline_color, uint32_t *tex);
+    
 
     struct Character : public base::ArenaObject {
         Character *next_ = nullptr;
         Character *prev_ = nullptr;
-        uint32_t   code_point;
+        char32_t   code_point;
         Boundi     glyph;
         Vector2i   bearing;
         long       advance;
     };
+
+    Vector2i RenderOutline(char32_t codepoint, const Vector3f &font_color, int outline_w, const Vector3f &outline_color,
+                           Character *info, std::vector<uint8_t> *pixels);
 
     const Character *FindOrInsertCharacter(uint32_t code_point);
 

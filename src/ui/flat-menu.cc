@@ -9,17 +9,20 @@ namespace nyaa {
 
 namespace ui {
 
-FlatMenu::FlatMenu(Id id, Component *parent) : Component(id, parent), font_(Game::This()->font_lib()->default_face()) {
+FlatMenu::FlatMenu(Id id, Component *parent) : Component(id, parent), font_(Game::This()->font_lib()->default_face()) {}
+
+FlatMenu::~FlatMenu() {
+    for (auto &item : items_) { glDeleteTextures(1, &item.tex); }
 }
 
-FlatMenu::~FlatMenu() {}
-
+// 22.0	60.0	92.0	
 void FlatMenu::AddItem(std::string_view text, Id id) {
     DCHECK(FindItem(id) == items_.end());
     Item item;
     item.id            = id;
     item.text          = text;
-    item.original_size = font_->ApproximateSize(text);
+    Vector2i size      = font()->MakeOutlineTexture(text, Vec3(1, 1, 1), 3, Vec3(0.22, 0.6, 0.92), &item.tex);
+    item.original_size = Vec2(size.x, size.y);
     item.bound         = {0, 0, 0, 0};
     items_.push_back(item);
 }
@@ -33,7 +36,6 @@ void FlatMenu::OnPaint(double delta) {
     float    scale  = std::min(scale2.x, scale2.y);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
 
     int   index = 0;
     float y     = bound().y + bound().h;
@@ -48,24 +50,32 @@ void FlatMenu::OnPaint(double delta) {
     }
 
     glDisable(GL_TEXTURE_2D);
-
-    // std::vector<uint8_t> pixels;
-    // Vector2i size = font()->RenderOutline(U'国', Vec3(1.0, 0.0, 0.0), 3, Vec3(0.7, 0.7, 0.7), &pixels);
-    // glDrawPixels(size.x, size.y, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
 }
 
 void FlatMenu::DrawText(float x, float y, float scale, Item *item) const {
-    std::vector<float> vertices;
+    item->bound.x = x;
+    item->bound.y = y;
+    item->bound.w = item->original_size.x * scale;
+    item->bound.h = item->original_size.y * scale;
 
-    item->bound = font()->Render({x, y, 0}, scale, item->text, &vertices);
+    glBindTexture(GL_TEXTURE_2D, item->tex);
+
     glBegin(GL_QUADS);
     glColor3f(1.0, 1.0, 1.0);
-    for (int i = 0; i < vertices.size(); i += 5) {
-        glTexCoord2f(vertices[i + 3], vertices[i + 4]);
-        glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
-    }
-    glEnd();
 
+    glTexCoord2f(0, 1);
+    glVertex2f(x, y);
+
+    glTexCoord2f(0, 0);
+    glVertex2f(x, y + item->bound.h);
+
+    glTexCoord2f(1, 0);
+    glVertex2f(x + item->bound.w, y + item->bound.h);
+
+    glTexCoord2f(1, 1);
+    glVertex2f(x + item->bound.w, y);
+    
+    glEnd();
 }
 
 Vector2f FlatMenu::ApproximateScale() const {

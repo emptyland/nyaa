@@ -25,6 +25,7 @@ private:
     struct Item {
         std::string text;
         Id          id;
+        uint32_t    tex;
         Vector2f    original_size;
         Boundf      bound;
     };
@@ -33,15 +34,15 @@ private:
     void OnPaint(double delta) override;
 
     Vector2f ApproximateScale() const;
-    void DrawText(float x, float y, float scale, Item *item) const;
+    void     DrawText(float x, float y, float scale, Item *item) const;
 
     std::vector<Item>::const_iterator FindItem(Id id) const {
         return std::find_if(items_.begin(), items_.end(), [&id](const Item &a) { return a.id == id; });
     }
 
-    res::FontFace *   font_;
-    int               padding_size_ = 48;
-    int               cursor_       = -1;
+    res::FontFace *font_;
+    int            padding_size_ = 48;
+    // int               cursor_       = -1;
     std::vector<Item> items_;
 };  // class FlatMenu
 

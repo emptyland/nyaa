@@ -1,5 +1,6 @@
 #include "resource/font-library.h"
 #include "resource/text-library.h"
+#include "resource/texture-library.h"
 #include "system/geometry-transform-system.h"
 #include "game/game.h"
 #include "base/slice.h"
@@ -219,15 +220,79 @@ void RasterCallback(const int y, const int count, const FT_Span *const spans, vo
     for (int i = 0; i < count; ++i) { receiver->push_back(Span{spans[i].x, y, spans[i].len, spans[i].coverage}); }
 }
 
+Vector2i FontFace::MakeOutlineTexture(std::string_view text, const Vector3f &font_color, int outline_w,
+                                      const Vector3f &outline_color, uint32_t *tex) {
+    struct Metadata {
+        Boundi               bound;
+        std::vector<uint8_t> pixels;
+    };
+
+    Vector2i total_size = {0, 0};
+    int      bearing_y  = std::numeric_limits<int>::min();
+
+    Character                   info;
+    Vector2i                    size;
+    std::vector<Metadata>       mds;
+    base::CodePointIteratorUtf8 iter(text);
+    for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
+        Metadata md;
+        size = RenderOutline(*iter, font_color, outline_w, outline_color, &info, &md.pixels);
+
+        md.bound.x = total_size.x + info.bearing.x;
+        md.bound.y = info.bearing.y;
+        md.bound.w = size.x;
+        md.bound.h = size.y;
+
+        total_size.x += (info.advance >> 6);
+        total_size.y = std::max(total_size.y, md.bound.h);
+        bearing_y    = std::max(bearing_y, info.glyph.h - info.bearing.y);
+        mds.emplace_back(std::move(md));
+    }
+    total_size.x += size.x;
+    total_size.y += bearing_y;
+
+    glEnable(GL_TEXTURE_2D);
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, total_size.x, total_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    for (const auto &md : mds) {
+        // DLOG(INFO) << "md.y = " << md.bound.y << " md.h = " << md.bound.h;
+        if (md.pixels.empty()) {
+            continue;
+        }
+        glTexSubImage2D(GL_TEXTURE_2D, 0, md.bound.x, total_size.y - bearing_y - md.bound.y - outline_w * 2, md.bound.w,
+                        md.bound.h, GL_RGBA, GL_UNSIGNED_BYTE, &md.pixels[0]);
+    }
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 0);
+
+    *tex = texture;
+    return total_size;
+}
+
 Vector2i FontFace::RenderOutline(char32_t codepoint, const Vector3f &font_color, int outline_w,
-                                 const Vector3f &outline_color, std::vector<uint8_t> *pixels) {
-    // FT_Set_Char_Size()
-    //FT_Set_Pixel_Sizes(face_, 128, 0);
+                                 const Vector3f &outline_color, Character *info, std::vector<uint8_t> *pixels) {
 
     FT_UInt  index = FT_Get_Char_Index(face_, codepoint);
     FT_Error err   = FT_Load_Glyph(face_, index, FT_LOAD_NO_BITMAP);
     DCHECK_EQ(err, 0);
     if (face_->glyph->format != FT_GLYPH_FORMAT_OUTLINE) { return {0, 0}; }
+    if (info) {
+        info->code_point = codepoint;
+        info->glyph.w    = face_->glyph->bitmap.width;
+        info->glyph.h    = face_->glyph->bitmap.rows;
+        info->bearing.x  = face_->glyph->bitmap_left;
+        info->bearing.y  = face_->glyph->bitmap_top;
+        info->advance    = face_->glyph->advance.x;
+    }
 
     std::vector<Span> spans;
 
@@ -264,6 +329,10 @@ Vector2i FontFace::RenderOutline(char32_t codepoint, const Vector3f &font_color,
     // Clean up afterwards.
     FT_Stroker_Done(stroker);
     FT_Done_Glyph(glyph);
+
+    if (spans.empty() || outline_spans.empty()) {
+        return {static_cast<int>(face_->glyph->bitmap.width), static_cast<int>(face_->glyph->bitmap.rows)};
+    }
 
     Rect rect{spans.front().x, spans.front().y, spans.front().x, spans.front().y};
     for (const auto &span : spans) {

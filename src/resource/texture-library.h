@@ -14,6 +14,14 @@ namespace res {
 
 class Texture : public base::ArenaObject {
 public:
+    Texture(ResourceId id, uint32_t tex_id, int index, float aspect_ratio)
+        : id_(id), tex_id_(tex_id), index_(index), aspect_ratio_(aspect_ratio) {
+        coord_[0] = {0, 0};
+        coord_[1] = {0, 1};
+        coord_[2] = {1, 1};
+        coord_[3] = {1, 0};
+    }
+
     Texture(ResourceId id, uint32_t tex_id, int index, float aspect_ratio, Vector2f p0, Vector2f p1, Vector2f p2,
             Vector2f p3)
         : id_(id), tex_id_(tex_id), index_(index), aspect_ratio_(aspect_ratio) {
