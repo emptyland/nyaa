@@ -48,7 +48,7 @@ void TestScene::Reset() {
 
     game()->entity_allocator()->Register<entity::PlayerEntity>();
     player_.reset(
-        game()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(100000)));
+        game()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(101110)));
     player_->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
     player_->mutable_movement()->mutable_coord()->x = zone_->viewport().center_coord().x;
     player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;

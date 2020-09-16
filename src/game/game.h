@@ -43,6 +43,7 @@ class UIService;
 class Scene;
 class Properties;
 class Game;
+class World;
 
 class Game final {
 public:
@@ -83,6 +84,8 @@ public:
     res::CubeLibrary *   cube_lib() const { return cube_lib_.get(); }
     res::ShaderLibrary * shader_lib() const { return shader_lib_.get(); }
     res::ActorLibrary *  actor_lib() const { return actor_lib_.get(); }
+
+    World *world() const { return world_.get(); }
 
     base::AbstractPrinter *debug_out() { return &stdout_; }
 
@@ -158,6 +161,8 @@ private:
     std::unique_ptr<UIController> console_ui_;
 
     std::vector<ui::UIService *> ui_services_;
+
+    std::unique_ptr<World> world_;
 
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;

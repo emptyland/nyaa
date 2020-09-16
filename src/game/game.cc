@@ -3,6 +3,7 @@
 #include "game/boot-scene.h"
 #include "game/avatar-view-scene.h"
 #include "game/scene.h"
+#include "game/world.h"
 #include "system/entity-allocation-system.h"
 #include "system/geometry-transform-system.h"
 #include "system/zone-render-system.h"
@@ -132,6 +133,7 @@ Game::Game()
     , skill_lib_(new res::SkillLibrary(sprite_lib_.get(), text_lib_.get(), &arena_))
     , actor_lib_(new res::ActorLibrary(avatar_lib_.get(), skill_lib_.get(), text_lib_.get(), &arena_))
     , console_ui_(new UIController(this))
+    , world_(new World())
     , properties_(new Properties())
     , stdout_(stdout) {
     // Total initialize
