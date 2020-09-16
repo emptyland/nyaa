@@ -43,6 +43,7 @@ public:
         main_menu_->AddItem("New Game", kNewGameId);
         main_menu_->AddItem("Test Scene", kTestSceneId);
         main_menu_->AddItem("Exit", kExitId);
+        main_menu_->AddDelegate(this);
         initialized_ = true;
     }
 

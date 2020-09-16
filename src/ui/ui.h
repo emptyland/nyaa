@@ -11,6 +11,8 @@ namespace ui {
 static constexpr Vector4f kBorderColor = {0.82, 0.53, 0.29, 1};
 static constexpr Vector4f kFontColor = {1, 1, 1, 1};
 
+static constexpr Vector4f kFontOutlineColor = {0.22, 0.6, 0.92, 1.0};
+
 static constexpr Vector4f kBgColor = {0, 0, 0, 0.5};
 static constexpr Vector4f kFgColor = {1, 1, 1, 1};
 }  // namespace ui

@@ -21,10 +21,23 @@ void FlatMenu::AddItem(std::string_view text, Id id) {
     Item item;
     item.id            = id;
     item.text          = text;
-    Vector2i size      = font()->MakeOutlineTexture(text, Vec3(1, 1, 1), 3, Vec3(0.22, 0.6, 0.92), &item.tex);
+    Vector2i size      = font()->MakeOutlineTexture(text, Vec3(kFontColor), 3, Vec3(kFontOutlineColor), &item.tex);
     item.original_size = Vec2(size.x, size.y);
     item.bound         = {0, 0, 0, 0};
     items_.push_back(item);
+}
+
+void FlatMenu::HandleMouseButtonInput(int button, int action, int mods, bool *should_break) {
+    switch (button) {
+        case GLFW_MOUSE_BUTTON_LEFT:
+            if (cursor_ < 0 || cursor_ >= items_.size()) { return; }
+            if (action == GLFW_PRESS) {
+                for (auto [deg, _] : *mutable_delegates()) { deg->OnCommand(this, items_[cursor_].id); }
+            }
+            break;
+
+        default: break;
+    }
 }
 
 void FlatMenu::OnMouseMove(double mx, double my) {
@@ -38,7 +51,7 @@ void FlatMenu::OnMouseMove(double mx, double my) {
         Item *item = &items_[index++];
 
         if (my >= y && my <= y + item->original_size.y * scale_) {
-            cursor_ = index;
+            cursor_ = index - 1;
             break;
         }
 
@@ -60,7 +73,7 @@ void FlatMenu::OnPaint(double delta) {
         const float w    = item->original_size.x * scale_;
         const float x    = bound().x + (bound().w - w) / 2;
 
-        if (index == cursor_) {
+        if (index - 1 == cursor_) {
             DrawText(x - item->original_size.x * 0.15, y - item->original_size.y * 0.15, scale_ + 0.3, item);
         } else {
             DrawText(x, y, scale_, item);

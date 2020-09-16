@@ -30,6 +30,7 @@ private:
         Boundf      bound;
     };
 
+    void HandleMouseButtonInput(int button, int action, int mods, bool *should_break) override;
     void OnMouseMove(double x, double y) override;
     void OnPaint(double delta) override;
 
