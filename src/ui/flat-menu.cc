@@ -15,7 +15,7 @@ FlatMenu::~FlatMenu() {
     for (auto &item : items_) { glDeleteTextures(1, &item.tex); }
 }
 
-// 22.0	60.0	92.0	
+// 22.0	60.0	92.0
 void FlatMenu::AddItem(std::string_view text, Id id) {
     DCHECK(FindItem(id) == items_.end());
     Item item;
@@ -27,26 +27,46 @@ void FlatMenu::AddItem(std::string_view text, Id id) {
     items_.push_back(item);
 }
 
-void FlatMenu::OnMouseMove(double x, double y) {
-    // TODO:
+void FlatMenu::OnMouseMove(double mx, double my) {
+    cursor_ = -1;
+
+    if (!InBound<int>(bound(), mx, my)) { return; }
+
+    int   index = 0;
+    float y     = bound().y + bound().h - items_.back().original_size.y * scale_ - padding_size();
+    while (y >= bound().y && index < items_.size()) {
+        Item *item = &items_[index++];
+
+        if (my >= y && my <= y + item->original_size.y * scale_) {
+            cursor_ = index;
+            break;
+        }
+
+        y -= (item->original_size.y + padding_size()) * scale_;
+    }
 }
 
 void FlatMenu::OnPaint(double delta) {
-    Vector2f scale2 = ApproximateScale();
-    float    scale  = std::min(scale2.x, scale2.y);
+    Vector2f scale = ApproximateScale();
+
+    scale_ = std::min(scale.x, scale.y);
 
     glEnable(GL_TEXTURE_2D);
 
     int   index = 0;
-    float y     = bound().y + bound().h;
+    float y     = bound().y + bound().h - items_.back().original_size.y * scale_ - padding_size();
     while (y >= bound().y && index < items_.size()) {
         Item *      item = &items_[index++];
-        const float w    = item->original_size.x * scale;
+        const float w    = item->original_size.x * scale_;
         const float x    = bound().x + (bound().w - w) / 2;
 
-        DrawText(x, y, scale, item);
+        if (index == cursor_) {
+            DrawText(x - item->original_size.x * 0.15, y - item->original_size.y * 0.15, scale_ + 0.3, item);
+        } else {
+            DrawText(x, y, scale_, item);
+        }
 
-        y -= (item->original_size.y + padding_size()) * scale;
+        y -= (item->original_size.y) * scale_ + padding_size();
     }
 
     glDisable(GL_TEXTURE_2D);
@@ -74,7 +94,7 @@ void FlatMenu::DrawText(float x, float y, float scale, Item *item) const {
 
     glTexCoord2f(1, 1);
     glVertex2f(x + item->bound.w, y);
-    
+
     glEnd();
 }
 

@@ -40,9 +40,10 @@ private:
         return std::find_if(items_.begin(), items_.end(), [&id](const Item &a) { return a.id == id; });
     }
 
-    res::FontFace *font_;
-    int            padding_size_ = 48;
-    // int               cursor_       = -1;
+    res::FontFace *   font_;
+    int               padding_size_ = 48;
+    int               cursor_       = -1;
+    float             scale_        = 1.0;
     std::vector<Item> items_;
 };  // class FlatMenu
 

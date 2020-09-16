@@ -55,10 +55,10 @@ public:
         int h = owns_->game()->fb_h();
 
         main_menu_->set_bound({
-            100,
-            100,
-            w - 200,
-            h - 200,
+            (w - 300) / 2,
+            (h - 400) / 2,
+            300,
+            400,
         });
         service_->Render(delta);
     }
