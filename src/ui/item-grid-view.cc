@@ -14,7 +14,6 @@ ItemGridView::ItemGridView(Id id, int column_count, int row_count, Component *pa
     : Component(id, parent)
     , column_count_(column_count)
     , row_count_(row_count)
-    , font_(Game::This()->font_lib()->default_face())
     , cursor_({column_count_, row_count_})
     , drag_({{0, 0}, 0, nullptr})
     , items_(new Item[column_count * row_count]) {

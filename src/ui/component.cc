@@ -1,4 +1,6 @@
 #include "ui/component.h"
+#include "resource/text-library.h"
+#include "resource/font-library.h"
 #include "game/game.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
@@ -8,8 +10,9 @@ namespace nyaa {
 
 namespace ui {
 
-Component::Component(Id id, Component *parent) : next_(this), prev_(this), id_(id), parent_(parent) {
-    if (parent_) { parent_->mutable_children()->Append(this); }
+Component::Component(Id id, Component *parent)
+    : next_(this), prev_(this), id_(id), font_(Game::This()->font_lib()->default_face()), parent_(parent) {
+    if (parent_) { parent_->AddChild(this); }
 }
 
 /*virtual*/ ComponentDelegate::~ComponentDelegate() {}
@@ -26,6 +29,14 @@ Component::~Component() {
     for (auto [value, ownership] : delegates()) {
         if (ownership) { delete value; }
     }
+    std::vector<const Component *> delay;
+    for (auto child : children()) { delay.push_back(child); }
+    for (auto child : delay) { delete child; }
+}
+
+void Component::SetName(res::TextID text) {
+    std::string_view slice = Game::This()->text_lib()->Load(text);
+    set_name(std::string(slice.data(), slice.size()));
 }
 
 bool Component::DeltaTest(double delta) {

@@ -10,8 +10,7 @@ namespace nyaa {
 
 namespace ui {
 
-ListBox::ListBox(Id id, int limit, Component *parent /*= nullptr*/)
-    : Component(id, parent), font_(Game::This()->font_lib()->default_face()), limit_rows_(limit) {}
+ListBox::ListBox(Id id, int limit, Component *parent /*= nullptr*/) : Component(id, parent), limit_rows_(limit) {}
 
 ListBox::~ListBox() {}
 

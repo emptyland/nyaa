@@ -48,12 +48,11 @@ void InputBox::HandleCharInput(char32_t code, bool *should_break) {
 }
 
 void InputBox::DidFocus(bool focus) {
-    DLOG(INFO) << "focus: " << focus;
     for (auto [deg, _] : *mutable_delegates()) { deg->DidForce(this); }
 }
 
 void InputBox::OnPaint(double delta) {
-    if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
+    //if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
 
     DrawBorder(kBorderColor, delta);
 

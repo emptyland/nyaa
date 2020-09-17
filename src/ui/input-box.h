@@ -27,7 +27,6 @@ public:
     explicit InputBox(Id id, Component *parent = nullptr);
     ~InputBox() override;
 
-    DEF_PTR_PROP_RW(res::FontFace, font);
     DEF_VAL_PROP_RW(int, font_bearing);
     DEF_VAL_PROP_RW(float, font_scale);
 
@@ -44,7 +43,6 @@ public:
     void OnPaint(double delta) override;
 
 private:
-    res::FontFace *font_ = nullptr;
     std::u32string text_;
     int            cursor_       = 0;
     int            font_bearing_ = 10;

@@ -60,7 +60,6 @@ public:
 
     DEF_VAL_GETTER(int, column_count);
     DEF_VAL_GETTER(int, row_count);
-    DEF_PTR_PROP_RW(res::FontFace, font);
     DEF_VAL_PROP_RW(Vector4f, font_color);
     DEF_VAL_PROP_RW(Vector4f, border_color);
 
@@ -107,7 +106,6 @@ private:
 
     const int      column_count_;
     const int      row_count_;
-    res::FontFace *font_;
     Vector2i       cursor_;
     DragContext    drag_;
     Vector4f       font_color_   = kFontColor;

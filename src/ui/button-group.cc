@@ -13,7 +13,6 @@ ButtonGroup::ButtonGroup(Id id, int column_count, int row_count, Component *pare
     : Component(id, parent)
     , column_count_(column_count)
     , row_count_(row_count)
-    , font_(Game::This()->font_lib()->default_face())
     , buttons_(new Button[column_count_ * row_count_]) {
     DCHECK_GT(column_count_ * row_count_, 0);
     cursor_.x = column_count_;

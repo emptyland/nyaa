@@ -114,6 +114,9 @@ void UIService::HandleKeyInput(int key, int code, int action, int mods, bool *sh
         last_time_ = time;
 
         focus_->HandleKeyInput(key, code, action, mods, should_break);
+        for (Component *node : *focus_->mutable_children()) {
+            node->HandleKeyInput(key, code, action, mods, should_break);
+        }
     }
 }
 
@@ -121,11 +124,11 @@ void UIService::HandleCharInput(char32_t codepoint, bool *should_break) {
     if (focus_) {
         double time = Game::This()->ts();
 
-        if (last_codepoint_ == codepoint && time - last_time_ < 0.07) { return; }
         last_time_      = time;
         last_codepoint_ = codepoint;
 
         focus_->HandleCharInput(codepoint, should_break);
+        for (Component *node : *focus_->mutable_children()) { node->HandleCharInput(codepoint, should_break); }
     }
 }
 

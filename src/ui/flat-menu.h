@@ -17,7 +17,6 @@ public:
     explicit FlatMenu(Id id, Component *parent = nullptr);
     ~FlatMenu() override;
 
-    DEF_PTR_PROP_RW(res::FontFace, font);
     DEF_VAL_PROP_RW(int, padding_size);
 
     void AddItem(res::TextID text, Id id);
@@ -43,7 +42,6 @@ private:
         return std::find_if(items_.begin(), items_.end(), [&id](const Item &a) { return a.id == id; });
     }
 
-    res::FontFace *   font_;
     int               padding_size_ = 48;
     int               cursor_       = -1;
     float             scale_        = 1.0;

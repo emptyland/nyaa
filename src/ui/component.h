@@ -3,6 +3,7 @@
 #define NYAA_UI_COMPONENT_H_
 
 #include "ui/ui.h"
+#include "resource/text-def-inl.h"
 #include "game/vector.h"
 #include "game/identifiers.h"
 #include "base/queue-macros.h"
@@ -11,7 +12,9 @@
 #include <vector>
 
 namespace nyaa {
-
+namespace res {
+class FontFace;
+}  // namespace res
 namespace ui {
 
 template <class T, class S = int>
@@ -71,12 +74,15 @@ public:
 
     DEF_VAL_GETTER(Id, id);
     DEF_VAL_PROP_RW(std::string, name);
+    DEF_PTR_PROP_RW(res::FontFace, font);
     DEF_VAL_PROP_RMW(Boundi, bound);
     DEF_VAL_PROP_RW(int, z_order);
     DEF_PTR_PROP_RW(Component, parent);
     DEF_VAL_PROP_RW(double, last_time);
     DEF_VAL_PROP_RW(Vector4f, bg_color);
     DEF_VAL_PROP_RW(Vector4f, fg_color);
+
+    void SetName(res::TextID text);
 
     bool DeltaTest(double delta);
 
@@ -96,6 +102,7 @@ public:
     class Children {
     public:
         Children() {
+            dummy_ = reinterpret_cast<Component *>(&stub_);
             dummy_->next_ = dummy_;
             dummy_->prev_ = dummy_;
         }
@@ -130,10 +137,11 @@ public:
 
     private:
         struct DummyStub {
+            intptr_t padding;
             Component *next;
             Component *prev;
         } stub_;
-        Component *dummy_ = reinterpret_cast<Component *>(&stub_);
+        Component *dummy_;
     };  // class Children
 
     class Delegates {
@@ -199,6 +207,7 @@ private:
     Component * prev_;
     Id          id_;
     std::string name_;
+    res::FontFace *font_ = nullptr;
     Vector4f    bg_color_ = kBgColor;
     Vector4f    fg_color_ = kFgColor;
     Boundi      bound_    = {0, 0, 0, 0};

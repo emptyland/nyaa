@@ -19,7 +19,6 @@ public:
     explicit ListBox(Id id, int limit, Component *parent = nullptr);
     ~ListBox() override;
 
-    DEF_PTR_PROP_RW(res::FontFace, font);
     DEF_VAL_PROP_RW(float, font_scale);
     DEF_VAL_PROP_RW(int, limit_rows);
 
@@ -37,7 +36,6 @@ private:
         float       h;
     };  // class Row
 
-    res::FontFace * font_;
     std::deque<Row> rows_;
     float           font_scale_ = 0.8;
     int             limit_rows_ = 1000;

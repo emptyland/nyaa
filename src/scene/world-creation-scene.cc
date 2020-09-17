@@ -1,6 +1,7 @@
 #include "scene/world-creation-scene.h"
 #include "scene/controller.h"
 #include "ui/button-group.h"
+#include "ui/label-input-box.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -25,9 +26,18 @@ public:
         btn = btn_group_->AddButton(kCreateId, 2, 0);
         btn->set_name("Create");
 
+        map_seed_ = ui->New<ui::LabelInputBox>(nullptr);
+        map_seed_->set_name("Seed:");
     }
 
     void DoLayout(const Boundi &view) {
+        map_seed_->set_bound({
+            ui::kScreenBorder,
+            view.h - ui::kScreenBorder * 4,
+            500,
+            ui::kButtonH,
+        });
+
         btn_group_->set_bound({
             (view.w - 500) / 2,
             ui::kButtonH + ui::kScreenBorder,
@@ -49,6 +59,7 @@ public:
 
 private:
     ui::ButtonGroup *btn_group_ = nullptr;
+    ui::LabelInputBox *map_seed_ = nullptr;
 };  // class WorldCreationScene::UIController
 
 WorldCreationScene::WorldCreationScene(Game *game) : Scene(game), ui_(new UIController(this)) {}

@@ -31,7 +31,6 @@ public:
 
     DEF_VAL_GETTER(int, column_count);
     DEF_VAL_GETTER(int, row_count);
-    DEF_PTR_PROP_RW(res::FontFace, font);
 
     class Button {
     public:
@@ -83,10 +82,9 @@ private:
         return buttons_.get() + j * column_count_ + i;
     }
 
-    const int      column_count_ = 1;
-    const int      row_count_    = 1;
-    res::FontFace *font_         = nullptr;
-    Vector2i       cursor_;
+    const int column_count_ = 1;
+    const int row_count_    = 1;
+    Vector2i  cursor_;
 
     std::unique_ptr<Button[]> buttons_;
 

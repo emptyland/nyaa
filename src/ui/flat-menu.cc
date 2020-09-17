@@ -10,15 +10,13 @@ namespace nyaa {
 
 namespace ui {
 
-FlatMenu::FlatMenu(Id id, Component *parent) : Component(id, parent), font_(Game::This()->font_lib()->default_face()) {}
+FlatMenu::FlatMenu(Id id, Component *parent) : Component(id, parent) {}
 
 FlatMenu::~FlatMenu() {
     for (auto &item : items_) { glDeleteTextures(1, &item.tex); }
 }
 
-void FlatMenu::AddItem(res::TextID text, Id id) {
-    AddItem(Game::This()->text_lib()->Load(text), id);
-}
+void FlatMenu::AddItem(res::TextID text, Id id) { AddItem(Game::This()->text_lib()->Load(text), id); }
 
 void FlatMenu::AddItem(std::string_view text, Id id) {
     DCHECK(FindItem(id) == items_.end());
