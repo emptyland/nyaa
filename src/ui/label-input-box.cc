@@ -13,7 +13,6 @@ namespace ui {
 LabelInputBox::LabelInputBox(Id id, Component *parent) : Component(id, parent), child_(new InputBox(id, this)) {
     child_->SetVisible(true);
     child_->SetEnable(true);
-    //AddChild(child_);
 }
 
 LabelInputBox::~LabelInputBox() {}
