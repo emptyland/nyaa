@@ -27,7 +27,7 @@ avatarDirs = [
     'avatar left',
 ]
 # 24 x 32
-def genAvatarTexId(id, cx, cy):
+def genAvatarTexId(no, id, cx, cy):
     print('------------------------------------------------------------------------------------------------------------------------')
     for x in range(0, cx * 12, cx * 3):
         for y in range(0, cy * 8, cy * 4):
@@ -37,7 +37,11 @@ def genAvatarTexId(id, cx, cy):
                     bound = (x + i * cx, y + j * cy, cx, cy)
                     boundText = ('%d,%d,%d,%d' % bound).ljust(19)
                     indexText = ('%d' % (index)).ljust(5)
-                    print('..                  | %s | %s | %s | %s' % (id, boundText, indexText, avatarDirs[j]))
+                    if x == 0 and y == 0 and j == 0 and i == 0:
+                        fileText = ('avatar-%02d.png' % (no)).ljust(20)
+                    else:
+                        fileText = '..'.ljust(20)
+                    print('%s| %s | %s | %s | %s' % (fileText, id, boundText, indexText, avatarDirs[j]))
                     id = id + 10
                     index = index + 1
     return id
@@ -64,7 +68,7 @@ elif sys.argv[1] == 'item':
 elif sys.argv[1] == 'avatar':
     id = int(sys.argv[2])
     for i in range(0, int(sys.argv[5])):
-        id = genAvatarTexId(id, int(sys.argv[3]), int(sys.argv[4]))
+        id = genAvatarTexId(i, id, int(sys.argv[3]), int(sys.argv[4]))
 elif sys.argv[1] == 'avatar.sprite':
     id = int(sys.argv[2])
     cx = int(sys.argv[3])
