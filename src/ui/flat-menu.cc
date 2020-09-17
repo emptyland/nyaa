@@ -1,5 +1,6 @@
 #include "ui/flat-menu.h"
 #include "resource/font-library.h"
+#include "resource/text-library.h"
 #include "game/game.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
@@ -15,7 +16,10 @@ FlatMenu::~FlatMenu() {
     for (auto &item : items_) { glDeleteTextures(1, &item.tex); }
 }
 
-// 22.0	60.0	92.0
+void FlatMenu::AddItem(res::TextID text, Id id) {
+    AddItem(Game::This()->text_lib()->Load(text), id);
+}
+
 void FlatMenu::AddItem(std::string_view text, Id id) {
     DCHECK(FindItem(id) == items_.end());
     Item item;

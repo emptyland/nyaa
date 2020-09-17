@@ -59,6 +59,7 @@ public:
     DEF_PTR_GETTER(GLFWwindow, window);
     DEF_VAL_GETTER(float, dpi_factor);
     DEF_VAL_GETTER(double, ts);
+    DEF_VAL_PROP_RW(bool, show_fps);
 
     bool break_input() const;
 
@@ -177,6 +178,7 @@ private:
     int         window_w_         = 0;
     int         fb_h_             = 0;
     int         fb_w_             = 0;
+    bool        show_fps_         = false;
     bool        exit_             = false;
     IdGenerator eid_generator_;
 };  // namespace nyaa

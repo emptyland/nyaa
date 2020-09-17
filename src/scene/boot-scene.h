@@ -8,7 +8,7 @@
 namespace nyaa {
 namespace com {
 class AvatarComponent;
-}  // namespace entity
+}  // namespace com
 
 class BootScene : public Scene {
 public:
@@ -16,14 +16,15 @@ public:
     ~BootScene() final;
 
     const char *Name() const final { return "boot-scene"; }
+
     void Reset() final;
     void OnKeyInput(int key, int code, int action, int mods) final;
     void Render(double delta) final;
 
-    DISALLOW_IMPLICIT_CONSTRUCTORS(BootScene);
-private:
     class UIController;
+    DISALLOW_IMPLICIT_CONSTRUCTORS(BootScene);
 
+private:
     std::unique_ptr<UIController> ui_;
 };  // class BootScene
 

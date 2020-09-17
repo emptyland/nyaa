@@ -3,6 +3,7 @@
 #define NYAA_UI_FLAT_MENU_H_
 
 #include "ui/component.h"
+#include "resource/text-def-inl.h"
 #include "glog/logging.h"
 
 namespace nyaa {
@@ -19,6 +20,7 @@ public:
     DEF_PTR_PROP_RW(res::FontFace, font);
     DEF_VAL_PROP_RW(int, padding_size);
 
+    void AddItem(res::TextID text, Id id);
     void AddItem(std::string_view text, Id id);
 
 private:

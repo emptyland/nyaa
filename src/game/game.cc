@@ -237,6 +237,8 @@ bool Game::Prepare(const std::string &properties_file_name) {
 
     scene_ = boot_scene_.get();
     boot_scene_->Reset();
+
+    show_fps_ = properties()->show_fps();
     return true;
 }
 
@@ -259,7 +261,7 @@ void Game::Run() {
 
         console_ui_->Render(delta);
 
-        if (properties()->show_fps()) {
+        if (show_fps()) {
             char fps_buf[120];
             ::snprintf(fps_buf, sizeof(fps_buf), "FPS: %0.0f", 1 / delta + 0.3);
             font_lib()->default_face()->Render(fps_buf, 0, fb_h() - properties()->default_font_size(), {1, 1, 1});
@@ -391,6 +393,26 @@ public:
         return 0;
     }
 
+    static int Cmd_TileShow(Game *owns, Command *cmd) {
+        // TODO:
+        return 0;
+    }
+
+    static int Cmd_CubeShow(Game *owns, Command *cmd) {
+        // TODO:
+        return 0;
+    }
+
+    static int Cmd_FPS(Game *owns, Command *cmd) {
+        if (cmd->argc < 1) {
+            owns->show_fps_ = !owns->show_fps_;
+        } else {
+            owns->show_fps_ = (cmd->i32(0) != 0);
+        }
+        CONSOLE(Vec3(0, 1, 0), "show fps: %d", owns->show_fps());
+        return 0;
+    }
+
     static void ProcessCommand(Game *owns, std::string_view text);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
@@ -432,6 +454,9 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"console.h", Cmd_Console_H, {U32, nullptr}},
     {"scene", Cmd_Scene, {nullptr}},
     {"avatar.show", Cmd_AvatarShow, {nullptr}},
+    {"tile.show", Cmd_TileShow, {nullptr}},
+    {"cube.show", Cmd_CubeShow, {nullptr}},
+    {"fps", Cmd_FPS, {I32, nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 

@@ -145,10 +145,10 @@ void ItemGridView::OnPaint(double delta) {
 
             if (drag_.grid.x == i && drag_.grid.y == j) {
                 glColor4f(0.7, 0.7, 0.7, 0.5);
-                DrawIcon(Rect(x, y, dx, dy), grid->icon(), grid->stack() - drag_.stack);
+                DrawIcon(Rect<float>(x, y, dx, dy), grid->icon(), grid->stack() - drag_.stack);
             } else {
                 glColor3f(1.0, 1.0, 1.0);
-                DrawIcon(Rect(x, y, dx, dy), grid->icon(), grid->stack());
+                DrawIcon(Rect<float>(x, y, dx, dy), grid->icon(), grid->stack());
             }
         }
     }
@@ -161,7 +161,7 @@ void ItemGridView::OnPaint(double delta) {
         pos.y -= dy / 2;
 
         glColor3f(1.0, 1.0, 1.0);
-        DrawIcon(Rect(pos.x, pos.y, dx, dy), grid->icon(), drag_.stack);
+        DrawIcon(Rect<float>(pos.x, pos.y, dx, dy), grid->icon(), drag_.stack);
     }
 }
 

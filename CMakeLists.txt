@@ -56,6 +56,7 @@ set(GAME_SRC
     src/scene/test-scene.cc
     src/scene/avatar-view-scene.cc
     src/scene/tile-view-scene.cc
+    src/scene/world-creation-scene.cc
     src/ui/component.cc
     src/ui/ui-service.cc
     src/ui/input-box.cc

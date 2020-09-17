@@ -60,7 +60,8 @@ inline constexpr Vector4f Vec4(const Vector2f &xy, float z, float w) { return Ve
 inline constexpr Vector4f Vec4(const Vector3f &xyz, float w) { return Vector4f{xyz.x, xyz.y, xyz.z, w}; }
 inline constexpr Vector4f Vec4(const Vector4i &v4i) { return Vec4(v4i.x, v4i.y, v4i.z, v4i.w); }
 
-inline constexpr Boundf Rect(float x, float y, float w, float h) { return {x, y, w, h}; }
+template<class T>
+inline constexpr Bound<T> Rect(T x, T y, T w, T h) { return {x, y, w, h}; }
 
 template <class T>
 inline constexpr bool operator==(const Vector2<T> &a, const Vector2<T> &b) {

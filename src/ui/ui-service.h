@@ -29,7 +29,7 @@ public:
     DEF_PTR_GETTER(Component, focus);
 
     template <class T, class = std::enable_if_t<std::is_base_of<Component, T>::value>, class... Args>
-    inline T *New(Args... args) {
+    inline T *New(Args&&... args) {
         UIComponentId id   = UIComponentId::Of(next_id_++);
         T *           ctrl = new T(id, args...);
         PutController(ctrl);

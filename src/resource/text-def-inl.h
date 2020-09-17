@@ -16,6 +16,10 @@ namespace res {
     V(TITLE_ROLE_3) \
     V(TITLE_ROLE_4) \
     V(TITLE_ROLE_5) \
+    V(TITLE_MENU_NEW_WORLD) \
+    V(TITLE_MENU_LOAD_WORLD) \
+    V(TITLE_MENU_TEST_SCENE) \
+    V(TITLE_MENU_EXIT) \
     V(CUBE_AIR) \
     V(CUBE_WALL_1) \
     V(CUBE_WOOD_1) \

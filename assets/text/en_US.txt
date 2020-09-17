@@ -10,6 +10,10 @@ TITLE_ROLE_2              | Niko∙Chen
 TITLE_ROLE_3              | Steve∙Wang
 TITLE_ROLE_4              | Tommy∙Zhang
 TITLE_ROLE_5              | Timmy∙Zhang
+TITLE_MENU_NEW_WORLD      | New World
+TITLE_MENU_LOAD_WORLD     | Load World
+TITLE_MENU_TEST_SCENE     | Test Scene
+TITLE_MENU_EXIT           | Exit
 CUBE_AIR                  | Air Cube
 CUBE_WALL_1               | Wall Cube 1
 CUBE_WOOD_1               | Wood Cube 1
