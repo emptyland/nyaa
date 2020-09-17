@@ -1,4 +1,4 @@
-#include "game/test-scene.h"
+#include "scene/test-scene.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/shader-library.h"

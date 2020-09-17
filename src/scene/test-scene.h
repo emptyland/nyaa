@@ -1,9 +1,9 @@
 #pragma once
-#ifndef NYAA_GAME_TEST_SCENE_H_
-#define NYAA_GAME_TEST_SCENE_H_
+#ifndef NYAA_SCENE_TEST_SCENE_H_
+#define NYAA_SCENE_TEST_SCENE_H_
 
 #include "game/vector.h"
-#include "game/scene.h"
+#include "scene/scene.h"
 
 namespace nyaa {
 
@@ -46,4 +46,4 @@ private:
 
 }  // namespace nyaa
 
-#endif  // NYAA_GAME_TEST_SCENE_H_
+#endif  // NYAA_SCENE_TEST_SCENE_H_

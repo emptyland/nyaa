@@ -1,9 +1,7 @@
 #include "game/game.h"
-#include "game/properties.h"
-#include "game/boot-scene.h"
-#include "game/avatar-view-scene.h"
-#include "game/scene.h"
-#include "game/world.h"
+#include "scene/boot-scene.h"
+#include "scene/avatar-view-scene.h"
+#include "scene/scene.h"
 #include "system/entity-allocation-system.h"
 #include "system/geometry-transform-system.h"
 #include "system/zone-render-system.h"
@@ -27,6 +25,8 @@
 #include "ui/ui-service.h"
 #include "ui/input-box.h"
 #include "ui/list-box.h"
+#include "game/properties.h"
+#include "game/world.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

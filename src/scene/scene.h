@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NYAA_GAME_SCENE_H_
-#define NYAA_GAME_SCENE_H_
+#ifndef NYAA_SCENE_SCENE_H_
+#define NYAA_SCENE_SCENE_H_
 
 #include "game/identifiers.h"
 #include "base/base.h"
@@ -35,4 +35,4 @@ private:
 
 }  // namespace nyaa
 
-#endif  // NYAA_GAME_SCENE_H_
+#endif  // NYAA_SCENE_SCENE_H_

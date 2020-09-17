@@ -1,9 +1,9 @@
-#include "game/avatar-view-scene.h"
-#include "game/game.h"
+#include "scene/avatar-view-scene.h"
 #include "system/geometry-transform-system.h"
 #include "resource/avatar-library.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
+#include "game/game.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 

@@ -1,8 +1,8 @@
-#include "game/boot-scene.h"
+#include "scene/boot-scene.h"
+#include "scene/test-scene.h"
 #include "ui/ui-service.h"
 #include "ui/flat-menu.h"
 #include "resource/texture-library.h"
-#include "game/test-scene.h"
 #include "game/game.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

@@ -46,15 +46,16 @@ endif()
 set(GAME_SRC
     src/main.cc
     src/game/game.cc
-    src/game/scene.cc
-    src/game/boot-scene.cc
-    src/game/test-scene.cc
-    src/game/avatar-view-scene.cc
     src/game/properties.cc
     src/game/entity-virtual-db.cc
     src/game/entity-grid-set.cc
     src/game/matrix.cc
     src/game/world.cc
+    src/scene/scene.cc
+    src/scene/boot-scene.cc
+    src/scene/test-scene.cc
+    src/scene/avatar-view-scene.cc
+    src/scene/tile-view-scene.cc
     src/ui/component.cc
     src/ui/ui-service.cc
     src/ui/input-box.cc

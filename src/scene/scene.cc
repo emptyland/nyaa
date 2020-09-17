@@ -1,4 +1,4 @@
-#include "game/scene.h"
+#include "scene/scene.h"
 #include "game/game.h"
 #include "glog/logging.h"
 
