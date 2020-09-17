@@ -20,6 +20,9 @@ namespace res {
     V(TITLE_MENU_LOAD_WORLD) \
     V(TITLE_MENU_TEST_SCENE) \
     V(TITLE_MENU_EXIT) \
+    V(LABEL_BACK) \
+    V(LABEL_RESET) \
+    V(LABEL_CREATE) \
     V(CUBE_AIR) \
     V(CUBE_WALL_1) \
     V(CUBE_WOOD_1) \

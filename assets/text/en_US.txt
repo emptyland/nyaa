@@ -14,6 +14,9 @@ TITLE_MENU_NEW_WORLD      | New World
 TITLE_MENU_LOAD_WORLD     | Load World
 TITLE_MENU_TEST_SCENE     | Test Scene
 TITLE_MENU_EXIT           | Exit
+LABEL_BACK                | Back
+LABEL_RESET               | Reset
+LABEL_CREATE              | Create
 CUBE_AIR                  | Air Cube
 CUBE_WALL_1               | Wall Cube 1
 CUBE_WOOD_1               | Wood Cube 1

@@ -102,7 +102,7 @@ public:
     class Children {
     public:
         Children() {
-            dummy_ = reinterpret_cast<Component *>(&stub_);
+            dummy_        = reinterpret_cast<Component *>(&stub_);
             dummy_->next_ = dummy_;
             dummy_->prev_ = dummy_;
         }
@@ -118,6 +118,12 @@ public:
         inline const_iterator end() const;
 
         bool empty() const { return dummy_->next_ == dummy_; }
+
+        int size() const {
+            int i = 0;
+            for (Component *node = dummy_->next_; node != dummy_; node = node->next_) { i++; }
+            return i;
+        }
 
         void Append(Component *child) { QUEUE_INSERT_TAIL(dummy_, child); }
 
@@ -137,7 +143,7 @@ public:
 
     private:
         struct DummyStub {
-            intptr_t padding;
+            intptr_t   padding;
             Component *next;
             Component *prev;
         } stub_;
@@ -163,6 +169,7 @@ public:
         inline const_iterator begin() const;
         inline const_iterator end() const;
 
+        bool empty() const { return delegate_size() == 0; }
         DEF_VAL_PROP_RW(int, delegate_size);
 
         void AddDelegate(Delegate *value, bool ownership = false) {
@@ -203,17 +210,17 @@ protected:
     void DrawBorder(const Vector4f &color, double delta);
 
 private:
-    Component * next_;
-    Component * prev_;
-    Id          id_;
-    std::string name_;
-    res::FontFace *font_ = nullptr;
-    Vector4f    bg_color_ = kBgColor;
-    Vector4f    fg_color_ = kFgColor;
-    Boundi      bound_    = {0, 0, 0, 0};
-    int         z_order_  = 0;
-    Component * parent_   = nullptr;
-    double      last_time_ = -1;
+    Component *    next_;
+    Component *    prev_;
+    Id             id_;
+    std::string    name_;
+    res::FontFace *font_      = nullptr;
+    Vector4f       bg_color_  = kBgColor;
+    Vector4f       fg_color_  = kFgColor;
+    Boundi         bound_     = {0, 0, 0, 0};
+    int            z_order_   = 0;
+    Component *    parent_    = nullptr;
+    double         last_time_ = -1;
 
     Flags<State, uint32_t> flags_;
 

@@ -14,12 +14,13 @@ public:
     public:
         inline Delegate() = default;
 
-        virtual void OnChecked(LabelCheckBox *sender, bool checked) {}
+        virtual void OnChecked(LabelCheckBox *sender, bool *checked) {}
 
         DISALLOW_IMPLICIT_CONSTRUCTORS(Delegate);
     };  // class Delegate
 
     LabelCheckBox(Id id, std::string_view name, Component *parent = nullptr);
+    LabelCheckBox(Id id, res::TextID name, Component *parent = nullptr);
     ~LabelCheckBox() override;
 
     DEF_VAL_PROP_RW(bool, checked);
