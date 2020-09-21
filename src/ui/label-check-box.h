@@ -24,6 +24,7 @@ public:
     ~LabelCheckBox() override;
 
     DEF_VAL_PROP_RW(bool, checked);
+    DEF_VAL_PROP_RW(float, font_scale);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(LabelCheckBox);
 
@@ -33,6 +34,7 @@ private:
     void OnPaint(double delta) override;
 
     bool checked_ = false;
+    float font_scale_ = 0.8f;
 };  // class LabelCheckBox
 
 }  // namespace ui

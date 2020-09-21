@@ -10,16 +10,37 @@ namespace ui {
 
 class CheckBoxGroup : public Component {
 public:
+    class Producer {
+    public:
+        inline Producer() = default;
+        virtual ~Producer() {}
+        virtual void OnCheckBoxProduce(CheckBoxGroup *sender, Id id, bool *value) = 0;
+
+        DISALLOW_IMPLICIT_CONSTRUCTORS(Producer);
+    };  // class Producer
+
     CheckBoxGroup(Id id, std::string_view name, Component *parent);
     CheckBoxGroup(Id id, res::TextID name, Component *parent);
     ~CheckBoxGroup() override;
 
+    DEF_VAL_PROP_RW(float, font_scale);
+    DEF_VAL_PROP_RW(int, border_size);
+
     LabelCheckBox *AddCheckBox(Id id, std::string_view name);
     LabelCheckBox *AddCheckBox(Id id, res::TextID name);
 
+    void AddDelegate(LabelCheckBox::Delegate *value, bool ownership = false) {
+        for (Component *child : *mutable_children()) { child->AddDelegate(value, ownership); }
+    }
+    void AddProducer(Producer *data) { data_ = data; }
+
 private:
     void OnPaint(double delta) override;
-}; // class CheckBoxGroup
+
+    float     font_scale_  = 0.8f;
+    int       border_size_ = kScreenBorder;
+    Producer *data_        = nullptr;
+};  // class CheckBoxGroup
 
 }  // namespace ui
 

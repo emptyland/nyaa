@@ -2,17 +2,29 @@
 #include "scene/controller.h"
 #include "ui/button-group.h"
 #include "ui/label-input-box.h"
-#include "ui/label-check-box.h"
+#include "ui/check-box-group.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 namespace nyaa {
 
-class WorldCreationScene::UIController : public UIControllerT<WorldCreationScene>, public ui::Component::Delegate {
+class WorldCreationScene::UIController : public UIControllerT<WorldCreationScene>,
+                                         public ui::LabelCheckBox::Delegate,
+                                         public ui::CheckBoxGroup::Producer {
 public:
     static constexpr auto kBackId   = UIComponentId::Of(0);
     static constexpr auto kResetId  = UIComponentId::Of(1);
     static constexpr auto kCreateId = UIComponentId::Of(2);
+
+    static constexpr auto kSmallMapId  = UIComponentId::Of(3);
+    static constexpr auto kNormalMapId = UIComponentId::Of(4);
+    static constexpr auto kLargeMapId  = UIComponentId::Of(5);
+
+    enum MapSize {
+        kSmall,
+        kNormal,
+        kLarge,
+    };
 
     UIController(WorldCreationScene *owns) : UIControllerT<WorldCreationScene>(owns) {}
 
@@ -21,21 +33,22 @@ public:
         btn_group_->AddDelegate(this);
 
         ui::ButtonGroup::Button *btn = btn_group_->AddButton(kBackId, 0, 0);
-        btn->set_name("Back");
+        btn->SetName(res::LABEL_BACK);
         btn = btn_group_->AddButton(kResetId, 1, 0);
-        btn->set_name("Reset");
+        btn->SetName(res::LABEL_RESET);
         btn = btn_group_->AddButton(kCreateId, 2, 0);
-        btn->set_name("Create");
+        btn->SetName(res::LABEL_CREATE);
 
         map_seed_ = ui->New<ui::LabelInputBox>(nullptr);
-        map_seed_->set_name("Seed:");
+        map_seed_->SetName(res::LABEL_MAP_SEED);
 
-        cb1_ = ui->New<ui::LabelCheckBox>("Small", nullptr);
-        cb1_->set_checked(true);
-
-        cb2_ = ui->New<ui::LabelCheckBox>("Normal", nullptr);
-
-        cb3_ = ui->New<ui::LabelCheckBox>("Large", nullptr);
+        map_size_ = ui->New<ui::CheckBoxGroup>(res::LABEL_MAP_SIZE, nullptr);
+        map_size_->set_font_scale(0.8f);
+        map_size_->AddCheckBox(kSmallMapId, res::LABEL_MAP_SMALL);
+        map_size_->AddCheckBox(kNormalMapId, res::LABEL_MAP_NORMAL);
+        map_size_->AddCheckBox(kLargeMapId, res::LABEL_MAP_LARGE);
+        map_size_->AddProducer(this);
+        map_size_->AddDelegate(this);
     }
 
     void DoLayout(const Boundi &view) {
@@ -46,25 +59,11 @@ public:
             ui::kButtonH,
         });
 
-        cb1_->set_bound({
+        map_size_->set_bound({
             ui::kScreenBorder,
-            view.h - (ui::kScreenBorder + ui::kButtonH) * 2,
+            map_seed_->bound().y - ui::kScreenBorder - (ui::kScreenBorder + ui::kButtonH) * 3,
             500,
-            ui::kButtonH,
-        });
-
-        cb2_->set_bound({
-            ui::kScreenBorder,
-            view.h - (ui::kScreenBorder + ui::kButtonH) * 3,
-            500,
-            ui::kButtonH,
-        });
-
-        cb3_->set_bound({
-            ui::kScreenBorder,
-            view.h - (ui::kScreenBorder + ui::kButtonH) * 4,
-            500,
-            ui::kButtonH,
+            (ui::kScreenBorder + ui::kButtonH) * 3,
         });
 
         btn_group_->set_bound({
@@ -75,7 +74,7 @@ public:
         });
     }
 
-    void OnCommand(ui::Component *sender, UIComponentId id) {
+    void OnCommand(ui::Component *sender, UIComponentId id) override {
         switch (id.value()) {
             case kBackId.value():
                 owns()->DelayDispose();
@@ -86,12 +85,29 @@ public:
         }
     }
 
+    void OnCheckBoxProduce(ui::CheckBoxGroup *sender, UIComponentId id, bool *value) override {
+        switch (id.value()) {
+            case kSmallMapId.value(): *value = (map_kind_ == kSmall); break;
+            case kNormalMapId.value(): *value = (map_kind_ == kNormal); break;
+            case kLargeMapId.value(): *value = (map_kind_ == kLarge); break;
+            default: break;
+        }
+    }
+
+    void OnChecked(ui::LabelCheckBox *sender, bool *checked) override {
+        switch (sender->id().value()) {
+            case kSmallMapId.value(): map_kind_ = kSmall; break;
+            case kNormalMapId.value(): map_kind_ = kNormal; break;
+            case kLargeMapId.value(): map_kind_ = kLarge; break;
+            default: break;
+        }
+    }
+
 private:
-    ui::ButtonGroup *btn_group_ = nullptr;
-    ui::LabelInputBox *map_seed_ = nullptr;
-    ui::LabelCheckBox *cb1_ = nullptr;
-    ui::LabelCheckBox *cb2_ = nullptr;
-    ui::LabelCheckBox *cb3_ = nullptr;
+    ui::ButtonGroup *  btn_group_ = nullptr;
+    ui::LabelInputBox *map_seed_  = nullptr;
+    ui::CheckBoxGroup *map_size_  = nullptr;
+    MapSize            map_kind_  = kNormal;
 };  // class WorldCreationScene::UIController
 
 WorldCreationScene::WorldCreationScene(Game *game) : Scene(game), ui_(new UIController(this)) {}

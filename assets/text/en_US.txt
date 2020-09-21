@@ -17,6 +17,11 @@ TITLE_MENU_EXIT           | Exit
 LABEL_BACK                | Back
 LABEL_RESET               | Reset
 LABEL_CREATE              | Create
+LABEL_MAP_SEED            | Map Seed:
+LABEL_MAP_SIZE            | Map Size:
+LABEL_MAP_SMALL           | Small
+LABEL_MAP_NORMAL          | Normal
+LABEL_MAP_LARGE           | Large
 CUBE_AIR                  | Air Cube
 CUBE_WALL_1               | Wall Cube 1
 CUBE_WOOD_1               | Wood Cube 1

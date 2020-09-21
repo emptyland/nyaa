@@ -76,7 +76,8 @@
         "numeric": "cpp",
         "variant": "cpp",
         "fstream": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "filesystem": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "python.linting.enabled": false,

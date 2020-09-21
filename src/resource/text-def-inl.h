@@ -23,6 +23,11 @@ namespace res {
     V(LABEL_BACK) \
     V(LABEL_RESET) \
     V(LABEL_CREATE) \
+    V(LABEL_MAP_SEED) \
+    V(LABEL_MAP_SIZE) \
+    V(LABEL_MAP_SMALL) \
+    V(LABEL_MAP_NORMAL) \
+    V(LABEL_MAP_LARGE) \
     V(CUBE_AIR) \
     V(CUBE_WALL_1) \
     V(CUBE_WOOD_1) \

@@ -98,12 +98,13 @@ void UIService::HandleMouseButtonInput(int button, int action, int mods, bool *s
                     focus_ = node;
                     focus_->SetFocus(true);
                     focus_->DidFocus(true);
-                    return;
+                    goto done;
                 }
             }
         }
     }
 
+done:
     if (focus_) { focus_->HandleMouseButtonInput(button, action, mods, should_break); }
 }
 

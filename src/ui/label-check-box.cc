@@ -27,9 +27,7 @@ void LabelCheckBox::HandleMouseButtonInput(int button, int action, int mods, boo
                     down_cast<Delegate>(deg)->OnCommand(this, id());
                     down_cast<Delegate>(deg)->OnChecked(this, &checked_);
                 }
-                if (delegates().empty()) {
-                    checked_ = !checked_;
-                }
+                if (delegates().empty()) { checked_ = !checked_; }
                 *should_break = true;
             }
             break;
@@ -76,11 +74,12 @@ void LabelCheckBox::OnPaint(double delta) {
         glEnd();
     }
 
-    Vector2f size = font()->ApproximateSize(name()) * 0.8f;
+    Vector2f size = font()->ApproximateSize(name()) * font_scale();
 
     std::vector<float> vertices;
 
-    font()->Render(Vec3(bound().x + bound().h, bound().y + (bound().h - size.y) / 2, 0), 0.8, name(), &vertices);
+    font()->Render(Vec3(bound().x + bound().h, bound().y + (bound().h - size.y) / 2, 0), font_scale(), name(),
+                   &vertices);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());

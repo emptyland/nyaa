@@ -40,6 +40,8 @@ public:
         DEF_VAL_PROP_RMW(Vector4f, bg_color);
         DEF_VAL_PROP_RMW(Vector4f, fg_color);
 
+        void SetName(res::TextID name);
+
 #define DECLARE_STATE(V) \
     V(Enable)            \
     V(Used)              \

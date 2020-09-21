@@ -1,5 +1,6 @@
 #include "ui/button-group.h"
 #include "resource/font-library.h"
+#include "resource/text-library.h"
 #include "game/game.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
@@ -8,6 +9,11 @@
 namespace nyaa {
 
 namespace ui {
+
+void ButtonGroup::Button::SetName(res::TextID name) {
+    std::string_view slice = Game::This()->text_lib()->Load(name);
+    set_name(std::string(slice.data(), slice.size()));
+}
 
 ButtonGroup::ButtonGroup(Id id, int column_count, int row_count, Component *parent)
     : Component(id, parent)
