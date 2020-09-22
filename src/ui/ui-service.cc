@@ -84,28 +84,27 @@ void UIService::HandleMouseButtonInput(int button, int action, int mods, bool *s
     }
 
     for (Component *ctrl : roots_) {
-        if (!ctrl->IsEnable() || !ctrl->IsVisible()) { continue; }
-        if (ctrl != focus_ && InBound<int>(ctrl->bound(), x, y)) {
-            if (ctrl->children().empty()) {
-                focus_ = ctrl;
-                focus_->SetFocus(true);
-                focus_->DidFocus(true);
-                break;
-            }
-            for (Component *node : *ctrl->mutable_children()) {
-                if (!node->IsEnable() || !node->IsVisible()) { continue; }
-                if (node != focus_ && InBound<int>(node->bound(), x, y)) {
-                    focus_ = node;
-                    focus_->SetFocus(true);
-                    focus_->DidFocus(true);
-                    goto done;
-                }
-            }
+        if (DoFocus(ctrl, x, y)) { break; }
+    }
+    if (focus_) { focus_->HandleMouseButtonInput(button, action, mods, should_break); }
+}
+
+bool UIService::DoFocus(Component *ctrl, double x, double y) {
+    if (!ctrl->IsEnable() || !ctrl->IsVisible()) { return false; }
+
+    if (ctrl != focus_ && InBound<int>(ctrl->bound(), x, y)) {
+        if (ctrl->children().empty()) {
+            focus_ = ctrl;
+            focus_->SetFocus(true);
+            focus_->DidFocus(true);
+            return true;
+        }
+        for (Component *node : *ctrl->mutable_children()) {
+            // if (!node->IsEnable() || !node->IsVisible()) { continue; }
+            if (DoFocus(node, x, y)) { return true; }
         }
     }
-
-done:
-    if (focus_) { focus_->HandleMouseButtonInput(button, action, mods, should_break); }
+    return false;
 }
 
 void UIService::HandleKeyInput(int key, int code, int action, int mods, bool *should_break) {
@@ -138,17 +137,19 @@ void UIService::Render(double delta) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (Component *ctrl : roots_) {
-        if (ctrl->IsVisible()) {
-            ctrl->OnPaint(delta);
-            for (Component *node : *ctrl->mutable_children()) {
-                if (node->IsVisible()) { node->OnPaint(delta); }
-            }
-        }
-    }
+    for (Component *ctrl : roots_) { DoRender(ctrl, delta); }
 
     glDisable(GL_BLEND);
     Game::This()->transform()->Exit2DProjection();
+}
+
+void UIService::DoRender(Component *ctrl, double delta) {
+    if (ctrl->IsVisible()) {
+        ctrl->OnPaint(delta);
+        for (Component *node : *ctrl->mutable_children()) {
+            if (node->IsVisible()) { DoRender(node, delta); }
+        }
+    }
 }
 
 void UIService::PutController(Component *ctrl) {

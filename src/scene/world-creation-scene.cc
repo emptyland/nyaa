@@ -2,10 +2,12 @@
 #include "scene/controller.h"
 #include "resource/avatar-library.h"
 #include "ui/button-group.h"
-#include "ui/label-component.h"
 #include "ui/input-box.h"
+#include "ui/property-box-group.h"
+#include "ui/property-box.h"
 #include "ui/check-box-group.h"
 #include "ui/avatar-selector.h"
+#include "ui/label-component.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -30,6 +32,11 @@ public:
     static constexpr auto kSmallMapId  = UIComponentId::Of(3);
     static constexpr auto kNormalMapId = UIComponentId::Of(4);
     static constexpr auto kLargeMapId  = UIComponentId::Of(5);
+
+    static constexpr auto kAttPropId  = UIComponentId::Of(6);
+    static constexpr auto kDefPropId  = UIComponentId::Of(7);
+    static constexpr auto kStgPropId  = UIComponentId::Of(8);
+    static constexpr auto kAglPropId  = UIComponentId::Of(9);
 
     enum MapSize {
         kSmall,
@@ -65,6 +72,12 @@ public:
         avatar_selector_ = ui->New<ui::AvatarSelector>(nullptr);
         avatar_selector_->AddDelegate(static_cast<ui::AvatarSelector::Delegate *>(this));
         avatar_selector_->AddProducer(static_cast<ui::AvatarSelector::Producer *>(this));
+
+        player_props_ = ui->New<ui::PropertyBoxGroup>("Initial Properties", nullptr);
+        player_props_->AddPropertyBox(kAttPropId, "ATT:");
+        player_props_->AddPropertyBox(kDefPropId, "DEF:");
+        player_props_->AddPropertyBox(kStgPropId, "STG:");
+        player_props_->AddPropertyBox(kAglPropId, "AGL:");
     }
 
     void DoLayout(const Boundi &view) {
@@ -99,6 +112,13 @@ public:
             player_name_->bound().y - (ui::kScreenBorder + ui::kButtonH * 2),
             ui::kButtonH * 6,
             ui::kButtonH * 2,
+        });
+
+        player_props_->set_bound({
+            column_x,
+            avatar_selector_->bound().y - (ui::kScreenBorder + ui::kButtonH) * 4,
+            column_w,
+            (ui::kScreenBorder + ui::kButtonH) * 4,
         });
 
         btn_group_->set_bound({
@@ -155,13 +175,14 @@ public:
     }
 
 private:
-    ui::ButtonGroup *   btn_group_       = nullptr;
-    ui::LabelInputBox * map_seed_        = nullptr;
-    ui::CheckBoxGroup * map_size_        = nullptr;
-    ui::LabelInputBox * player_name_     = nullptr;
-    ui::AvatarSelector *avatar_selector_ = nullptr;
-    int                 avatar_index_    = 0;
-    MapSize             map_kind_        = kNormal;
+    ui::ButtonGroup *     btn_group_       = nullptr;
+    ui::LabelInputBox *   map_seed_        = nullptr;
+    ui::CheckBoxGroup *   map_size_        = nullptr;
+    ui::LabelInputBox *   player_name_     = nullptr;
+    ui::AvatarSelector *  avatar_selector_ = nullptr;
+    ui::PropertyBoxGroup *player_props_    = nullptr;
+    int                   avatar_index_    = 0;
+    MapSize               map_kind_        = kNormal;
 };  // class WorldCreationScene::UIController
 
 WorldCreationScene::WorldCreationScene(Game *game) : Scene(game), ui_(new UIController(this)) {}

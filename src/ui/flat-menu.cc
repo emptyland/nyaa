@@ -10,7 +10,9 @@ namespace nyaa {
 
 namespace ui {
 
-FlatMenu::FlatMenu(Id id, Component *parent) : Component(id, parent) {}
+FlatMenu::FlatMenu(Id id, Component *parent) : Component(id, parent) {
+    set_padding_size(48);
+}
 
 FlatMenu::~FlatMenu() {
     for (auto &item : items_) { glDeleteTextures(1, &item.tex); }

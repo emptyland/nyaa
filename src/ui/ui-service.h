@@ -62,6 +62,8 @@ public:
     DISALLOW_IMPLICIT_CONSTRUCTORS(UIService);
 
 private:
+    void DoRender(Component *ctrl, double delta);
+    bool DoFocus(Component *ctrl, double x, double y);
     void PutController(Component *ctrl);
 
     double   last_time_;

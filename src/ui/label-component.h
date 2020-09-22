@@ -24,9 +24,6 @@ public:
         child->SetEnable(true);
     }
 
-    DEF_VAL_PROP_RW(int, font_bearing);
-    DEF_VAL_PROP_RW(float, font_scale);
-
     T *Child() {
         Component *child = nullptr;
         for (Component *c : *mutable_children()) {
@@ -44,9 +41,6 @@ public:
 
 private:
     void OnPaint(double delta) override;
-
-    int   font_bearing_ = 10;
-    float font_scale_   = 0.8;
 };  // template<class T> class LabelComponent
 
 void DoPaintLabel(const std::vector<float> &vertices, Component *self, Component *child);

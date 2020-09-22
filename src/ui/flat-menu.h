@@ -17,10 +17,10 @@ public:
     explicit FlatMenu(Id id, Component *parent = nullptr);
     ~FlatMenu() override;
 
-    DEF_VAL_PROP_RW(int, padding_size);
-
     void AddItem(res::TextID text, Id id);
     void AddItem(std::string_view text, Id id);
+
+    DISALLOW_IMPLICIT_CONSTRUCTORS(FlatMenu);
 
 private:
     struct Item {
@@ -42,9 +42,8 @@ private:
         return std::find_if(items_.begin(), items_.end(), [&id](const Item &a) { return a.id == id; });
     }
 
-    int               padding_size_ = 48;
-    int               cursor_       = -1;
-    float             scale_        = 1.0;
+    int               cursor_ = -1;
+    float             scale_  = 1.0;
     std::vector<Item> items_;
 };  // class FlatMenu
 

@@ -68,6 +68,7 @@ set(GAME_SRC
     src/ui/check-box-group.cc
     src/ui/avatar-selector.cc
     src/ui/property-box.cc
+    src/ui/property-box-group.cc
     src/ui/label-component.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc

@@ -14,7 +14,8 @@ class FontFace;
 
 namespace ui {
 
-template <class T> class LabelComponent;
+template <class T>
+class LabelComponent;
 
 class InputBox : public Component {
 public:
@@ -28,9 +29,6 @@ public:
 
     explicit InputBox(Id id, Component *parent = nullptr);
     ~InputBox() override;
-
-    DEF_VAL_PROP_RW(int, font_bearing);
-    DEF_VAL_PROP_RW(float, font_scale);
 
     std::string Utf8Text();
 
@@ -46,10 +44,8 @@ private:
     void OnPaint(double delta) override;
 
     std::u32string text_;
-    int            cursor_       = 0;
-    int            font_bearing_ = 10;
-    float          font_scale_   = 0.8;
-    double         time_         = 0;
+    int            cursor_ = 0;
+    double         time_   = 0;
 };  // class InputBox
 
 using LabelInputBox = LabelComponent<InputBox>;

@@ -19,7 +19,6 @@ public:
     explicit ListBox(Id id, int limit, Component *parent = nullptr);
     ~ListBox() override;
 
-    DEF_VAL_PROP_RW(float, font_scale);
     DEF_VAL_PROP_RW(int, limit_rows);
 
     void Append(std::string_view text, Vector3f color = Vec3(1, 1, 1));
@@ -37,7 +36,6 @@ private:
     };  // class Row
 
     std::deque<Row> rows_;
-    float           font_scale_ = 0.8;
     int             limit_rows_ = 1000;
 };  // class ListBox
 

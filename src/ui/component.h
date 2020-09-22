@@ -83,6 +83,9 @@ public:
     DEF_VAL_PROP_RW(double, last_time);
     DEF_VAL_PROP_RW(Vector4f, bg_color);
     DEF_VAL_PROP_RW(Vector4f, fg_color);
+    DEF_VAL_PROP_RW(int, font_bearing);
+    DEF_VAL_PROP_RW(int, padding_size);
+    DEF_VAL_PROP_RW(float, font_scale);
 
     void SetName(res::TextID text);
 
@@ -216,13 +219,16 @@ private:
     Component *    prev_;
     Id             id_;
     std::string    name_;
-    res::FontFace *font_      = nullptr;
-    Vector4f       bg_color_  = kBgColor;
-    Vector4f       fg_color_  = kFgColor;
-    Boundi         bound_     = {0, 0, 0, 0};
-    int            z_order_   = 0;
-    Component *    parent_    = nullptr;
-    double         last_time_ = -1;
+    res::FontFace *font_         = nullptr;
+    int            font_bearing_ = 10;
+    float          font_scale_   = 0.8f;
+    int            padding_size_ = kScreenBorder;
+    Vector4f       bg_color_     = kBgColor;
+    Vector4f       fg_color_     = kFgColor;
+    Boundi         bound_        = {0, 0, 0, 0};
+    int            z_order_      = 0;
+    Component *    parent_       = nullptr;
+    double         last_time_    = -1;
 
     Flags<State, uint32_t> flags_;
 

@@ -23,9 +23,6 @@ public:
     CheckBoxGroup(Id id, res::TextID name, Component *parent);
     ~CheckBoxGroup() override;
 
-    DEF_VAL_PROP_RW(float, font_scale);
-    DEF_VAL_PROP_RW(int, border_size);
-
     LabelCheckBox *AddCheckBox(Id id, std::string_view name);
     LabelCheckBox *AddCheckBox(Id id, res::TextID name);
 
@@ -37,8 +34,6 @@ public:
 private:
     void OnPaint(double delta) override;
 
-    float     font_scale_  = 0.8f;
-    int       border_size_ = kScreenBorder;
     Producer *data_        = nullptr;
 };  // class CheckBoxGroup
 
