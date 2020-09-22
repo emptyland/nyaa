@@ -19,8 +19,8 @@ public:
         DISALLOW_IMPLICIT_CONSTRUCTORS(Delegate);
     };  // class Delegate
 
-    LabelCheckBox(Id id, std::string_view name, Component *parent = nullptr);
-    LabelCheckBox(Id id, res::TextID name, Component *parent = nullptr);
+    LabelCheckBox(Id id, std::string_view name, Component *parent);
+    LabelCheckBox(Id id, res::TextID name, Component *parent);
     ~LabelCheckBox() override;
 
     DEF_VAL_PROP_RW(bool, checked);

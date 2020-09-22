@@ -61,13 +61,14 @@ set(GAME_SRC
     src/ui/ui-service.cc
     src/ui/input-box.cc
     src/ui/list-box.cc
-    src/ui/label-input-box.cc
     src/ui/button-group.cc
     src/ui/item-grid-view.cc
     src/ui/flat-menu.cc
     src/ui/label-check-box.cc
     src/ui/check-box-group.cc
     src/ui/avatar-selector.cc
+    src/ui/property-box.cc
+    src/ui/label-component.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
     src/component/cube-component.cc

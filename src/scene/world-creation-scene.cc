@@ -2,7 +2,8 @@
 #include "scene/controller.h"
 #include "resource/avatar-library.h"
 #include "ui/button-group.h"
-#include "ui/label-input-box.h"
+#include "ui/label-component.h"
+#include "ui/input-box.h"
 #include "ui/check-box-group.h"
 #include "ui/avatar-selector.h"
 #include <GL/glew.h>
@@ -49,8 +50,7 @@ public:
         btn = btn_group_->AddButton(kCreateId, 2, 0);
         btn->SetName(res::LABEL_CREATE);
 
-        map_seed_ = ui->New<ui::LabelInputBox>(nullptr);
-        map_seed_->SetName(res::LABEL_MAP_SEED);
+        map_seed_ = ui->New<ui::LabelInputBox>(res::LABEL_MAP_SEED, nullptr);
 
         map_size_ = ui->New<ui::CheckBoxGroup>(res::LABEL_MAP_SIZE, nullptr);
         map_size_->set_font_scale(0.8f);
@@ -60,8 +60,7 @@ public:
         map_size_->AddProducer(static_cast<ui::CheckBoxGroup::Producer *>(this));
         map_size_->AddDelegate(static_cast<ui::LabelCheckBox::Delegate *>(this));
 
-        player_name_ = ui->New<ui::LabelInputBox>(nullptr);
-        player_name_->set_name("Name:");
+        player_name_ = ui->New<ui::LabelInputBox>("Name:", nullptr);
 
         avatar_selector_ = ui->New<ui::AvatarSelector>(nullptr);
         avatar_selector_->AddDelegate(static_cast<ui::AvatarSelector::Delegate *>(this));

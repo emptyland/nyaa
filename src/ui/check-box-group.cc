@@ -9,12 +9,8 @@ namespace nyaa {
 
 namespace ui {
 
-CheckBoxGroup::CheckBoxGroup(Id id, std::string_view name, Component *parent) : Component(id, parent) {
-    set_name(std::string(name.data(), name.size()));
-}
-
-CheckBoxGroup::CheckBoxGroup(Id id, res::TextID name, Component *parent) : Component(id, parent) { SetName(name); }
-
+CheckBoxGroup::CheckBoxGroup(Id id, std::string_view name, Component *parent) : Component(id, name, parent) {}
+CheckBoxGroup::CheckBoxGroup(Id id, res::TextID name, Component *parent) : Component(id, name, parent) {}
 CheckBoxGroup::~CheckBoxGroup() {}
 
 LabelCheckBox *CheckBoxGroup::AddCheckBox(Id id, std::string_view name) {

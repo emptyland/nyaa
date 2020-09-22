@@ -10,10 +10,18 @@ namespace nyaa {
 
 namespace ui {
 
-Component::Component(Id id, Component *parent)
-    : next_(this), prev_(this), id_(id), font_(Game::This()->font_lib()->default_face()), parent_(parent) {
+Component::Component(Id id, std::string_view name, Component *parent)
+    : next_(this)
+    , prev_(this)
+    , id_(id)
+    , name_(name.data(), name.size())
+    , font_(Game::This()->font_lib()->default_face())
+    , parent_(parent) {
     if (parent_) { parent_->AddChild(this); }
 }
+
+Component::Component(Id id, res::TextID name, Component *parent)
+    : Component(id, Game::This()->text_lib()->Load(name), parent) {}
 
 /*virtual*/ ComponentDelegate::~ComponentDelegate() {}
 

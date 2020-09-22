@@ -69,7 +69,9 @@ public:
     static constexpr int kMaxDelegates = 8;
 
     inline explicit Component(Id id) : Component(id, nullptr) {}
-    Component(Id id, Component *parent);
+    inline Component(Id id, Component *parent) : Component(id, "", parent) {}
+    Component(Id id, res::TextID name, Component *parent);
+    Component(Id id, std::string_view name, Component *parent);
     virtual ~Component();
 
     DEF_VAL_GETTER(Id, id);
