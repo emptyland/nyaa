@@ -192,7 +192,7 @@ public:
     DEF_VAL_PROP_RM(Children, children);
     DEF_VAL_PROP_RM(Delegates, delegates);
 
-    void AddDelegate(Delegate *value, bool ownership = false) { delegates_.AddDelegate(value, ownership); }
+    virtual void AddDelegate(Delegate *value, bool ownership = false) { delegates_.AddDelegate(value, ownership); }
 
     void AddChild(Component *child) { children_.Append(child); }
 

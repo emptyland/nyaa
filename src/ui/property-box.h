@@ -41,9 +41,16 @@ private:
     void OnMouseMove(double x, double y) override;
     void OnPaint(double delta) override;
 
-    int       value_ = 0;
-    double    time_  = 0;
-    Producer *data_  = nullptr;
+    enum Direction {
+        kNone,
+        kIncr,
+        kDecr,
+    };  // enum Direction
+
+    int       value_  = 0;
+    Direction cursor_ = kNone;
+    double    time_   = 0;
+    Producer *data_   = nullptr;
 };  // class PropertyBox
 
 using LabelPropertyBox = LabelComponent<PropertyBox>;

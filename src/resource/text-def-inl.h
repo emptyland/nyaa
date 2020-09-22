@@ -28,6 +28,13 @@ namespace res {
     V(LABEL_MAP_SMALL) \
     V(LABEL_MAP_NORMAL) \
     V(LABEL_MAP_LARGE) \
+    V(LABEL_NAME) \
+    V(LABEL_INIT_PROPS) \
+    V(LABEL_INIT_PROPS_FMT) \
+    V(LABEL_PROP_ATT) \
+    V(LABEL_PROP_DEF) \
+    V(LABEL_PROP_STG) \
+    V(LABEL_PROP_AGL) \
     V(CUBE_AIR) \
     V(CUBE_WALL_1) \
     V(CUBE_WOOD_1) \

@@ -23,7 +23,9 @@ class WorldCreationScene::UIController : public UIControllerT<WorldCreationScene
                                          public ui::LabelCheckBox::Delegate,
                                          public ui::CheckBoxGroup::Producer,
                                          public ui::AvatarSelector::Delegate,
-                                         public ui::AvatarSelector::Producer {
+                                         public ui::AvatarSelector::Producer,
+                                         public ui::PropertyBox::Delegate,
+                                         public ui::PropertyBoxGroup::Producer {
 public:
     static constexpr auto kBackId   = UIComponentId::Of(0);
     static constexpr auto kResetId  = UIComponentId::Of(1);
@@ -33,10 +35,10 @@ public:
     static constexpr auto kNormalMapId = UIComponentId::Of(4);
     static constexpr auto kLargeMapId  = UIComponentId::Of(5);
 
-    static constexpr auto kAttPropId  = UIComponentId::Of(6);
-    static constexpr auto kDefPropId  = UIComponentId::Of(7);
-    static constexpr auto kStgPropId  = UIComponentId::Of(8);
-    static constexpr auto kAglPropId  = UIComponentId::Of(9);
+    static constexpr auto kAttPropId = UIComponentId::Of(6);
+    static constexpr auto kDefPropId = UIComponentId::Of(7);
+    static constexpr auto kStgPropId = UIComponentId::Of(8);
+    static constexpr auto kAglPropId = UIComponentId::Of(9);
 
     enum MapSize {
         kSmall,
@@ -67,17 +69,19 @@ public:
         map_size_->AddProducer(static_cast<ui::CheckBoxGroup::Producer *>(this));
         map_size_->AddDelegate(static_cast<ui::LabelCheckBox::Delegate *>(this));
 
-        player_name_ = ui->New<ui::LabelInputBox>("Name:", nullptr);
+        player_name_ = ui->New<ui::LabelInputBox>(res::LABEL_NAME, nullptr);
 
         avatar_selector_ = ui->New<ui::AvatarSelector>(nullptr);
         avatar_selector_->AddDelegate(static_cast<ui::AvatarSelector::Delegate *>(this));
         avatar_selector_->AddProducer(static_cast<ui::AvatarSelector::Producer *>(this));
 
-        player_props_ = ui->New<ui::PropertyBoxGroup>("Initial Properties", nullptr);
-        player_props_->AddPropertyBox(kAttPropId, "ATT:");
-        player_props_->AddPropertyBox(kDefPropId, "DEF:");
-        player_props_->AddPropertyBox(kStgPropId, "STG:");
-        player_props_->AddPropertyBox(kAglPropId, "AGL:");
+        player_props_ = ui->New<ui::PropertyBoxGroup>(res::LABEL_INIT_PROPS, nullptr);
+        player_props_->AddPropertyBox(kAttPropId, res::LABEL_PROP_ATT);
+        player_props_->AddPropertyBox(kDefPropId, res::LABEL_PROP_DEF);
+        player_props_->AddPropertyBox(kStgPropId, res::LABEL_PROP_STG);
+        player_props_->AddPropertyBox(kAglPropId, res::LABEL_PROP_AGL);
+        player_props_->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
+        player_props_->AddProducer(static_cast<ui::PropertyBoxGroup::Producer *>(this));
     }
 
     void DoLayout(const Boundi &view) {
@@ -174,6 +178,50 @@ public:
         }
     }
 
+    void OnIncreaseProperty(ui::PropertyBox *sender) override {
+        int *value = nullptr;
+        switch (sender->id().value()) {
+            case kAttPropId.value(): value = &prop_att_; break;
+            case kDefPropId.value(): value = &prop_def_; break;
+            case kStgPropId.value(): value = &prop_stg_; break;
+            case kAglPropId.value(): value = &prop_agl_; break;
+            default: break;
+        }
+        if (value) {
+            if (prop_oth_ > 0) {
+                (*value)++;
+                prop_oth_--;
+            }
+        }
+    }
+
+    void OnDecreaseProperty(ui::PropertyBox *sender) override {
+        int *value = nullptr;
+        switch (sender->id().value()) {
+            case kAttPropId.value(): value = &prop_att_; break;
+            case kDefPropId.value(): value = &prop_def_; break;
+            case kStgPropId.value(): value = &prop_stg_; break;
+            case kAglPropId.value(): value = &prop_agl_; break;
+            default: break;
+        }
+        if (value) {
+            if (*value > 0) {
+                (*value)--;
+                prop_oth_++;
+            }
+        }
+    }
+
+    void OnPropertyBoxProduce(ui::PropertyBoxGroup *sender, UIComponentId id, int *value) override {
+        switch (id.value()) {
+            case kAttPropId.value(): *value = prop_att_; break;
+            case kDefPropId.value(): *value = prop_def_; break;
+            case kStgPropId.value(): *value = prop_stg_; break;
+            case kAglPropId.value(): *value = prop_agl_; break;
+            default: break;
+        }
+    }
+
 private:
     ui::ButtonGroup *     btn_group_       = nullptr;
     ui::LabelInputBox *   map_seed_        = nullptr;
@@ -182,6 +230,11 @@ private:
     ui::AvatarSelector *  avatar_selector_ = nullptr;
     ui::PropertyBoxGroup *player_props_    = nullptr;
     int                   avatar_index_    = 0;
+    int                   prop_att_        = 0;
+    int                   prop_def_        = 0;
+    int                   prop_stg_        = 0;
+    int                   prop_agl_        = 0;
+    int                   prop_oth_        = 30;
     MapSize               map_kind_        = kNormal;
 };  // class WorldCreationScene::UIController
 

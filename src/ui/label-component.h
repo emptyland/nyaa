@@ -33,7 +33,7 @@ public:
         return down_cast<T>(child);
     }
 
-    void AddDelegate(Delegate *value, bool ownership = false) {
+    void AddDelegate(Delegate *value, bool ownership = false) override {
         for (Component *c : *mutable_children()) { c->AddDelegate(value, ownership); }
     }
 

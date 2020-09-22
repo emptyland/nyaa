@@ -24,6 +24,9 @@ public:
     LabelPropertyBox *AddPropertyBox(Id id, std::string_view name);
     LabelPropertyBox *AddPropertyBox(Id id, res::TextID name);
 
+    void AddDelegate(Delegate *value, bool ownership = false) override {
+        for (Component *c : *mutable_children()) { c->AddDelegate(value, ownership); }
+    }
     void AddProducer(Producer *data) { data_ = data; }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(PropertyBoxGroup);

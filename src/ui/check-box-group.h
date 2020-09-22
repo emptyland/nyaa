@@ -26,7 +26,7 @@ public:
     LabelCheckBox *AddCheckBox(Id id, std::string_view name);
     LabelCheckBox *AddCheckBox(Id id, res::TextID name);
 
-    void AddDelegate(LabelCheckBox::Delegate *value, bool ownership = false) {
+    void AddDelegate(Component::Delegate *value, bool ownership = false) override {
         for (Component *child : *mutable_children()) { child->AddDelegate(value, ownership); }
     }
     void AddProducer(Producer *data) { data_ = data; }

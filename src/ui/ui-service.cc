@@ -54,13 +54,13 @@ void UIService::HandleMouseMove() {
     last_mouse_pos_.x = x;
     last_mouse_pos_.y = y;
 
-    for (Component *ctrl : roots_) {
-        if (!ctrl->IsVisible()) { continue; }
-        for (Component *node : *ctrl->mutable_children()) {
-            if (node->IsEnable() && node->IsVisible()) { node->OnMouseMove(x, y); }
-        }
-        ctrl->OnMouseMove(x, y);
-    }
+    for (Component *ctrl : roots_) { DispatchMouseMove(ctrl, x, y); }
+}
+
+void UIService::DispatchMouseMove(Component *ctrl, double x, double y) {
+    if (!ctrl->IsVisible()) { return; }
+    for (Component *node : *ctrl->mutable_children()) { DispatchMouseMove(node, x, y); }
+    ctrl->OnMouseMove(x, y);
 }
 
 void UIService::HandleMouseButtonInput(int button, int action, int mods, bool *should_break) {
