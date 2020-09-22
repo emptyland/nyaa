@@ -26,7 +26,7 @@ public:
         virtual void DidBtnFocus(ButtonGroup *sender, Button *btn) {}
     };  // class Delegate
 
-    explicit ButtonGroup(Id id, int column_count, int row_count, Component *parent);
+    ButtonGroup(Id id, int column_count, int row_count, Component *parent);
     ~ButtonGroup() override;
 
     DEF_VAL_GETTER(int, column_count);
@@ -65,15 +65,14 @@ public:
 
     Button *AddButton(Id id, int column, int row);
 
-    void HandleKeyInput(int key, int code, int action, int mods, bool *should_break) override;
-    void HandleMouseButtonInput(int button, int action, int mods, bool *should_break) override;
-    void OnMouseMove(double x, double y) override;
-
-    void OnPaint(double delta) override;
-
     DISALLOW_IMPLICIT_CONSTRUCTORS(ButtonGroup);
 
 private:
+    void HandleKeyInput(int key, int code, int action, int mods, bool *should_break) override;
+    void HandleMouseButtonInput(int button, int action, int mods, bool *should_break) override;
+    void OnMouseMove(double x, double y) override;
+    void OnPaint(double delta) override;
+
     void UpdateBtnFocus(int i, int j);
 
     Button *button(int i, int j) {

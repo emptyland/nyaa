@@ -34,11 +34,6 @@ LabelCheckBox *CheckBoxGroup::AddCheckBox(Id id, res::TextID name) {
 }
 
 void CheckBoxGroup::OnPaint(double delta) {
-
-    // DrawBorder(kBorderColor, delta);
-
-    // return;
-
     Vector2f font_size = font()->ApproximateSize(name());
 
     float y = bound().y + bound().h - font_size.y * font_scale();

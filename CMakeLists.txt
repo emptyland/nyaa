@@ -67,6 +67,7 @@ set(GAME_SRC
     src/ui/flat-menu.cc
     src/ui/label-check-box.cc
     src/ui/check-box-group.cc
+    src/ui/avatar-selector.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
     src/component/cube-component.cc
