@@ -22,6 +22,7 @@
 #include "resource/shader-library.h"
 #include "resource/skill-library.h"
 #include "resource/actor-library.h"
+#include "resource/text-formatter.h"
 #include "ui/ui-service.h"
 #include "ui/input-box.h"
 #include "ui/list-box.h"
@@ -444,6 +445,24 @@ public:
         return 0;
     }
 
+    static int Cmd_FormatTest(Game *owns, Command *cmd) {
+        std::string s = res::Format(res::TEST_FMT_1, 1);
+        CONSOLE(Vec3(0, 1, 0), "test.1: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_1, 2, 3);
+        CONSOLE(Vec3(0, 1, 0), "test.2: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_2, 1, 2);
+        CONSOLE(Vec3(0, 1, 0), "test.3: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_2, 22);
+        CONSOLE(Vec3(0, 1, 0), "test.4: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_3, 1, 2, 3);
+        CONSOLE(Vec3(0, 1, 0), "test.5: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_3);
+        CONSOLE(Vec3(0, 1, 0), "test.6: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_3, res::TEST_FMT_1, 1.1, 2.2);
+        CONSOLE(Vec3(0, 1, 0), "test.7: %s", s.c_str());
+        return 0;
+    }
+
     static void ProcessCommand(Game *owns, std::string_view text);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
@@ -490,6 +509,7 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"fps", Cmd_FPS, {I32, nullptr}},
     {"random", Cmd_Random, {I32, nullptr}},
     {"random.f", Cmd_RandomF, {I32, nullptr}},
+    {"format.test", Cmd_FormatTest, {nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 

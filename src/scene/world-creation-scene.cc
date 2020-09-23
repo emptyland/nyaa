@@ -1,6 +1,7 @@
 #include "scene/world-creation-scene.h"
 #include "scene/controller.h"
 #include "resource/avatar-library.h"
+#include "resource/text-formatter.h"
 #include "ui/message-box.h"
 #include "ui/button-group.h"
 #include "ui/input-box.h"
@@ -251,7 +252,7 @@ public:
             ui::MessageBox *box = service()->Modal<ui::MessageBox>(ui::kOk|ui::kCancel, nullptr);
             box->set_name("[warn]");
             box->Add(Vec3(1, 1, 0), res::LABEL_NOTICE);
-            box->Add(Vec3(1, 1, 0), res::HINT_ROLE_PP_LEFT);
+            box->Add(Vec3(1, 1, 0), res::Format(res::HINT_ROLE_PP_LEFT, prop_oth_));
             box->Add(Vec3(1, 1, 0), res::HINT_CONTINUE_OR_NOT);
             box->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
             return;

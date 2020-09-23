@@ -97,6 +97,7 @@ set(GAME_SRC
     src/resource/skill-library.cc
     src/resource/definition.cc
     src/resource/ai-def.cc
+    src/resource/text-formatter.cc
     src/base/arena-utils.cc
     src/base/arenas.cc
     src/base/hash.cc

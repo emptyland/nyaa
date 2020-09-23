@@ -8,6 +8,9 @@ namespace res {
 #define DEFINE_TEXT_KINDS(V) \
     V(TEST_STRING_1) \
     V(TEST_STRING_2) \
+    V(TEST_FMT_1) \
+    V(TEST_FMT_2) \
+    V(TEST_FMT_3) \
     V(TITLE_OPTION_1) \
     V(TITLE_OPTION_2) \
     V(TITLE_OPTION_3) \

@@ -2,6 +2,9 @@
 ------------------------------------------------------------------------------------------------------------------------
 TEST_STRING_1             | Hello, World
 TEST_STRING_2             | <>汉字?~!@#$%^&*()_+=-,.;:'"[]{}
+TEST_FMT_1                | a={} item(s)
+TEST_FMT_2                | a={}, b={}
+TEST_FMT_3                | a={}, b={}, c={}
 TITLE_OPTION_1            | New Game
 TITLE_OPTION_2            | Test Mode
 TITLE_OPTION_3            | Exit
@@ -32,7 +35,7 @@ LABEL_PROP_AGL            | AGL:
 LABEL_ERRORS              | Errors:
 LABEL_NOTICE              | Notice:
 HINT_ROLE_NAME_EMPTY      | > Player name is empty!
-HINT_ROLE_PP_LEFT         | > Role Property point has left(%d)!
+HINT_ROLE_PP_LEFT         | > Role Property point has left({})!
 HINT_CONTINUE_OR_NOT      | > Continue or not?
 BTN_OK                    | Ok
 BTN_CANCEL                | Cancel

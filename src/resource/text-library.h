@@ -30,13 +30,10 @@ public:
         return From(text_[index]);
     }
 
-    // std::string Sprintf(TextID fmt, ...) const {
-    //     va_list ap;
-    //     va_start(ap, fmt);
-    //     std::string text = Vsprintf(fmt, ap);
-    //     va_end(ap);
-    //     return text;
-    // }
+    std::string Clone(TextID id) const {
+        std::string_view slice = Load(id);
+        return std::string(slice.data(), slice.size());
+    }
 
     std::string Vsprintf(TextID fmt, va_list ap) const {
         std::string_view text = Load(fmt);
