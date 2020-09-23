@@ -4,7 +4,9 @@
 
 #include "resource/text-def-inl.h"
 #include "base/arena-utils.h"
+#include "base/slice.h"
 #include "glog/logging.h"
+#include <stdarg.h>
 
 namespace nyaa {
 
@@ -28,6 +30,19 @@ public:
         return From(text_[index]);
     }
 
+    // std::string Sprintf(TextID fmt, ...) const {
+    //     va_list ap;
+    //     va_start(ap, fmt);
+    //     std::string text = Vsprintf(fmt, ap);
+    //     va_end(ap);
+    //     return text;
+    // }
+
+    std::string Vsprintf(TextID fmt, va_list ap) const {
+        std::string_view text = Load(fmt);
+        return base::Vsprintf(text.data(), ap);
+    }
+
     TextID FindID(std::string_view name) const {
         auto iter = text_name_to_id_.find(name);
         return iter == text_name_to_id_.end() ? MAX_TEXT_ID : iter->second;
@@ -43,9 +58,9 @@ private:
         return std::string_view(s, len);
     }
 
-    base::Arena *const arena_;
+    base::Arena *const                                arena_;
     base::ArenaUnorderedMap<std::string_view, TextID> text_name_to_id_;
-    NRStr              text_[MAX_TEXT_ID];
+    NRStr                                             text_[MAX_TEXT_ID];
 
     static const char *kTextIDName[MAX_TEXT_ID];
 };  // class TextLibrary

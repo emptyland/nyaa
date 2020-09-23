@@ -25,6 +25,8 @@ public:
     void Printf(const Vector3f &color, const char *fmt, ...);
     void Vsprintf(const Vector3f &color, const char *fmt, va_list ap);
 
+    void Add(const Vector3f &color, res::TextID text);
+
     void AddDelegate(Delegate *value, bool ownership = false) override;
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(MessageBox);

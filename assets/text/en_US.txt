@@ -29,6 +29,11 @@ LABEL_PROP_ATT            | ATT:
 LABEL_PROP_DEF            | DEF:
 LABEL_PROP_STG            | STG:
 LABEL_PROP_AGL            | AGL:
+LABEL_ERRORS              | Errors:
+LABEL_NOTICE              | Notice:
+HINT_ROLE_NAME_EMPTY      | > Player name is empty!
+HINT_ROLE_PP_LEFT         | > Role Property point has left(%d)!
+HINT_CONTINUE_OR_NOT      | > Continue or not?
 BTN_OK                    | Ok
 BTN_CANCEL                | Cancel
 BTN_YES                   | Yes

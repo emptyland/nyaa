@@ -27,10 +27,13 @@ public:
         virtual void DidEnter(InputBox *sender){};
     };  // class Delegate
 
-    explicit InputBox(Id id, Component *parent = nullptr);
+    InputBox(Id id, Component *parent);
     ~InputBox() override;
 
+    DEF_VAL_PROP_RW(bool, number_only);
+
     std::string Utf8Text();
+    void SetUtf8Text(std::string_view text);
 
     void ClearText() {
         text_.clear();
@@ -44,8 +47,9 @@ private:
     void OnPaint(double delta) override;
 
     std::u32string text_;
-    int            cursor_ = 0;
-    double         time_   = 0;
+    int            cursor_      = 0;
+    double         time_        = 0;
+    bool           number_only_ = false;
 };  // class InputBox
 
 using LabelInputBox = LabelComponent<InputBox>;

@@ -35,6 +35,11 @@ namespace res {
     V(LABEL_PROP_DEF) \
     V(LABEL_PROP_STG) \
     V(LABEL_PROP_AGL) \
+    V(LABEL_ERRORS) \
+    V(LABEL_NOTICE) \
+    V(HINT_ROLE_NAME_EMPTY) \
+    V(HINT_ROLE_PP_LEFT) \
+    V(HINT_CONTINUE_OR_NOT) \
     V(BTN_OK) \
     V(BTN_CANCEL) \
     V(BTN_YES) \

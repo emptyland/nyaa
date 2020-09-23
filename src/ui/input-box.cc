@@ -1,6 +1,7 @@
 #include "ui/input-box.h"
 #include "resource/font-library.h"
 #include "game/game.h"
+#include "base/slice.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,6 +18,16 @@ std::string InputBox::Utf8Text() {
     std::string buf;
     for (char32_t codepoint : text_) { buf.append(1, static_cast<char>(codepoint & 0xff)); }
     return buf;
+}
+
+void InputBox::SetUtf8Text(std::string_view text) {
+    base::CodePointIteratorUtf8 iter(text);
+    text_.clear();
+    text_.reserve(text.size());
+    for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
+        text_.append(1, *iter);
+    }
+    cursor_ = static_cast<int>(text_.size());
 }
 
 void InputBox::HandleKeyInput(int key, int code, int action, int mods, bool *should_break) {
@@ -41,7 +52,9 @@ void InputBox::HandleKeyInput(int key, int code, int action, int mods, bool *sho
 }
 
 void InputBox::HandleCharInput(char32_t code, bool *should_break) {
-    // DLOG(INFO) << "char input: " << code << " cursor: " << cursor_;
+    if (number_only() && (code < '0' || code > '9')) {
+        return;
+    }
     text_.insert(text_.begin() + cursor_, code);
     cursor_++;
     *should_break = true;

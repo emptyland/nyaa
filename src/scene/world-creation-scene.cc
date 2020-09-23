@@ -61,6 +61,8 @@ public:
         btn->SetName(res::LABEL_CREATE);
 
         map_seed_ = ui->New<ui::LabelInputBox>(res::LABEL_MAP_SEED, nullptr);
+        map_seed_->Child()->set_number_only(true);
+        map_seed_->Child()->SetUtf8Text(base::Sprintf("%d", game()->random()->NextI32()));
 
         map_size_ = ui->New<ui::CheckBoxGroup>(res::LABEL_MAP_SIZE, nullptr);
         map_size_->set_font_scale(0.8f);
@@ -141,17 +143,13 @@ public:
                 DCHECK_NOTNULL(owns()->prev())->SwitchTo(nullptr);
                 break;
 
-            case kCreateId.value(): {
-                ui::MessageBox *box = service()->Modal<ui::MessageBox>(ui::kOk | ui::kCancel, nullptr);
-                box->set_name("[test]");
-                box->Add(Vec3(1, 1, 0), "ok");
-                box->Add(Vec3(0, 1, 0), "cancel");
-                box->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
-            } break;
+            case kCreateId.value(): PrepareCreation(); break;
 
             case ui::MessageBox::kIdOk.value():
             case ui::MessageBox::kIdCancel.value():
-                if (sender->parent()->name() == "[test]") { service()->Modaless(sender->parent()); }
+            case ui::MessageBox::kIdDone.value():
+                if (sender->parent()->name() == "[error]") { service()->Modaless(sender->parent()); }
+                if (sender->parent()->name() == "[warn]") { service()->Modaless(sender->parent()); }
                 break;
 
             default: break;
@@ -233,6 +231,30 @@ public:
             case kStgPropId.value(): *value = prop_stg_; break;
             case kAglPropId.value(): *value = prop_agl_; break;
             default: break;
+        }
+    }
+
+    void PrepareCreation() {
+        // if ()
+
+        std::string role_name = player_name_->Child()->Utf8Text();
+        if (role_name.empty()) {
+            ui::MessageBox *box = service()->Modal<ui::MessageBox>(ui::kDone, nullptr);
+            box->set_name("[error]");
+            box->Add(Vec3(1, 0, 0), res::LABEL_ERRORS);
+            box->Add(Vec3(1, 0, 0), res::HINT_ROLE_NAME_EMPTY);
+            box->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
+            return;
+        }
+
+        if (prop_oth_ > 0) {
+            ui::MessageBox *box = service()->Modal<ui::MessageBox>(ui::kOk|ui::kCancel, nullptr);
+            box->set_name("[warn]");
+            box->Add(Vec3(1, 1, 0), res::LABEL_NOTICE);
+            box->Add(Vec3(1, 1, 0), res::HINT_ROLE_PP_LEFT);
+            box->Add(Vec3(1, 1, 0), res::HINT_CONTINUE_OR_NOT);
+            box->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
+            return;
         }
     }
 

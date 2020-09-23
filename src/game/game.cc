@@ -52,7 +52,7 @@ public:
         input_box_->set_font(owns_->font_lib()->system_face());
         input_box_->SetVisible(false);
 
-        list_box_ = service_->New<ui::ListBox>(100, nullptr); // NewListBox(100, nullptr);
+        list_box_ = service_->New<ui::ListBox>(100, nullptr);  // NewListBox(100, nullptr);
         list_box_->set_bound({4, 52, owns_->fb_w() / 2, h()});
         list_box_->set_font_scale(0.7);
         list_box_->set_font(owns_->font_lib()->default_face());
@@ -135,8 +135,14 @@ Game::Game()
     , console_ui_(new UIController(this))
     , world_(new World())
     , properties_(new Properties())
-    , stdout_(stdout) {
+    , stdout_(stdout)
+    , random_(0) {
     // Total initialize
+    timeval time_val;
+    ::gettimeofday(&time_val, nullptr);
+    uint64_t mills = time_val.tv_sec * 1000 + time_val.tv_usec / 1000;
+    random_.ResetSeed(mills);
+
     ::glfwInit();
 }
 
@@ -286,6 +292,7 @@ void Game::Run() {
 
 /*static*/ void Game::OnKeyInput(GLFWwindow *window, int key, int code, int action, int mods) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
+    game->random()->Chaosize();
 
     for (ui::UIService *srv : game->ui_services_) {
         srv->HandleKeyInput(key, code, action, mods, &game->break_input_);
@@ -297,6 +304,7 @@ void Game::Run() {
 
 /*static*/ void Game::OnCharInput(GLFWwindow *window, unsigned int codepoint) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
+    game->random()->Chaosize();
 
     for (ui::UIService *srv : game->ui_services_) {
         srv->HandleCharInput(codepoint, &game->break_input_);
@@ -306,6 +314,7 @@ void Game::Run() {
 
 /*static*/ void Game::OnMouseButtonInput(GLFWwindow *window, int button, int action, int mods) {
     Game *game = static_cast<Game *>(glfwGetWindowUserPointer(window));
+    game->random()->Chaosize();
 
     for (ui::UIService *srv : game->ui_services_) {
         srv->HandleMouseButtonInput(button, action, mods, &game->break_input_);
@@ -413,6 +422,28 @@ public:
         return 0;
     }
 
+    static int Cmd_Random(Game *owns, Command *cmd) {
+        int n = 0;
+        if (cmd->argc < 1) {
+            n = 1;
+        } else {
+            n = cmd->i32(0);
+        }
+        for (int i = 0; i < n; i++) { CONSOLE(Vec3(0, 1, 0), "[%d]: rand=%lld", i, owns->random()->Next()); }
+        return 0;
+    }
+
+    static int Cmd_RandomF(Game *owns, Command *cmd) {
+        int n = 0;
+        if (cmd->argc < 1) {
+            n = 1;
+        } else {
+            n = cmd->i32(0);
+        }
+        for (int i = 0; i < n; i++) { CONSOLE(Vec3(0, 1, 0), "[%d]: rand=%02f", i, owns->random()->NextFactor()); }
+        return 0;
+    }
+
     static void ProcessCommand(Game *owns, std::string_view text);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
@@ -457,6 +488,8 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"tile.show", Cmd_TileShow, {nullptr}},
     {"cube.show", Cmd_CubeShow, {nullptr}},
     {"fps", Cmd_FPS, {I32, nullptr}},
+    {"random", Cmd_Random, {I32, nullptr}},
+    {"random.f", Cmd_RandomF, {I32, nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 
@@ -531,6 +564,9 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     }
 }
 
-void Game::ProcessConsoleCommand(std::string_view text) { CommandDispatcher::ProcessCommand(this, text); }
+void Game::ProcessConsoleCommand(std::string_view text) {
+    random()->Chaosize();
+    CommandDispatcher::ProcessCommand(this, text);
+}
 
 }  // namespace nyaa

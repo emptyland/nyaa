@@ -2,6 +2,7 @@
 #ifndef NYAA_GAME_GAME_H_
 #define NYAA_GAME_GAME_H_
 
+#include "game/pseudo-random-number.h"
 #include "game/identifiers.h"
 #include "base/lazy-instance.h"
 #include "base/arenas.h"
@@ -64,6 +65,8 @@ public:
     bool break_input() const;
 
     const Properties *properties() const { return properties_.get(); }
+
+    PseudoRandomGenerator *random() { return &random_; }
 
     sys::EntityAllocationSystem *    entity_allocator() const { return entity_allocator_.get(); }
     sys::ZoneRenderSystem *          zone_render() const { return zone_render_.get(); }
@@ -168,6 +171,8 @@ private:
     std::unique_ptr<Properties> properties_;
     std::deque<Scene *>         recycle_scenes_;
     base::StdFilePrinter        stdout_;
+
+    PseudoRandomGenerator random_;
 
     bool        break_input_      = false;
     float       dpi_factor_       = 1.0;

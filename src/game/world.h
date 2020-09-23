@@ -2,6 +2,7 @@
 #ifndef NYAA_GAME_WORLD_H_
 #define NYAA_GAME_WORLD_H_
 
+#include "game/pseudo-random-number.h"
 #include "game/game.h"
 
 namespace nyaa {
@@ -21,6 +22,8 @@ public:
     World();
     ~World();
 
+    PseudoRandomGenerator *random() { return &random_; }
+
     bool Prepare();
 
     static inline World *This() { return Game::This()->world(); }
@@ -30,6 +33,7 @@ private:
     std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<entity::PlayerEntity> player_;
     std::unique_ptr<EntityGridSet> entity_grid_set_;
+    PseudoRandomGenerator random_;
 };  // class World
 
 }  // namespace nyaa

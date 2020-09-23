@@ -2,6 +2,7 @@
 #include "ui/button-group.h"
 #include "game/game.h"
 #include "resource/font-library.h"
+#include "resource/text-library.h"
 #include "base/slice.h"
 #include "base/bit-ops.h"
 #include "glog/logging.h"
@@ -71,6 +72,8 @@ void MessageBox::Add(const Vector3f &color, std::string_view msg) {
     row.size  = font()->ApproximateSize(msg) * font_scale();
     rows_.push_back(row);
 }
+
+void MessageBox::Add(const Vector3f &color, res::TextID text) { Add(color, Game::This()->text_lib()->Load(text)); }
 
 void MessageBox::AddDelegate(Delegate *value, bool ownership) { buttons_->AddDelegate(value, ownership); }
 

@@ -27,7 +27,7 @@
 
 namespace nyaa {
 
-World::World() {
+World::World() : random_(0) {
     // :format
 }
 
