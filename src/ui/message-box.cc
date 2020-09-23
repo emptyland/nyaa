@@ -15,6 +15,8 @@ namespace nyaa {
 namespace ui {
 
 MessageBox::MessageBox(Id id, uint32_t buttons, Component *parent) : Component(id, parent) {
+    set_bg_color({0, 0, 0, 0.8});
+
     int n = base::Bits::CountOne32(buttons);
 
     buttons_ = new ButtonGroup(id, n <= 0 ? 1 : n, 1, this);
@@ -79,7 +81,9 @@ void MessageBox::AddDelegate(Delegate *value, bool ownership) { buttons_->AddDel
 
 void MessageBox::OnPaint(double delta) {
     UpdateBound();
+    glLineWidth(2.0);
     DrawBorder(kBorderColor, delta);
+    glLineWidth(1.0);
 
     int x = bound().x + kScreenBorder;
     int y = bound().y + bound().h - kScreenBorder;

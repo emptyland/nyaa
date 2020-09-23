@@ -1,6 +1,6 @@
 # property        # value
 -------------------------------------
-name              | demo,demo,demo
+name              | The Legend of Grand Karma
 assets_dir        | assets
 show_fps          | 1
 window_width      | 300

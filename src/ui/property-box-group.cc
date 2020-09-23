@@ -35,6 +35,7 @@ void PropertyBoxGroup::OnPaint(double delta) {
 
     y -= 4;
 
+    glLineWidth(2.0);
     glBegin(GL_LINES);
     glColor4f(kBorderColor.x, kBorderColor.y, kBorderColor.z, kBorderColor.w);
 
@@ -44,6 +45,7 @@ void PropertyBoxGroup::OnPaint(double delta) {
     glVertex2f(bound().x, y - 4);
     glVertex2f(bound().x + bound().w, y - 4);
     glEnd();
+    glLineWidth(1.0);
 
     y -= 8;
 

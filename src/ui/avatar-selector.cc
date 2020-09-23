@@ -84,6 +84,7 @@ void AvatarSelector::OnPaint(double delta) {
     glVertex2i(bound().x + 2 * cell - 4, bound().y + 2);
     glEnd();
 
+    glLineWidth(2.0);
     glBegin(GL_LINE_LOOP);
     glColor3f(1, 1, 1);
     glVertex2i(bound().x + cell - 16, bound().y + bound().h / 6);
@@ -97,6 +98,7 @@ void AvatarSelector::OnPaint(double delta) {
     glVertex2i(bound().x + 2 * cell + 16, bound().y + bound().h * 5 / 6);
     glVertex2i(bound().x + 2 * cell + cell / 2, bound().y + bound().h / 2);
     glEnd();
+    glLineWidth(1.0);
 
     switch (cursor_) {
         case kPrev:

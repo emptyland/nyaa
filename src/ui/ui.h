@@ -26,6 +26,14 @@ static constexpr uint32_t kNo     = 1u << 3;
 static constexpr uint32_t kAbort  = 1u << 4;
 static constexpr uint32_t kDone   = 1u << 5;
 
+enum Alignment {
+    kAlignCenter,
+    kAlignLeft,
+    kAlignRight,
+    kAlignTop,
+    kAlignBottom,
+};
+
 }  // namespace ui
 
 }  // namespace nyaa

@@ -124,7 +124,7 @@ public:
 
         player_props_->set_bound({
             column_x,
-            avatar_selector_->bound().y - (ui::kScreenBorder + ui::kButtonH) * 4,
+            avatar_selector_->bound().y - 2 * ui::kScreenBorder - (ui::kScreenBorder + ui::kButtonH) * 4,
             column_w,
             (ui::kScreenBorder + ui::kButtonH) * 4,
         });

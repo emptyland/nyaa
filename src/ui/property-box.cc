@@ -44,10 +44,12 @@ void PropertyBox::OnMouseMove(double x, double y) {
 void PropertyBox::OnPaint(double delta) {
     if (data_) { data_->OnPropertyProduce(this, &value_); }
 
+    glLineWidth(2.0);
     glBegin(GL_LINES);
     glVertex2i(bound().x, bound().y);
     glVertex2i(bound().x + bound().w - bound().h, bound().y);
     glEnd();
+    glLineWidth(1.0);
 
     char buf[64];
     ::snprintf(buf, arraysize(buf), "%d", value());
@@ -68,6 +70,7 @@ void PropertyBox::OnPaint(double delta) {
         glEnd();
     }
 
+    glLineWidth(2.0);
     int x = bound().x + bound().w - bound().h;
     if (cursor_ == kIncr) {
         glBegin(GL_TRIANGLES);
@@ -90,6 +93,7 @@ void PropertyBox::OnPaint(double delta) {
     glVertex2i(x + bound().h / 2, bound().y + bound().h / 2 - 4);
     glVertex2i(x + bound().h / 4, bound().y + 8);
     glEnd();
+    glLineWidth(1.0);
 }
 
 }  // namespace ui
