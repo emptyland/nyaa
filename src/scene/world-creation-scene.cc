@@ -1,6 +1,7 @@
 #include "scene/world-creation-scene.h"
 #include "scene/controller.h"
 #include "resource/avatar-library.h"
+#include "ui/message-box.h"
 #include "ui/button-group.h"
 #include "ui/input-box.h"
 #include "ui/property-box-group.h"
@@ -138,6 +139,19 @@ public:
             case kBackId.value():
                 owns()->DelayDispose();
                 DCHECK_NOTNULL(owns()->prev())->SwitchTo(nullptr);
+                break;
+
+            case kCreateId.value(): {
+                ui::MessageBox *box = service()->Modal<ui::MessageBox>(ui::kOk | ui::kCancel, nullptr);
+                box->set_name("[test]");
+                box->Add(Vec3(1, 1, 0), "ok");
+                box->Add(Vec3(0, 1, 0), "cancel");
+                box->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
+            } break;
+
+            case ui::MessageBox::kIdOk.value():
+            case ui::MessageBox::kIdCancel.value():
+                if (sender->parent()->name() == "[test]") { service()->Modaless(sender->parent()); }
                 break;
 
             default: break;

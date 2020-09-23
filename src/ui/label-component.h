@@ -55,7 +55,7 @@ void LabelComponent<T>::OnPaint(double delta) {
         bound().h,
     });
 
-    DrawLabel(Vec3(bound().x, bound().y + font_bearing(), 0), name());
+    DrawLabel(Vec3(bound().x, bound().y + font_bearing(), 0), Vec3(kFontColor), name());
 }
 
 }  // namespace ui

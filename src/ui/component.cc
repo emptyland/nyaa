@@ -99,28 +99,28 @@ void Component::DrawBorder(const Vector4f &color, double delta) {
     glEnd();
 }
 
-Boundf Component::DrawLabel(const Vector3f &pos, std::string_view label) {
+Boundf Component::DrawLabel(const Vector3f &pos, const Vector3f &color, std::string_view label) {
     std::vector<float> vertices;
 
     Boundf rect = font()->Render(pos, font_scale(), label, &vertices);
-    DrawText(vertices);
+    DrawText(color, vertices);
     return rect;
 }
 
-Boundf Component::DrawLabel(const Vector3f &pos, std::u32string_view label) {
+Boundf Component::DrawLabel(const Vector3f &pos, const Vector3f &color, std::u32string_view label) {
     std::vector<float> vertices;
 
     Boundf rect = font()->Render(pos, font_scale(), label, &vertices);
-    DrawText(vertices);
+    DrawText(color, vertices);
     return rect;
 }
 
-void Component::DrawText(const std::vector<float> &vertices) {
+void Component::DrawText(const Vector3f &color, const std::vector<float> &vertices) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
 
     glBegin(GL_QUADS);
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3fv(&color.x);
     for (int i = 0; i < vertices.size(); i += 5) {
         glTexCoord2f(vertices[i + 3], vertices[i + 4]);
         glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);

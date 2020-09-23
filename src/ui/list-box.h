@@ -26,9 +26,9 @@ public:
     void Printf(const Vector3f &color, const char *fmt, ...);
     void Sprintf(const Vector3f &color, const char *fmt, va_list ap);
 
+private:
     void OnPaint(double delta) override;
 
-private:
     struct Row {
         std::string text;
         Vector3f    color;

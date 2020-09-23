@@ -17,9 +17,11 @@ void PropertyBox::HandleMouseButtonInput(int button, int action, int mods, bool 
         switch (cursor_) {
             case kIncr:
                 for (auto [deg, _] : *mutable_delegates()) { down_cast<Delegate>(deg)->OnIncreaseProperty(this); }
+                *should_break = true;
                 break;
             case kDecr:
                 for (auto [deg, _] : *mutable_delegates()) { down_cast<Delegate>(deg)->OnDecreaseProperty(this); }
+                *should_break = true;
                 break;
             default: break;
         }
@@ -49,7 +51,7 @@ void PropertyBox::OnPaint(double delta) {
 
     char buf[64];
     ::snprintf(buf, arraysize(buf), "%d", value());
-    Boundf rect = DrawLabel(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), buf);
+    Boundf rect = DrawLabel(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), Vec3(kFontColor), buf);
 
     time_ += delta;
     uint64_t mills = time_ * 1000;

@@ -27,13 +27,33 @@ public:
 
     DEF_VAL_PROP_RW(float, dpi_factor);
     DEF_PTR_GETTER(Component, focus);
+    DEF_PTR_GETTER(Component, modal);
 
     template <class T, class = std::enable_if_t<std::is_base_of<Component, T>::value>, class... Args>
-    inline T *New(Args&&... args) {
+    inline T *New(Args &&... args) {
         UIComponentId id   = UIComponentId::Of(next_id_++);
         T *           ctrl = new T(id, args...);
         PutController(ctrl);
         return ctrl;
+    }
+
+    template <class T, class = std::enable_if_t<std::is_base_of<Component, T>::value>, class... Args>
+    inline T *Modal(Args &&... args) {
+        DCHECK(modal() == nullptr);
+        UIComponentId id   = UIComponentId::Of(next_id_++);
+        T *           ctrl = new T(id, args...);
+        PutController(ctrl);
+        modal_ = ctrl;
+        SetFocus(ctrl);
+        return ctrl;
+    }
+
+    void Modaless(Component *ctrl) {
+        if (modal_ == ctrl) {
+            modal_ = nullptr;
+            SetFocus(nullptr);
+            Destroy(ctrl);
+        }
     }
 
     void Destroy(Component *ctrl);
@@ -74,6 +94,7 @@ private:
     Vector2f last_mouse_pos_ = {0, 0};
 
     std::vector<Component *> roots_;
+    Component *              modal_ = nullptr;
     Component *              focus_ = nullptr;
 
     std::unordered_map<UIComponentId, Component *, ControllerHash> id_to_ctrl_;

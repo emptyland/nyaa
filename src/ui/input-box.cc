@@ -56,7 +56,7 @@ void InputBox::OnPaint(double delta) {
 
     std::vector<float> vertices;
 
-    Boundf rect = DrawLabel(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), text_);
+    Boundf rect = DrawLabel(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), Vec3(kFontColor), text_);
 
     time_ += delta;
     uint64_t mills = time_ * 1000;

@@ -70,6 +70,7 @@ set(GAME_SRC
     src/ui/property-box.cc
     src/ui/property-box-group.cc
     src/ui/label-component.cc
+    src/ui/message-box.cc
     src/entity/player-entity.cc
     src/entity/actor-entity.cc
     src/component/cube-component.cc

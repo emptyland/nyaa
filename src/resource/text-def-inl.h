@@ -35,6 +35,12 @@ namespace res {
     V(LABEL_PROP_DEF) \
     V(LABEL_PROP_STG) \
     V(LABEL_PROP_AGL) \
+    V(BTN_OK) \
+    V(BTN_CANCEL) \
+    V(BTN_YES) \
+    V(BTN_NO) \
+    V(BTN_ABORT) \
+    V(BTN_DONE) \
     V(CUBE_AIR) \
     V(CUBE_WALL_1) \
     V(CUBE_WOOD_1) \

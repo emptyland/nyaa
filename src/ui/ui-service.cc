@@ -26,6 +26,8 @@ void UIService::Destroy(Component *ctrl) {
         ctrl->parent()->mutable_children()->Remove(ctrl);
     }
     delete ctrl;
+    if (focus_ == ctrl) { focus_ = nullptr; }
+    if (modal_ == ctrl) { modal_ = nullptr; }
 }
 
 void UIService::SetFocus(Component *ctrl) {
@@ -54,7 +56,11 @@ void UIService::HandleMouseMove() {
     last_mouse_pos_.x = x;
     last_mouse_pos_.y = y;
 
-    for (Component *ctrl : roots_) { DispatchMouseMove(ctrl, x, y); }
+    if (modal()) {
+        DispatchMouseMove(modal(), x, y);
+    } else {
+        for (Component *ctrl : roots_) { DispatchMouseMove(ctrl, x, y); }
+    }
 }
 
 void UIService::DispatchMouseMove(Component *ctrl, double x, double y) {
@@ -83,8 +89,14 @@ void UIService::HandleMouseButtonInput(int button, int action, int mods, bool *s
         }
     }
 
-    for (Component *ctrl : roots_) {
-        if (DoFocus(ctrl, x, y)) { break; }
+    if (modal()) {
+        if (!DoFocus(modal(), x, y)) {
+            focus_ = nullptr;
+        }
+    } else {
+        for (Component *ctrl : roots_) {
+            if (DoFocus(ctrl, x, y)) { break; }
+        }
     }
     if (focus_) { focus_->HandleMouseButtonInput(button, action, mods, should_break); }
 }

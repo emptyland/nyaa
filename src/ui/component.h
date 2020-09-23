@@ -213,9 +213,9 @@ protected:
     bool TestKeyPress(int key);
 
     void DrawBorder(const Vector4f &color, double delta);
-    Boundf DrawLabel(const Vector3f &pos, std::string_view label);
-    Boundf DrawLabel(const Vector3f &pos, std::u32string_view label);
-    void DrawText(const std::vector<float> &vertices);
+    Boundf DrawLabel(const Vector3f &pos, const Vector3f &color, std::string_view label);
+    Boundf DrawLabel(const Vector3f &pos, const Vector3f &color, std::u32string_view label);
+    void DrawText(const Vector3f &color, const std::vector<float> &vertices);
 
 private:
     Component *    next_;

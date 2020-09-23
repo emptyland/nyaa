@@ -90,7 +90,7 @@ void ButtonGroup::HandleMouseButtonInput(int key, int action, int mods, bool *sh
         return;
     }
 
-    if (key == GLFW_MOUSE_BUTTON_LEFT) {
+    if (key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         Button *btn = button(cursor_.x, cursor_.y);
         for (auto [deg, _] : *mutable_delegates()) { deg->OnCommand(this, btn->id()); }
         *should_break = true;

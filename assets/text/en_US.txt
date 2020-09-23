@@ -29,6 +29,12 @@ LABEL_PROP_ATT            | ATT:
 LABEL_PROP_DEF            | DEF:
 LABEL_PROP_STG            | STG:
 LABEL_PROP_AGL            | AGL:
+BTN_OK                    | Ok
+BTN_CANCEL                | Cancel
+BTN_YES                   | Yes
+BTN_NO                    | No
+BTN_ABORT                 | Abort
+BTN_DONE                  | Done
 CUBE_AIR                  | Air Cube
 CUBE_WALL_1               | Wall Cube 1
 CUBE_WOOD_1               | Wood Cube 1

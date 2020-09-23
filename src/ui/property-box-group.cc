@@ -31,7 +31,7 @@ void PropertyBoxGroup::OnPaint(double delta) {
     Vector2f font_size = font()->ApproximateSize(name());
 
     float y = bound().y + bound().h - font_size.y * font_scale();
-    DrawLabel(Vec3(bound().x + 4, y - 4, 0), name());
+    DrawLabel(Vec3(bound().x + 4, y - 4, 0), Vec3(kFontColor), name());
 
     y -= 4;
 

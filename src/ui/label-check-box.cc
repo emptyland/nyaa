@@ -69,7 +69,7 @@ void LabelCheckBox::OnPaint(double delta) {
     }
 
     Vector2f size = font()->ApproximateSize(name()) * font_scale();
-    DrawLabel(Vec3(bound().x + bound().h, bound().y + (bound().h - size.y) / 2, 0), name());
+    DrawLabel(Vec3(bound().x + bound().h, bound().y + (bound().h - size.y) / 2, 0), Vec3(kFontColor), name());
 }
 
 }  // namespace ui
