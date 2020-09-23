@@ -31,21 +31,7 @@ void PropertyBoxGroup::OnPaint(double delta) {
     Vector2f font_size = font()->ApproximateSize(name());
 
     float y = bound().y + bound().h - font_size.y * font_scale();
-
-    std::vector<float> vertices;
-    font()->Render(Vec3(bound().x + 4, y - 4, 0), font_scale(), name(), &vertices);
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
-
-    glBegin(GL_QUADS);
-    glColor3f(1.0, 1.0, 1.0);
-    for (int i = 0; i < vertices.size(); i += 5) {
-        glTexCoord2f(vertices[i + 3], vertices[i + 4]);
-        glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
-    }
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
+    DrawLabel(Vec3(bound().x + 4, y - 4, 0), name());
 
     y -= 4;
 

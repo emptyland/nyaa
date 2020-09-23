@@ -52,26 +52,11 @@ void InputBox::DidFocus(bool focus) {
 }
 
 void InputBox::OnPaint(double delta) {
-    //if (!font()) { set_font(Game::This()->font_lib()->default_face()); }
-
     DrawBorder(kBorderColor, delta);
 
     std::vector<float> vertices;
 
-    Boundf rect =
-        font()->Render(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), font_scale(), text_, &vertices);
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, font()->buffered_tex());
-
-    glBegin(GL_QUADS);
-    glColor3f(1.0, 1.0, 1.0);
-    for (int i = 0; i < vertices.size(); i += 5) {
-        glTexCoord2f(vertices[i + 3], vertices[i + 4]);
-        glVertex3f(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
-    }
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
+    Boundf rect = DrawLabel(Vec3(bound().x + 2, bound().y + 2 + font_bearing(), 0), text_);
 
     time_ += delta;
     uint64_t mills = time_ * 1000;

@@ -43,8 +43,6 @@ private:
     void OnPaint(double delta) override;
 };  // template<class T> class LabelComponent
 
-void DoPaintLabel(const std::vector<float> &vertices, Component *self, Component *child);
-
 template <class T>
 void LabelComponent<T>::OnPaint(double delta) {
     Component *child = Child();
@@ -57,9 +55,7 @@ void LabelComponent<T>::OnPaint(double delta) {
         bound().h,
     });
 
-    std::vector<float> vertices;
-    font()->Render(Vec3(bound().x, bound().y + font_bearing(), 0), font_scale(), name(), &vertices);
-    DoPaintLabel(vertices, this, child);
+    DrawLabel(Vec3(bound().x, bound().y + font_bearing(), 0), name());
 }
 
 }  // namespace ui
