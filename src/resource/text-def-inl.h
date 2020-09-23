@@ -43,6 +43,10 @@ namespace res {
     V(HINT_ROLE_NAME_EMPTY) \
     V(HINT_ROLE_PP_LEFT) \
     V(HINT_CONTINUE_OR_NOT) \
+    V(HINT_PLAYER_NAME) \
+    V(HINT_PLAYER_AVATAR) \
+    V(HINT_MAP_SEED) \
+    V(HINT_MAP_SIZE) \
     V(BTN_OK) \
     V(BTN_CANCEL) \
     V(BTN_YES) \

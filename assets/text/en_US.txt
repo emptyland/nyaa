@@ -37,6 +37,10 @@ LABEL_NOTICE              | Notice:
 HINT_ROLE_NAME_EMPTY      | > Player name is empty!
 HINT_ROLE_PP_LEFT         | > Role Property point has left({})!
 HINT_CONTINUE_OR_NOT      | > Continue or not?
+HINT_PLAYER_NAME          | > Player Name: {}
+HINT_PLAYER_AVATAR        | > Player Avatar: {}
+HINT_MAP_SEED             | > Map Seed: {}
+HINT_MAP_SIZE             | > Map Size: {}
 BTN_OK                    | Ok
 BTN_CANCEL                | Cancel
 BTN_YES                   | Yes

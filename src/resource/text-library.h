@@ -35,11 +35,6 @@ public:
         return std::string(slice.data(), slice.size());
     }
 
-    std::string Vsprintf(TextID fmt, va_list ap) const {
-        std::string_view text = Load(fmt);
-        return base::Vsprintf(text.data(), ap);
-    }
-
     TextID FindID(std::string_view name) const {
         auto iter = text_name_to_id_.find(name);
         return iter == text_name_to_id_.end() ? MAX_TEXT_ID : iter->second;

@@ -46,6 +46,21 @@ struct Textualizer<double> {
 };
 
 template <>
+struct Textualizer<const char *> {
+    static inline std::string Of(const char *value) { return value; }
+};
+
+template <>
+struct Textualizer<std::string> {
+    static inline std::string Of(const std::string &value) { return value; }
+};
+
+template <>
+struct Textualizer<std::string_view> {
+    static inline std::string Of(const std::string_view &value) { return std::string(value.data(), value.size()); }
+};
+
+template <>
 struct Textualizer<TextID> {
     static inline std::string Of(const TextID &value) { return Game::This()->text_lib()->Clone(value); }
 };
