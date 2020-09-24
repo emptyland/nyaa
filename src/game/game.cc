@@ -1,6 +1,7 @@
 #include "game/game.h"
 #include "scene/boot-scene.h"
 #include "scene/avatar-view-scene.h"
+#include "scene/tile-view-scene.h"
 #include "scene/scene.h"
 #include "system/entity-allocation-system.h"
 #include "system/geometry-transform-system.h"
@@ -404,7 +405,9 @@ public:
     }
 
     static int Cmd_TileShow(Game *owns, Command *cmd) {
-        // TODO:
+        TileViewScene *scene = new TileViewScene(owns);
+        scene->SwitchTo(owns->scene());
+        CONSOLE(Vec3(0, 1, 0), "%s open.", scene->Name());
         return 0;
     }
 

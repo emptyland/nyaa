@@ -170,12 +170,12 @@ void AvatarViewScene::OnKeyInput(int key, int code, int action, int mods) {
             if (action == GLFW_PRESS) { ctrl_->run_ = !ctrl_->run_; }
             break;
 
-        case GLFW_KEY_LEFT:
+        case GLFW_KEY_RIGHT:
         case GLFW_KEY_DOWN:
             if (action == GLFW_PRESS) { ctrl_->NextPage(); }
             break;
 
-        case GLFW_KEY_RIGHT:
+        case GLFW_KEY_LEFT:
         case GLFW_KEY_UP:
             if (action == GLFW_PRESS) { ctrl_->PrevPage(); }
             break;
