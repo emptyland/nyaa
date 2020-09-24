@@ -446,6 +446,29 @@ void CodePointIteratorUtf8::Next() {
     }
 }
 
+int Slice::ConvertCodepointToUTF8(char bytes[6], char32_t codepoint) {
+    if (codepoint > 0 && codepoint <= 0x7F) {
+        bytes[0] = static_cast<char>(codepoint & 0x7F);
+        return 1;
+    } else if (codepoint >= 0x80 && codepoint <= 0x7ff) {
+        bytes[0] = 0b11000000 | ((codepoint & 0b11111000000) >> 6);
+        bytes[1] = 0b10000000 | (codepoint & 0b111111);
+        return 2;
+    } else if ((codepoint >= 0x800 && codepoint <= 0xD7FF) || (codepoint >= 0xE000 && codepoint <= 0xFFFF)) {
+        bytes[0] = 0b11100000 | ((codepoint & 0b1111000000000000) >> 12);
+        bytes[1] = 0b10000000 | ((codepoint & 0b111111000000) >> 6);
+        bytes[2] = 0b10000000 | (codepoint & 0b111111);
+        return 3;
+    } else if (codepoint >= 0x10000 && codepoint <= 0x10FFFF) {
+        bytes[0] = 0b11110000 | ((codepoint & 0b111000000000000000000) >> 18);
+        bytes[1] = 0b10000000 | ((codepoint & 0b111111000000000000) >> 12);
+        bytes[2] = 0b10000000 | ((codepoint & 0b111111000000) >> 6);
+        bytes[3] = 0b10000000 | (codepoint & 0b111111);
+        return 4;
+    }
+    return 0;
+}
+
 }  // namespace base
 
 }  // namespace nyaa

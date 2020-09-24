@@ -16,7 +16,7 @@ InputBox::~InputBox() {}
 
 std::string InputBox::Utf8Text() {
     std::string buf;
-    for (char32_t codepoint : text_) { buf.append(1, static_cast<char>(codepoint & 0xff)); }
+    base::Slice::ConvertUTF32ToUTF8(text_, &buf);
     return buf;
 }
 
@@ -24,9 +24,7 @@ void InputBox::SetUtf8Text(std::string_view text) {
     base::CodePointIteratorUtf8 iter(text);
     text_.clear();
     text_.reserve(text.size());
-    for (iter.SeekFirst(); iter.Valid(); iter.Next()) {
-        text_.append(1, *iter);
-    }
+    for (iter.SeekFirst(); iter.Valid(); iter.Next()) { text_.append(1, *iter); }
     cursor_ = static_cast<int>(text_.size());
 }
 
@@ -52,9 +50,7 @@ void InputBox::HandleKeyInput(int key, int code, int action, int mods, bool *sho
 }
 
 void InputBox::HandleCharInput(char32_t code, bool *should_break) {
-    if (number_only() && (code < '0' || code > '9')) {
-        return;
-    }
+    if (number_only() && (code < '0' || code > '9')) { return; }
     text_.insert(text_.begin() + cursor_, code);
     cursor_++;
     *should_break = true;

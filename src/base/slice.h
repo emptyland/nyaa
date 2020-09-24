@@ -199,6 +199,18 @@ public:
 
     static int ParseEscaped(const char *s, size_t n, std::string *rv);
 
+    static int ConvertUTF32ToUTF8(std::u32string_view from, std::string *to) {
+        char buf[6];
+        for (char32_t codepoint : from) {
+            int rv = ConvertCodepointToUTF8(buf, codepoint);
+            if (rv == 0) { return -1; }
+            to->append(buf, rv);
+        }
+        return 0;
+    }
+
+    static int ConvertCodepointToUTF8(char bytes[6], char32_t codepoint);
+
     DISALLOW_ALL_CONSTRUCTORS(Slice);
 };  // struct Slice
 

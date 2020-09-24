@@ -267,9 +267,17 @@ public:
         box->Add(Vec3(0, 1, 0), res::LABEL_NOTICE);
         box->Add(Vec3(0, 1, 0), res::Format(res::HINT_PLAYER_NAME, role_name));
         box->Add(Vec3(0, 1, 0), res::Format(res::HINT_PLAYER_AVATAR, kPlayerAvatars[avatar_index_].value()));
-        box->Add(Vec3(0, 1, 0), res::Format(res::HINT_MAP_SEED, role_name));
-        box->Add(Vec3(0, 1, 0), res::Format(res::HINT_MAP_SIZE, role_name));
+        box->Add(Vec3(0, 1, 0), res::Format(res::HINT_MAP_SEED, map_seed_->Child()->Utf8Text()));
+        box->Add(Vec3(0, 1, 0), res::Format(res::HINT_MAP_SIZE, MapSizeText()));
         box->AddDelegate(static_cast<ui::PropertyBox::Delegate *>(this));
+    }
+
+    const char *MapSizeText() const {
+        switch (map_kind_) {
+            case kLarge: return "large";
+            case kNormal: return "normal";
+            case kSmall: return "small";
+        }
     }
 
 private:
