@@ -460,6 +460,8 @@ public:
         CONSOLE(Vec3(0, 1, 0), "test.6: %s", s.c_str());
         s = res::Format(res::TEST_FMT_3, res::TEST_FMT_1, 1.1, 2.2);
         CONSOLE(Vec3(0, 1, 0), "test.7: %s", s.c_str());
+        s = res::Format(res::TEST_FMT_1, s);
+        CONSOLE(Vec3(0, 1, 0), "test.8: %s", s.c_str());
         return 0;
     }
 

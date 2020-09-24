@@ -4,6 +4,8 @@ namespace nyaa {
 
 namespace res {
 
+namespace detail {
+
 bool FormatScanner::Next() {
     latest_segment_ = std::string_view();
     while (iter_ < end_) {
@@ -24,6 +26,8 @@ bool FormatScanner::Next() {
     }
     return false;
 }
+
+}  // namespace detail
 
 }  // namespace res
 

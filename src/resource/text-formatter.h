@@ -12,7 +12,10 @@ namespace res {
 
 template <class T>
 struct Textualizer {
-    static inline std::string Of(const T &value) { return ""; }
+    static inline std::string Of(const T &value) {
+        NOREACHED();
+        return "";
+    }
 };
 
 template <>
@@ -65,25 +68,7 @@ struct Textualizer<TextID> {
     static inline std::string Of(const TextID &value) { return Game::This()->text_lib()->Clone(value); }
 };
 
-class FormatScanner {
-public:
-    FormatScanner(std::string_view slice)
-        : iter_(slice.data()), start_(slice.data()), end_(slice.data() + slice.size()) {}
-
-    bool Valid() { return iter_ < end_; }
-
-    bool Next();
-
-    std::string Segment() const { return std::string(latest_segment_.data(), latest_segment_.size()); }
-
-    std::string Left() const { return std::string(start_, end_ - start_); }
-
-private:
-    const char *      iter_;
-    const char *      start_;
-    const char *const end_;
-    std::string_view  latest_segment_;
-};  // class FormatScanner
+#if 0
 
 inline std::string Format(TextID fmt) {
     std::string_view slice = Game::This()->text_lib()->Load(fmt);
@@ -150,6 +135,68 @@ inline std::string Format(TextID fmt, const A &a, const B &b, const C &c) {
         text.append(scanner.Segment());
         text.append(Textualizer<C>::Of(c));
     }
+    text.append(scanner.Left());
+    return text;
+}
+
+#endif  // 0
+
+namespace detail {
+
+class FormatScanner {
+public:
+    FormatScanner(std::string_view slice)
+        : iter_(slice.data()), start_(slice.data()), end_(slice.data() + slice.size()) {}
+
+    bool Valid() { return iter_ < end_; }
+
+    bool Next();
+
+    std::string Segment() const { return std::string(latest_segment_.data(), latest_segment_.size()); }
+
+    std::string Left() const { return std::string(start_, end_ - start_); }
+
+    void Move() { start_ = end_; }
+
+private:
+    const char *      iter_;
+    const char *      start_;
+    const char *const end_;
+    std::string_view  latest_segment_;
+};  // class FormatScanner
+
+template <class T>
+inline void HandleFormat(FormatScanner *scanner, std::string *text, T &&arg) {
+    if (!scanner->Valid()) { return; }
+    if (scanner->Next()) {
+        text->append(scanner->Segment());
+        text->append(Textualizer<typename std::remove_reference<T>::type>::Of(std::forward<T>(arg)));
+    }
+}
+
+template <class T>
+inline void ProcessFormat(FormatScanner *scanner, std::string *text, T &&arg) {
+    HandleFormat(scanner, text, std::forward<T>(arg));
+}
+
+template <class T, class... Args>
+inline void ProcessFormat(FormatScanner *scanner, std::string *text, T &&arg, Args &&... args) {
+    HandleFormat(scanner, text, std::forward<T>(arg));
+    ProcessFormat(scanner, text, std::forward<Args>(args)...);
+}
+
+}  // namespace detail
+
+inline std::string Format(TextID fmt) {
+    std::string_view slice = Game::This()->text_lib()->Load(fmt);
+    return std::string(slice.data(), slice.size());
+}
+
+template <class... Args>
+inline std::string Format(TextID fmt, Args &&... args) {
+    detail::FormatScanner scanner(Game::This()->text_lib()->Load(fmt));
+    std::string   text;
+    detail::ProcessFormat(&scanner, &text, std::forward<Args>(args)...);
     text.append(scanner.Left());
     return text;
 }

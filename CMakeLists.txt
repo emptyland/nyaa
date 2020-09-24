@@ -9,6 +9,7 @@ message(STATUS "Operation system is ${CMAKE_SYSTEM}")
 
 set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -D_NDEBUG")
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined-trap -O0 -g -DDEBUG -D_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -DDEBUG -D_DEBUG")
 
 # Test requried libraries

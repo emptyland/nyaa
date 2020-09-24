@@ -258,10 +258,6 @@ public:
             return;
         }
 
-        // HINT_PLAYER_NAME          | > Player Name: {}
-        // HINT_PLAYER_AVATAR        | > Player Avatar: {}
-        // HINT_MAP_SEED             | > Map Seed: {}
-        // HINT_MAP_SIZE             | > Map Size: {}
         ui::MessageBox *box = service()->Modal<ui::MessageBox>(ui::kOk | ui::kCancel, nullptr);
         box->set_name("[done]");
         box->Add(Vec3(0, 1, 0), res::LABEL_NOTICE);
