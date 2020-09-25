@@ -1,6 +1,9 @@
 #include "scene/scene.h"
 #include "game/game.h"
+#include "game/vector.h"
 #include "glog/logging.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 namespace nyaa {
 
@@ -21,5 +24,9 @@ void Scene::DelayDispose() { game()->DelayDeleteScene(this); }
 /*virtual*/ void Scene::OnKeyInput(int key, int code, int action, int mods) {}
 
 /*virtual*/ void Scene::Render(double delta) {}
+
+bool Scene::TestKeyPressed(int key) {
+    return ::glfwGetKey(game()->window(), key) == GLFW_PRESS;
+}
 
 }  // namespace nyaa

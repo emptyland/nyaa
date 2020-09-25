@@ -45,8 +45,6 @@ public:
 
         tile_tex_id_ = game()->texture_lib()->FindOrNull(kTileId)->tex_id();
 
-        projection_mat_.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
-        view_mat_.Translate(0, 0, -2);
         initialized_ = true;
     }
 
@@ -61,11 +59,31 @@ public:
         glBindTexture(GL_TEXTURE_2D, tile_tex_id_);
 
         DrawCube(1, 0, 0);
+        DrawCube(2, 1, 0);
+        DrawCube(3, 2, 0);
+        DrawCube(4, 3, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         shader_->Disable();
         shader_->Unuse();
     }
+
+    void HandleInput() {
+        const float rolated_speed = 2;
+
+        if (owns_->TestKeyPressed(GLFW_KEY_UP)) {
+            AddYRolated(rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_DOWN)) {
+            AddYRolated(-rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_LEFT)) {
+            AddZRolated(-rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_RIGHT)) {
+            AddZRolated(rolated_speed);
+        }
+    }
+
+    void AddYRolated(float angle) { y_rolated_ += angle; }
+    void AddZRolated(float angle) { z_rolated_ += angle; }
 
     Game *game() const { return owns_->game(); }
 
@@ -75,11 +93,17 @@ private:
 
         model_mat_.Identity();
         Matrix<float> mat;
-        mat.Rotate(1, 0, 0, y_rolated_);
+
+        mat.Scale(scale_, scale_, scale_);
         model_mat_.Multiply(mat);
+
+        mat.Translate(-8 + 2 * col + 1, 4 + 2 * row + 1, 0);
+        model_mat_.Multiply(mat);
+
+        mat.Rotate(0, 1, 0, y_rolated_);
+        model_mat_.Multiply(mat);
+
         mat.Rotate(0, 0, 1, z_rolated_);
-        model_mat_.Multiply(mat);
-        mat.Scale(0.2, 0.2, 0.2);
         model_mat_.Multiply(mat);
 
         shader_->SetModelMatrix(model_mat_);
@@ -90,6 +114,9 @@ private:
     void UpdatePageSize() {}
 
     void SetUpShader() {
+        projection_mat_.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
+        view_mat_.Translate(camera_.x, camera_.y, camera_.z);
+
         shader_->SetProjectionMatrix(projection_mat_);
         shader_->SetViewMatrix(view_mat_);
         shader_->SetDiffuseMaterial({0.6, 0.6, 0.6});
@@ -138,13 +165,13 @@ private:
     Matrix<float> model_mat_;
     Matrix<float> view_mat_;
 
-    float    ambient_light_     = 0.8;
+    float    ambient_light_     = 0.6;
     float    y_rolated_         = 45;
     float    z_rolated_         = 45;
     Vector4f camera_            = {0, 0, -2, 1};
     Vector3f directional_light_ = {0, 1, -1};
 
-    float scale_ = 0.2;
+    float scale_ = 0.1;
 
     static const float kVertices[];
 };  // class CubeViewScene::Core
@@ -189,10 +216,7 @@ void CubeViewScene::Reset() { core_->Prepare(); }
 void CubeViewScene::OnKeyInput(int key, int code, int action, int mods) {}
 
 void CubeViewScene::Render(double delta) {
-    // res::BlockShaderProgram *shader = game()->shader_lib()->block_program();
-    // shader->Use();
-    // shader->Enable();
-
+    core_->HandleInput();
     core_->DrawPage(delta);
 
     // shader->Disable();

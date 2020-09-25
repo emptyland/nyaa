@@ -25,6 +25,8 @@ public:
     virtual void OnKeyInput(int key, int code, int action, int mods);
     virtual void Render(double delta);
 
+    bool TestKeyPressed(int key);
+
     DISALLOW_ALL_CONSTRUCTORS(Scene);
 
 private:
