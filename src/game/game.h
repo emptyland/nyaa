@@ -188,9 +188,9 @@ private:
     IdGenerator eid_generator_;
 };  // namespace nyaa
 
-extern base::LazyInstance<Game> ThisGame;
+inline base::LazyInstance<Game> standalone_game;
 
-/*static*/ inline Game *Game::This() { return ThisGame.Get(); }
+/*static*/ inline Game *Game::This() { return standalone_game.Get(); }
 
 }  // namespace nyaa
 

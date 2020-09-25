@@ -2,7 +2,7 @@
 #include "scene/boot-scene.h"
 #include "scene/avatar-view-scene.h"
 #include "scene/tile-view-scene.h"
-#include "scene/scene.h"
+#include "scene/cube-view-scene.h"
 #include "system/entity-allocation-system.h"
 #include "system/geometry-transform-system.h"
 #include "system/zone-render-system.h"
@@ -38,7 +38,6 @@
 
 namespace nyaa {
 
-base::LazyInstance<Game> ThisGame;
 
 class Game::UIController : public ui::InputBox::Delegate {
 public:
@@ -412,7 +411,9 @@ public:
     }
 
     static int Cmd_CubeShow(Game *owns, Command *cmd) {
-        // TODO:
+        CubeViewScene *scene = new CubeViewScene(owns);
+        scene->SwitchTo(owns->scene());
+        CONSOLE(Vec3(0, 1, 0), "%s open.", scene->Name());
         return 0;
     }
 

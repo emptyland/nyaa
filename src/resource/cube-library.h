@@ -64,7 +64,8 @@ public:
 
 private:
     const TextureLibrary *const tex_lib_;
-    Cube *                      cubes_[Cube::MAX_CUBE_KINDS];
+
+    Cube *cubes_[Cube::MAX_CUBE_KINDS];
 };  // class CubeLibrary
 
 }  // namespace res

@@ -13,7 +13,7 @@
                 "cwd": "${workspaceFolder}/build"
             },
             "problemMatcher": [
-                "$clang"
+                "$gcc"
             ],
             "presentation": {
                 "echo": true,

@@ -8,6 +8,13 @@
     V(CUBE_DIRT_2) \
     V(CUBE_GRASS_1) \
     V(CUBE_GRASS_2) \
+    V(CUBE_SNOW_1) \
+    V(CUBE_SNOW_2) \
+    V(CUBE_SNOW_3) \
+    V(CUBE_SNOW_STONE_1) \
+    V(CUBE_SNOW_STONE_2) \
+    V(CUBE_SNOW_STONE_3) \
+    V(CUBE_SNOW_DIRT_1) \
     V(CUBE_STONE_1) \
     V(CUBE_TREE_1) \
     V(CUBE_TREE_2) \

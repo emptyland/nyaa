@@ -81,7 +81,7 @@ bool TextureLibrary::Prepare(const std::string &file_name) {
 }
 
 uint32_t TextureLibrary::LoadPictureFile(const std::string &name, Vector2f *size) {
-    std::string full_name(ThisGame->properties()->assets_dir());
+    std::string full_name(Game::This()->properties()->assets_dir());
     full_name.append("/").append(kTextureDir).append("/").append(name);
 
     std::vector<Byte> data;

@@ -10,7 +10,7 @@ void GeometryTransformSystem::Enter2DProjection() {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(0, ThisGame->fb_w(), 0, ThisGame->fb_h(), -1, 10);
+    glOrtho(0, Game::This()->fb_w(), 0, Game::This()->fb_h(), -1, 10);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
