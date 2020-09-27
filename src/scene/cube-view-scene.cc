@@ -17,8 +17,8 @@ public:
     static constexpr auto kTileId      = ResourceId::Of(200000);
     static constexpr int  kBorderSize  = 48;
     static constexpr int  kPaddingSize = 48;
-    static constexpr int  kCubeW       = 128;
-    static constexpr int  kCubeH       = 128;
+    // static constexpr int   kCubeFactor  = 75;
+    static constexpr float kScaleFactor = 300.0;
 
     Core(CubeViewScene *owns) : owns_(owns) {}
     ~Core() { glDeleteBuffers(1, &vbo_); }
@@ -49,6 +49,8 @@ public:
     }
 
     void DrawPage(double delta) {
+        UpdatePageSize();
+
         shader_->Use();
         SetUpShader();
 
@@ -58,10 +60,17 @@ public:
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tile_tex_id_);
 
-        DrawCube(1, 0, 0);
-        DrawCube(2, 1, 0);
-        DrawCube(3, 2, 0);
-        DrawCube(4, 3, 0);
+        int offset = page_no_ * PageSize();
+        for (int j = 0; j < page_row_; j++) {
+            for (int i = 0; i < page_col_; i++) {
+                int index = offset++;
+                if (index >= kCubeSize) { goto draw_done; }
+
+                DrawCube(index, i, j);
+            }
+        }
+        // DrawCube(1, 0, 0);
+    draw_done:
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         shader_->Disable();
@@ -72,32 +81,42 @@ public:
         const float rolated_speed = 2;
 
         if (owns_->TestKeyPressed(GLFW_KEY_UP)) {
-            AddYRolated(rolated_speed);
-        } else if (owns_->TestKeyPressed(GLFW_KEY_DOWN)) {
-            AddYRolated(-rolated_speed);
-        } else if (owns_->TestKeyPressed(GLFW_KEY_LEFT)) {
-            AddZRolated(-rolated_speed);
-        } else if (owns_->TestKeyPressed(GLFW_KEY_RIGHT)) {
             AddZRolated(rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_DOWN)) {
+            AddZRolated(-rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_LEFT)) {
+            AddYRolated(-rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_RIGHT)) {
+            AddYRolated(rolated_speed);
+        } else if (owns_->TestKeyPressed(GLFW_KEY_K)) {
+            scale_ += 0.001;
+        } else if (owns_->TestKeyPressed(GLFW_KEY_L)) {
+            scale_ -= 0.001;
+            if (scale_ < 0.1) { scale_ = 0.1; }
+        } else if (owns_->TestKeyPressed(GLFW_KEY_W)) {
+            offset_.y += 0.01;
+        } else if (owns_->TestKeyPressed(GLFW_KEY_S)) {
+            offset_.y -= 0.01;
+        } else if (owns_->TestKeyPressed(GLFW_KEY_A)) {
+            offset_.x += 0.01;
+        } else if (owns_->TestKeyPressed(GLFW_KEY_D)) {
+            offset_.y -= 0.01;
         }
     }
-
-    void AddYRolated(float angle) { y_rolated_ += angle; }
-    void AddZRolated(float angle) { z_rolated_ += angle; }
-
-    Game *game() const { return owns_->game(); }
 
 private:
     void DrawCube(int index, int col, int row) {
         if (index >= kCubeSize) { return; }
 
+        // float x = -8 + 2 * col + 1;
+        // float y = 4 + 2 * row + 1;
+        float x = -page_col_ * (scale_ + 0.4) / 2 + col * (scale_ + 0.4) + 1 * scale_;
+        float y = -page_row_ * (scale_ + 0.4) / 2 + row * (scale_ + 0.4) + 1 * scale_;
+
         model_mat_.Identity();
         Matrix<float> mat;
 
-        mat.Scale(scale_, scale_, scale_);
-        model_mat_.Multiply(mat);
-
-        mat.Translate(-8 + 2 * col + 1, 4 + 2 * row + 1, 0);
+        mat.Translate(x, y, 0);
         model_mat_.Multiply(mat);
 
         mat.Rotate(0, 1, 0, y_rolated_);
@@ -106,16 +125,32 @@ private:
         mat.Rotate(0, 0, 1, z_rolated_);
         model_mat_.Multiply(mat);
 
+        mat.Scale(scale_, scale_, scale_);
+        model_mat_.Multiply(mat);
+
         shader_->SetModelMatrix(model_mat_);
 
         glDrawArrays(GL_QUADS, index * 24, 24);
     }
 
-    void UpdatePageSize() {}
+    void UpdatePageSize() {
+        // float factor = (kCubeFactor * ScaleFactor());
+        page_col_ = game()->fb_w() / kScaleFactor;
+        page_row_ = game()->fb_h() / kScaleFactor;
+
+        page_no_ = std::min(page_no_, MaxPageNo() - 1);
+    }
+
+    float ScaleFactor() const { return (scale_ / kScaleFactor); }
+
+    int PageSize() const { return page_col_ * page_row_; }
+
+    int MaxPageNo() const { return PageSize() == 0 ? 0 : (kCubeSize + PageSize() - 1) / PageSize(); }
 
     void SetUpShader() {
         projection_mat_.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
         view_mat_.Translate(camera_.x, camera_.y, camera_.z);
+        // view_mat_.Identity();
 
         shader_->SetProjectionMatrix(projection_mat_);
         shader_->SetViewMatrix(view_mat_);
@@ -129,7 +164,7 @@ private:
         shader_->SetPointLightLinear(0.09);
         shader_->SetPointLightQuadratic(0.032);
         shader_->SetPointLightPosition(Vec3(0, 0, 2));
-        shader_->SetCameraPosition({camera_.x, camera_.y, camera_.z});
+        shader_->SetCameraPosition({-camera_.x, -camera_.y, -camera_.z});
     }
 
     static void FillCubeBuf(const res::Cube *cube, float *vertices) {
@@ -152,6 +187,11 @@ private:
         }
     }
 
+    void AddYRolated(float angle) { y_rolated_ += angle; }
+    void AddZRolated(float angle) { z_rolated_ += angle; }
+
+    Game *game() const { return owns_->game(); }
+
     CubeViewScene *const     owns_;
     bool                     initialized_ = false;
     GLuint                   vbo_         = 0;
@@ -171,42 +211,44 @@ private:
     Vector4f camera_            = {0, 0, -2, 1};
     Vector3f directional_light_ = {0, 1, -1};
 
-    float scale_ = 0.1;
+    float scale_ = 0.3;
+
+    Vector2f offset_ = {0, 0};
 
     static const float kVertices[];
 };  // class CubeViewScene::Core
 
 const float CubeViewScene::Core::kVertices[] = {
     // top
-    0, 0, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
-    0, 1, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
-    1, 1, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
-    1, 0, 1, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
+    -0.5, -0.5, 0.5, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,  // :format
+    -0.5, 0.5, 0.5, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,   // :format
+    0.5, 0.5, 0.5, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,    // :format
+    0.5, -0.5, 0.5, /*normal*/ 0, 0, 1, /*uv*/ 0, 0,   // :format
     // bottom
-    0, 0, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
-    0, 1, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
-    1, 1, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
-    1, 0, 0, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    -0.5, -0.5, -0.5, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,  // :format
+    -0.5, 0.5, -0.5, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,   // :format
+    0.5, 0.5, -0.5, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,    // :format
+    0.5, -0.5, -0.5, /*normal*/ 0, 0, -1, /*uv*/ 0, 0,   // :format
     // :front
-    0, 0, 0, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    0, 0, 1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    1, 0, 1, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
-    1, 0, 0, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    -0.5, -0.5, -0.5, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,  // :format
+    -0.5, -0.5, 0.5, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,   // :format
+    0.5, -0.5, 0.5, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,    // :format
+    0.5, -0.5, -0.5, /*normal*/ 0, -1, 0, /*uv*/ 0, 0,   // :format
     // :back
-    0, 1, 0, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
-    1, 1, 0, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
-    1, 1, 1, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
-    0, 1, 1, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
+    -0.5, 0.5, -0.5, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,  // :format
+    0.5, 0.5, -0.5, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,   // :format
+    0.5, 0.5, 0.5, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,    // :format
+    -0.5, 0.5, 0.5, /*normal*/ 0, 1, 0, /*uv*/ 0, 0,   // :format
     // :left
-    0, 0, 0, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    0, 1, 0, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    0, 1, 1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
-    0, 0, 1, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -0.5, -0.5, -0.5, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,  // :format
+    -0.5, 0.5, -0.5, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,   // :format
+    -0.5, 0.5, 0.5, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,    // :format
+    -0.5, -0.5, 0.5, /*normal*/ -1, 0, 0, /*uv*/ 0, 0,   // :format
     // :right
-    1, 0, 0, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
-    1, 0, 1, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
-    1, 1, 1, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
-    1, 1, 0, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
+    0.5, -0.5, -0.5, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,  // :format
+    0.5, -0.5, 0.5, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,   // :format
+    0.5, 0.5, 0.5, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,    // :format
+    0.5, 0.5, -0.5, /*normal*/ 1, 0, 0, /*uv*/ 0, 0,   // :format
 };
 
 CubeViewScene::CubeViewScene(Game *game) : Scene(game), core_(new Core(this)) {}

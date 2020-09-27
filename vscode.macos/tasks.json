@@ -7,7 +7,7 @@
             "command": "make",
             "args": [
                 "-j",
-                "3"
+                "6"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
@@ -50,7 +50,7 @@
             "label": "CMake: cmake configure",
             "command": "cmake",
             "args": [
-                ".."
+                "-DCMAKE_BUILD_TYPE=Debug .."
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
