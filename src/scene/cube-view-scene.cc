@@ -18,7 +18,7 @@ public:
     static constexpr int  kBorderSize  = 48;
     static constexpr int  kPaddingSize = 48;
     // static constexpr int   kCubeFactor  = 75;
-    static constexpr float kScaleFactor = 300.0;
+    static constexpr float kScaleFactor = 200.0;
 
     Core(CubeViewScene *owns) : owns_(owns) {}
     ~Core() { glDeleteBuffers(1, &vbo_); }
@@ -41,16 +41,19 @@ public:
         glBufferData(GL_ARRAY_BUFFER, buf.size() * sizeof(float), &buf[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        shader_ = game()->shader_lib()->block_program();
-
+        shader_      = game()->shader_lib()->block_program();
         tile_tex_id_ = game()->texture_lib()->FindOrNull(kTileId)->tex_id();
 
+        offset_.x = scale_;
+        offset_.y = scale_;
+
+        const int w  = ::sqrt(kCubeSize) + 1;
+        total_row_   = w;
+        total_col_   = w;
         initialized_ = true;
     }
 
     void DrawPage(double delta) {
-        UpdatePageSize();
-
         shader_->Use();
         SetUpShader();
 
@@ -60,13 +63,12 @@ public:
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tile_tex_id_);
 
-        int offset = page_no_ * PageSize();
-        for (int j = 0; j < page_row_; j++) {
-            for (int i = 0; i < page_col_; i++) {
-                int index = offset++;
+        int index = 0;
+        for (int j = 0; j < total_row_; j++) {
+            for (int i = 0; i < total_col_; i++) {
                 if (index >= kCubeSize) { goto draw_done; }
 
-                DrawCube(index, i, j);
+                DrawCube(index++, i, j);
             }
         }
         // DrawCube(1, 0, 0);
@@ -100,7 +102,7 @@ public:
         } else if (owns_->TestKeyPressed(GLFW_KEY_A)) {
             offset_.x += 0.01;
         } else if (owns_->TestKeyPressed(GLFW_KEY_D)) {
-            offset_.y -= 0.01;
+            offset_.x -= 0.01;
         }
     }
 
@@ -108,10 +110,8 @@ private:
     void DrawCube(int index, int col, int row) {
         if (index >= kCubeSize) { return; }
 
-        // float x = -8 + 2 * col + 1;
-        // float y = 4 + 2 * row + 1;
-        float x = -page_col_ * (scale_ + 0.4) / 2 + col * (scale_ + 0.4) + 1 * scale_;
-        float y = -page_row_ * (scale_ + 0.4) / 2 + row * (scale_ + 0.4) + 1 * scale_;
+        float x = -total_col_ * (scale_ + 0.4) / 2 + col * (scale_ + 0.4) + offset_.x;
+        float y = -total_row_ * (scale_ + 0.4) / 2 + row * (scale_ + 0.4) + offset_.y;
 
         model_mat_.Identity();
         Matrix<float> mat;
@@ -130,22 +130,13 @@ private:
 
         shader_->SetModelMatrix(model_mat_);
 
+        // game()->transform()->TransformToScreen(projection_mat_, view_mat_, model_mat_, Vec4)
+        Vector4f coord = game()->transform()->TransformToScreen(projection_mat_, view_mat_, model_mat_,
+                                                                Vec4(0, 0, 0, 1), {game()->fb_w(), game()->fb_h()});
+        cube_screen_coord_[index] = Vec2(coord.x, coord.y);
+
         glDrawArrays(GL_QUADS, index * 24, 24);
     }
-
-    void UpdatePageSize() {
-        // float factor = (kCubeFactor * ScaleFactor());
-        page_col_ = game()->fb_w() / kScaleFactor;
-        page_row_ = game()->fb_h() / kScaleFactor;
-
-        page_no_ = std::min(page_no_, MaxPageNo() - 1);
-    }
-
-    float ScaleFactor() const { return (scale_ / kScaleFactor); }
-
-    int PageSize() const { return page_col_ * page_row_; }
-
-    int MaxPageNo() const { return PageSize() == 0 ? 0 : (kCubeSize + PageSize() - 1) / PageSize(); }
 
     void SetUpShader() {
         projection_mat_.Perspective(45, static_cast<float>(game()->fb_w()) / game()->fb_h(), 0.1, 100);
@@ -197,9 +188,6 @@ private:
     GLuint                   vbo_         = 0;
     GLuint                   tile_tex_id_ = 0;
     res::BlockShaderProgram *shader_      = nullptr;
-    int                      page_col_    = 0;
-    int                      page_row_    = 0;
-    int                      page_no_     = 0;
 
     Matrix<float> projection_mat_;
     Matrix<float> model_mat_;
@@ -211,9 +199,13 @@ private:
     Vector4f camera_            = {0, 0, -2, 1};
     Vector3f directional_light_ = {0, 1, -1};
 
-    float scale_ = 0.3;
+    int   total_row_ = 0;
+    int   total_col_ = 0;
+    float scale_     = 0.2;
 
     Vector2f offset_ = {0, 0};
+
+    Vector2f cube_screen_coord_[kCubeSize];
 
     static const float kVertices[];
 };  // class CubeViewScene::Core
