@@ -14,6 +14,7 @@ namespace res {
 class DemoShaderProgram;
 class BillboardShaderProgram;
 class BlockShaderProgram;
+class TextShaderProgram;
 
 class ShaderLibrary final {
 public:
@@ -25,6 +26,7 @@ public:
     DEF_PTR_GETTER(DemoShaderProgram, demo_program);
     DEF_PTR_GETTER(BillboardShaderProgram, billboard_program);
     DEF_PTR_GETTER(BlockShaderProgram, block_program);
+    DEF_PTR_GETTER(TextShaderProgram, text_program);
 
     bool Prepare(const std::string &dir);
 
@@ -39,6 +41,7 @@ private:
     DemoShaderProgram *     demo_program_;
     BillboardShaderProgram *billboard_program_;
     BlockShaderProgram *    block_program_;
+    TextShaderProgram *     text_program_;
 };  // class ShaderLibrary
 
 class ShaderProgram : public base::ArenaObject {
@@ -225,6 +228,35 @@ private:
     int normal_;
     int uv_;
 };  // class BlockShaderProgram
+
+class TextShaderProgram : public ShaderProgram {
+public:
+    DEF_VAL_GETTER(int, projection_matrix);
+    DEF_VAL_GETTER(int, view_model_matrix);
+    DEF_VAL_GETTER(int, text_color);
+    DEF_VAL_GETTER(int, position);
+    DEF_VAL_GETTER(int, uv);
+
+    void SetProjectionMatrix(const Matrix<float> &mat);
+    void SetViewModelMatrix(const Matrix<float> &mat);
+    void SetTextColor(const Vector4f &color);
+
+    void Enable() override;
+    void Disable() override;
+
+    friend class ShaderLibrary;
+    DISALLOW_IMPLICIT_CONSTRUCTORS(TextShaderProgram);
+
+protected:
+    TextShaderProgram(uint32_t program);
+
+private:
+    int projection_matrix_;
+    int view_model_matrix_;
+    int text_color_;
+    int position_;
+    int uv_;
+};  // class UniversalShaderProgram
 
 }  // namespace res
 

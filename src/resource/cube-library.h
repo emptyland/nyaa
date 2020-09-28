@@ -30,6 +30,14 @@ public:
     DEF_VAL_GETTER(int, vh);
     DEF_VAL_GETTER(std::string_view, name);
 
+    static const char *GetName(Kind kind) { return IndexToName(static_cast<int>(kind)); }
+
+    static const char *IndexToName(int index) {
+        DCHECK_GE(index, 0);
+        DCHECK_LT(index, MAX_CUBE_KINDS);
+        return kKindNames[index];
+    }
+
     friend class CubeLibrary;
 
 private:
@@ -42,6 +50,8 @@ private:
     int              vw_;
     int              vh_;
     std::string_view name_;
+
+    static const char *kKindNames[MAX_CUBE_KINDS];
 };  // class Cube
 
 class CubeLibrary final : public ResourceLibrary<Cube, CubeLibrary> {

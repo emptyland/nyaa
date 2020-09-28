@@ -19,6 +19,9 @@ const char kBillboardVSFileName[] = "billboard.vs";
 const char kBlockFSFileName[] = "block.fs";
 const char kBlockVSFileName[] = "block.vs";
 
+const char kTextFSFileName[] = "text.fs";
+const char kTextVSFileName[] = "text.vs";
+
 void ShaderProgram::Use() { glUseProgram(handle()); }
 void ShaderProgram::Unuse() { glUseProgram(0); }
 
@@ -192,6 +195,40 @@ void BlockShaderProgram::SetSpecularMaterial(const Vector3f &value) {
     glUniform3f(specular_material(), value.x, value.y, value.z);
 }
 
+TextShaderProgram::TextShaderProgram(uint32_t program)
+    : ShaderProgram(program)
+    , projection_matrix_(glGetUniformLocation(handle_, "projectionMatrix"))
+    , view_model_matrix_(glGetUniformLocation(handle_, "viewModelMatrix"))
+    , text_color_(glGetUniformLocation(handle_, "textColor"))
+    , position_(glGetAttribLocation(handle_, "position"))
+    , uv_(glGetAttribLocation(handle_, "uv")) {}
+
+void TextShaderProgram::SetProjectionMatrix(const Matrix<float> &mat) {
+    DCHECK_NE(-1, projection_matrix());
+    glUniformMatrix4fv(projection_matrix(), 1, GL_FALSE, mat.values());
+}
+
+void TextShaderProgram::SetViewModelMatrix(const Matrix<float> &mat) {
+    DCHECK_NE(-1, view_model_matrix());
+    glUniformMatrix4fv(view_model_matrix(), 1, GL_FALSE, mat.values());
+}
+
+void TextShaderProgram::SetTextColor(const Vector4f &color) {
+    DCHECK_NE(-1, text_color());
+    glUniform4fv(text_color(), 1, &color.x);
+}
+
+void TextShaderProgram::Enable() {
+    glEnableVertexAttribArray(position());
+    glEnableVertexAttribArray(uv());
+    SetAttribute(position(), 4, 5, 0);
+    SetAttribute(uv(), 4, 5, 3);
+}
+void TextShaderProgram::Disable() {
+    glDisableVertexAttribArray(position());
+    glDisableVertexAttribArray(uv());
+}
+
 bool ShaderLibrary::Prepare(const std::string &dir) {
     uint32_t vs, fs, program;
     if (!MakeShader(dir + "/" + kDemoVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
@@ -208,6 +245,11 @@ bool ShaderLibrary::Prepare(const std::string &dir) {
     if (!MakeShader(dir + "/" + kBlockFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
     if (!MakeProgram(vs, fs, &program)) { return false; }
     block_program_ = new (arena_) BlockShaderProgram(program);
+
+    if (!MakeShader(dir + "/" + kTextVSFileName, GL_VERTEX_SHADER, &vs)) { return false; }
+    if (!MakeShader(dir + "/" + kTextFSFileName, GL_FRAGMENT_SHADER, &fs)) { return false; }
+    if (!MakeProgram(vs, fs, &program)) { return false; }
+    text_program_ = new (arena_) TextShaderProgram(program);
     return true;
 }
 

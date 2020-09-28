@@ -6,6 +6,12 @@ namespace nyaa {
 
 namespace res {
 
+const char *Cube::kKindNames[MAX_CUBE_KINDS] = {
+#define DECLARE_KIND(name) #name,
+    DEFINE_CUBE_KINDS(DECLARE_KIND)
+#undef DECLARE_KIND
+};
+
 class CubeDef final : public Definition<CubeDef> {
 public:
     DEF_VAL_GETTER(ResourceId, id);
