@@ -135,8 +135,6 @@ int TestScene::HandleKeyInput() {
 }
 
 void TestScene::Render(double delta) {
-    int command = !game()->break_input() ? HandleKeyInput() : 0;
-
     sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
 
     System::This()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
