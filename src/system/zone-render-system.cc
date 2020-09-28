@@ -62,7 +62,7 @@ void ZoneRenderSystem::Reset() {
 }
 
 void ZoneRenderSystem::RenderTerrain(com::ZoneComponent *zone) {
-    if (!vbo_[1][1].buffer) { GenBuffer(zone->center(), 1, 1); }
+    if (!vbo_[1][1].buffer) { GenBuffer(zone->mutable_region(), 1, 1); }
 
     //------------------------------------------------------------------------------------------------------------------
     glFrontFace(GL_CW);
@@ -120,8 +120,8 @@ void ZoneRenderSystem::GenBuffer(com::RegionComponent *region, int i, int j) {
 }
 
 void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, bool surface, std::vector<float> *buf) {
-    //float half_size  = cube_size_ / 2;
-    int   n_vertices = surface ? 4 : 24;
+    // float half_size  = cube_size_ / 2;
+    int n_vertices = surface ? 4 : 24;
 
     size_t pos = buf->size();
     buf->resize(pos + n_vertices * 8);

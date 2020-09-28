@@ -34,9 +34,8 @@ void TestScene::Reset() {
     entity_grid_set_.reset(new EntityGridSet);
 
     zone_.reset(new com::ZoneComponent());
-    com::RegionComponent *region = new com::RegionComponent();
+    com::RegionComponent *region = zone_->mutable_region();
     region->set_global_coord({0, 0});
-    zone_->set_region(1, 1, region);
     System::This()->random_zone()->Update(region);
     for (int i = 0; i < region->plants_size(); i++) {
         // entity_grid_set_->UpdatePlant()
@@ -140,16 +139,8 @@ void TestScene::Render(double delta) {
 
     sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
 
-    // glViewport()
+    System::This()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
 
-    if (zone_->center()) {
-        System::This()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
-    }
-
-    if (!zone_->center() || command > 0) {
-        zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
-        System::This()->zone_loader()->Update(zone_.get());
-    }
     entity_grid_set_->UpdatePlayer(player_.get());
 
     res::BlockShaderProgram *    bk_shader = game()->shader_lib()->block_program();

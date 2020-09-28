@@ -24,7 +24,7 @@ public:
 
 private:
     void ReplaceRegionIfNeeded(com::ZoneComponent *zone, com::RegionComponent *center);
-    com::RegionComponent *LoadRegion(int x, int y);
+    com::RegionComponent *LoadRegion(com::RegionComponent *region, int x, int y);
 
     std::unordered_map<int, com::RegionComponent *> cached_regions_;
 };  // class ZoneLoadingSystem

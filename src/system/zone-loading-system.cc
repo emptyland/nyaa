@@ -12,15 +12,10 @@ void ZoneLoadingSystem::Update(com::ZoneComponent *zone) {
         zone->viewport().round_down_center_x(),
         zone->viewport().round_down_center_y(),
     };
-    if (!zone->center()) {
-        zone->set_region(1, 1, LoadRegion(coord.x / kRegionSize, coord.y / kRegionSize));
-    }
-
-    zone->UpdateViewportCoord();
+    LoadRegion(zone->mutable_region(), coord.x, coord.y);
 }
 
-com::RegionComponent *ZoneLoadingSystem::LoadRegion(int x, int y) {
-    com::RegionComponent *region = new com::RegionComponent();
+com::RegionComponent *ZoneLoadingSystem::LoadRegion(com::RegionComponent *region, int x, int y) {
     region->set_global_coord({x, y});
 
     // TODO:

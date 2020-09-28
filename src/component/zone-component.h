@@ -61,8 +61,8 @@ public:
     }
 
 private:
-    Vector2i global_coord_ = {0, 0};
-    Floor    terrain_[kTerrainMaxLevels];
+    Vector2i                    global_coord_ = {0, 0};
+    Floor                       terrain_[kTerrainMaxLevels];
     std::vector<PlantComponent> plants_;
 };  // class RegionComponent
 
@@ -84,64 +84,21 @@ private:
 
 class ZoneComponent {
 public:
-    enum Direction { kNone, kE, kS, kW, kN, kSE, kNE, kSW, kNW };
-
     ZoneComponent();
     ~ZoneComponent();
 
-    CubeComponent *CubeAt(int i, int j, int z);
-
     CubeComponent *Cube(int x, int y, int z);
 
-    void UpdateViewportCoord(Vector2f coord) {
-        viewport_.set_center_coord(coord);
-        want_ = WantSibling();
-    }
-
-    void UpdateViewportCoord() { want_ = WantSibling(); }
-
-    Direction WantSibling();
-
-    DEF_VAL_PROP_RM(com::ViewportComponent, viewport);
-    DEF_VAL_GETTER(Direction, want);
-
-    com::RegionComponent *center() const { return regions_[1][1]; }
-
-    const char *want_string() const { return kDirectionText[want()]; }
-
-    com::RegionComponent *region(int i, int j) {
-        DCHECK_GE(i, 0);
-        DCHECK_LT(i, 3);
-        DCHECK_GE(j, 0);
-        DCHECK_LT(j, 3);
-        return regions_[i][j];
-    }
-
-    void set_region(int i, int j, com::RegionComponent *region) {
-        DCHECK_GE(i, 0);
-        DCHECK_LT(i, 3);
-        DCHECK_GE(j, 0);
-        DCHECK_LT(j, 3);
-        regions_[i][j] = region;
-    }
-
-    void ClearRegions() {
-        for (int i = 0; i < 3; i++) {
-            regions_[i][0] = nullptr;
-            regions_[i][1] = nullptr;
-            regions_[i][2] = nullptr;
-        }
-    }
+    DEF_VAL_PROP_RM(ViewportComponent, viewport);
+    DEF_VAL_PROP_RM(RegionComponent, region);
+    DEF_VAL_PROP_RW(float, gravity);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(ZoneComponent);
 
 private:
-    com::ViewportComponent viewport_;
-    com::RegionComponent * regions_[3][3];
-
-    Direction want_ = kNone;
-
-    static const char *kDirectionText[];
+    ViewportComponent viewport_;
+    RegionComponent   region_;
+    float             gravity_ = 0;
 };  // class Zone
 
 }  // namespace com
