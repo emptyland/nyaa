@@ -2,9 +2,9 @@
 #ifndef NYAA_SYSTEM_IMPACT_CHECKING_SYSTEM_H_
 #define NYAA_SYSTEM_IMPACT_CHECKING_SYSTEM_H_
 
+#include "system/system.h"
 #include "game/identifiers.h"
 #include "game/vector.h"
-#include "base/base.h"
 #include "glog/logging.h"
 
 namespace nyaa {

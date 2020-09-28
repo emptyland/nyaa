@@ -2,9 +2,9 @@
 #ifndef NYAA_ZONE_RENDER_SYSTEM_H_
 #define NYAA_ZONE_RENDER_SYSTEM_H_
 
+#include "system/system.h"
 #include "game/constants.h"
 #include "game/vector.h"
-#include "base/base.h"
 #include <vector>
 
 namespace nyaa {

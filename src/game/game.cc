@@ -3,16 +3,7 @@
 #include "scene/avatar-view-scene.h"
 #include "scene/tile-view-scene.h"
 #include "scene/cube-view-scene.h"
-#include "system/entity-allocation-system.h"
-#include "system/geometry-transform-system.h"
-#include "system/zone-render-system.h"
-#include "system/random-zone-system.h"
-#include "system/zone-loading-system.h"
-#include "system/actor-billboard-render-system.h"
-#include "system/actor-movement-system.h"
-#include "system/actor-ai-system.h"
-#include "system/avatar-render-system.h"
-#include "system/sprite-render-system.h"
+#include "system/system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -114,16 +105,7 @@ private:
 
 Game::Game()
     : boot_scene_(new BootScene(this))
-    , entity_allocator_(new sys::EntityAllocationSystem())
-    , zone_render_(new sys::ZoneRenderSystem())
-    , zone_loader_(new sys::ZoneLoadingSystem())
-    , random_zone_(new sys::RandomZoneSystem())
-    , actor_movement_(new sys::ActorMovementSystem())
-    , actor_ai_(new sys::ActorAISystem())
-    , actor_billboard_(new sys::ActorBillboardRenderSystem())
-    , sprite_render_(new sys::SpriteRenderSystem())
-    , avatar_render_(new sys::AvatarRenderSystem())
-    , transform_(new sys::GeometryTransformSystem())
+    , system_(new sys::System())
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))
@@ -235,12 +217,7 @@ bool Game::Prepare(const std::string &properties_file_name) {
     console_ui_->Prepare();
 
     // System Prepare
-    // Initial tiles texture id
-    res::Texture *tex = DCHECK_NOTNULL(texture_lib_->FindOrNull(ResourceId::Of(200000)));
-    zone_render()->set_tile_tex_id(tex->tex_id());
-    // zone_render()->Prepare();
-    sprite_render()->Prepare(sprite_lib());
-    avatar_render()->Prepare(avatar_lib());
+    system()->Prepare();
 
     scene_ = boot_scene_.get();
     boot_scene_->Reset();

@@ -24,22 +24,13 @@ class ActorLibrary;
 class SkillLibrary;
 }  // namespace res
 
-namespace sys {
-class EntityAllocationSystem;
-class ZoneRenderSystem;
-class RandomZoneSystem;
-class ZoneLoadingSystem;
-class ActorMovementSystem;
-class ActorAISystem;
-class ActorBillboardRenderSystem;
-class AvatarRenderSystem;
-class GeometryTransformSystem;
-class SpriteRenderSystem;
-}  // namespace sys
-
 namespace ui {
 class UIService;
 }  // namespace ui
+
+namespace sys {
+class System;
+}  // namespace sys
 
 class Scene;
 class Properties;
@@ -68,16 +59,7 @@ public:
 
     PseudoRandomGenerator *random() { return &random_; }
 
-    sys::EntityAllocationSystem *    entity_allocator() const { return entity_allocator_.get(); }
-    sys::ZoneRenderSystem *          zone_render() const { return zone_render_.get(); }
-    sys::ZoneLoadingSystem *         zone_loader() const { return zone_loader_.get(); }
-    sys::AvatarRenderSystem *        avatar_render() const { return avatar_render_.get(); }
-    sys::SpriteRenderSystem *        sprite_render() const { return sprite_render_.get(); }
-    sys::RandomZoneSystem *          random_zone() const { return random_zone_.get(); }
-    sys::ActorBillboardRenderSystem *actor_billboard() const { return actor_billboard_.get(); }
-    sys::ActorMovementSystem *       actor_movement() const { return actor_movement_.get(); }
-    sys::ActorAISystem *             actor_ai() const { return actor_ai_.get(); }
-    sys::GeometryTransformSystem *   transform() const { return transform_.get(); }
+    sys::System *system() const { return system_.get(); }
 
     res::FontLibrary *   font_lib() const { return font_lib_.get(); }
     res::TextLibrary *   text_lib() const { return text_lib_.get(); }
@@ -139,17 +121,8 @@ private:
     Scene *                scene_ = nullptr;
     std::unique_ptr<Scene> boot_scene_;
 
-    // Systems
-    std::unique_ptr<sys::EntityAllocationSystem>     entity_allocator_;
-    std::unique_ptr<sys::ZoneRenderSystem>           zone_render_;
-    std::unique_ptr<sys::ZoneLoadingSystem>          zone_loader_;
-    std::unique_ptr<sys::RandomZoneSystem>           random_zone_;
-    std::unique_ptr<sys::ActorMovementSystem>        actor_movement_;
-    std::unique_ptr<sys::ActorAISystem>              actor_ai_;
-    std::unique_ptr<sys::ActorBillboardRenderSystem> actor_billboard_;
-    std::unique_ptr<sys::SpriteRenderSystem>         sprite_render_;
-    std::unique_ptr<sys::AvatarRenderSystem>         avatar_render_;
-    std::unique_ptr<sys::GeometryTransformSystem>    transform_;
+    // System
+    std::unique_ptr<sys::System> system_;
 
     // Resource libraries
     std::unique_ptr<res::FontLibrary>    font_lib_;

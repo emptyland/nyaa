@@ -2,7 +2,7 @@
 #ifndef NYAA_SYSTEM_RANDOM_REGION_SYSTEM_H_
 #define NYAA_SYSTEM_RANDOM_REGION_SYSTEM_H_
 
-#include "base/base.h"
+#include "system/system.h"
 
 namespace nyaa {
 

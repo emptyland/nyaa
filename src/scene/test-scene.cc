@@ -37,24 +37,24 @@ void TestScene::Reset() {
     com::RegionComponent *region = new com::RegionComponent();
     region->set_global_coord({0, 0});
     zone_->set_region(1, 1, region);
-    game()->random_zone()->Update(region);
+    System::This()->random_zone()->Update(region);
     for (int i = 0; i < region->plants_size(); i++) {
         // entity_grid_set_->UpdatePlant()
-        entity::PlantEntity *plant = game()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
+        entity::PlantEntity *plant = System::This()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
         entity_grid_set_->UpdatePlant(plant);
     }
 
     zone_->mutable_viewport()->set_center_coord({kRegionSize / 2, kRegionSize / 2});
 
-    game()->entity_allocator()->Register<entity::PlayerEntity>();
+    System::This()->entity_allocator()->Register<entity::PlayerEntity>();
     player_.reset(
-        game()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(101110)));
+        System::This()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(101110)));
     player_->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
     player_->mutable_movement()->mutable_coord()->x = zone_->viewport().center_coord().x;
     player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;
 
     entity::ActorEntity *actor =
-        game()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100010));
+        System::This()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100010));
     *actor->mutable_movement() = player_->movement();
     actor->mutable_movement()->mutable_coord()->x += 1;
     actor->mutable_movement()->mutable_coord()->y += 1;
@@ -62,7 +62,7 @@ void TestScene::Reset() {
 
     entity_grid_set_->UpdateActor(actor);
 
-    game()->zone_render()->Reset();
+    System::This()->zone_render()->Reset();
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
@@ -143,12 +143,12 @@ void TestScene::Render(double delta) {
     // glViewport()
 
     if (zone_->center()) {
-        game()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
+        System::This()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
     }
 
     if (!zone_->center() || command > 0) {
         zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
-        game()->zone_loader()->Update(zone_.get());
+        System::This()->zone_loader()->Update(zone_.get());
     }
     entity_grid_set_->UpdatePlayer(player_.get());
 
@@ -191,7 +191,7 @@ void TestScene::Render(double delta) {
     bk_shader->SetPointLightPosition(Vec3(0, 0, 2));
     bk_shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
-    game()->zone_render()->RenderTerrain(zone_.get());
+    System::This()->zone_render()->RenderTerrain(zone_.get());
 
     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel);
 
@@ -202,18 +202,21 @@ void TestScene::Render(double delta) {
             // for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
             for (entity::Entity *obj : *entity_grid_set_->ViewGrid(zone_->viewport(), x, y)) {
                 if (obj->Is<entity::PlayerEntity>()) {
-                    game()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
-                                                    delta);
+                    System::This()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(),
+                                                            nullptr, delta);
                 } else if (obj->Is<entity::PlantEntity>()) {
-                    game()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
+                    System::This()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(),
+                                                                 delta);
                 } else if (obj->Is<entity::ActorEntity>()) {
                     actor = obj->AsOrNull<entity::ActorEntity>();
 
-                    game()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
-                                               actor->mutable_nature(), zone_.get(), nullptr, delta);
-                    game()->actor_movement()->Update(actor->id(), actor->mutable_movement(), 0.3, &impact, delta);
+                    System::This()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
+                                                       actor->mutable_nature(), zone_.get(), nullptr, delta);
+                    System::This()->actor_movement()->Update(actor->id(), actor->mutable_movement(), 0.3, &impact,
+                                                             delta);
                     entity_grid_set_->UpdateActor(actor);
-                    game()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
+                    System::This()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view,
+                                                            delta);
                 }
             }
         }
@@ -224,8 +227,8 @@ void TestScene::Render(double delta) {
         bb_shader->Use();
         bb_shader->SetViewMatrix(view_mat);
         bb_shader->SetProjectionMatrix(proj_mat);
-        game()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
-                                          actor->mutable_nature(), &view);
+        System::This()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
+                                                  actor->mutable_nature(), &view);
 
         // Matrix<float> model_view;
         Vector3f d = actor->movement().coord() - view;

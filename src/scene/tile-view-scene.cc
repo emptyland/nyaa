@@ -144,7 +144,7 @@ void TileViewScene::OnKeyInput(int key, int code, int action, int mods) {
 }
 
 void TileViewScene::Render(double delta) {
-    game()->transform()->Enter2DProjection();
+    System::This()->transform()->Enter2DProjection();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -155,7 +155,7 @@ void TileViewScene::Render(double delta) {
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
-    game()->transform()->Exit2DProjection();
+    System::This()->transform()->Exit2DProjection();
 
     char buf[128];
     ::snprintf(buf, arraysize(buf), "%d/%d", core_->page_no() + 1, core_->MaxPageNo());

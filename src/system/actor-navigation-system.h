@@ -2,7 +2,7 @@
 #ifndef NYAA_SYSTEM_ACTOR_NAVIGATION_SYSTEM_H_
 #define NYAA_SYSTEM_ACTOR_NAVIGATION_SYSTEM_H_
 
-#include "base/base.h"
+#include "system/system.h"
 
 namespace nyaa {
 

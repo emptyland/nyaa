@@ -2,8 +2,8 @@
 #ifndef NYAA_SYSTEM_ACTOR_MOVEMENT_SYSTEM_H_
 #define NYAA_SYSTEM_ACTOR_MOVEMENT_SYSTEM_H_
 
+#include "system/system.h"
 #include "game/identifiers.h"
-#include "base/base.h"
 
 namespace nyaa {
 

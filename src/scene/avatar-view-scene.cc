@@ -185,7 +185,7 @@ void AvatarViewScene::OnKeyInput(int key, int code, int action, int mods) {
 }
 
 void AvatarViewScene::Render(double delta) {
-    game()->transform()->Enter2DProjection();
+    System::This()->transform()->Enter2DProjection();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -196,7 +196,7 @@ void AvatarViewScene::Render(double delta) {
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
-    game()->transform()->Exit2DProjection();
+    System::This()->transform()->Exit2DProjection();
 
     char buf[128];
     ::snprintf(buf, arraysize(buf), "%d/%d", ctrl_->page_no_ + 1, ctrl_->MaxPageNo());

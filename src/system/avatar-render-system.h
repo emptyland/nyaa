@@ -2,8 +2,8 @@
 #ifndef NYAA_SYSTEM_AVATAR_RENDER_SYSTEM_H_
 #define NYAA_SYSTEM_AVATAR_RENDER_SYSTEM_H_
 
+#include "system/system.h"
 #include "game/vector.h"
-#include "base/base.h"
 
 namespace nyaa {
 namespace com {

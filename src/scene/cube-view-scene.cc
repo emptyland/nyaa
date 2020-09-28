@@ -188,8 +188,8 @@ private:
 
         block_shader_->SetModelMatrix(model_mat_);
 
-        Vector4f coord = game()->transform()->TransformToScreen(projection_mat_, view_mat_, model_mat_,
-                                                                Vec4(0, 0, 0, 1), {game()->fb_w(), game()->fb_h()});
+        Vector4f coord = System::This()->transform()->TransformToScreen(
+            projection_mat_, view_mat_, model_mat_, Vec4(0, 0, 0, 1), {game()->fb_w(), game()->fb_h()});
 
         cube_labels_[index].screen_coord = Vec2(coord.x, coord.y);
 
@@ -345,9 +345,6 @@ void CubeViewScene::OnKeyInput(int key, int code, int action, int mods) {
 void CubeViewScene::Render(double delta) {
     core_->HandleInput();
     core_->DrawPage(delta);
-
-    // shader->Disable();
-    // shader->Unuse();
 }
 
 }  // namespace nyaa

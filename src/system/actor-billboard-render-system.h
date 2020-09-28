@@ -2,9 +2,9 @@
 #ifndef NYAA_SYSTEM_ACTOR_BILLBOARD_RENDER_SYSTEM_H_
 #define NYAA_SYSTEM_ACTOR_BILLBOARD_RENDER_SYSTEM_H_
 
+#include "system/system.h"
 #include "game/identifiers.h"
 #include "game/matrix.h"
-#include "base/base.h"
 #include <string_view>
 #include <unordered_map>
 

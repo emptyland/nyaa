@@ -24,7 +24,7 @@ com::RegionComponent *ZoneLoadingSystem::LoadRegion(int x, int y) {
     region->set_global_coord({x, y});
 
     // TODO:
-    Game::This()->random_zone()->Update(region);
+    System::This()->random_zone()->Update(region);
 
     return region;
 }

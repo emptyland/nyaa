@@ -15,7 +15,8 @@ LabelTextBox::LabelTextBox(Id id, res::TextID name, Component *parent) : Compone
 LabelTextBox::~LabelTextBox() {}
 
 void LabelTextBox::OnPaint(double delta) {
-    // TODO:
+    Vector2f size = font()->ApproximateSize(name()) * font_scale();
+    DrawLabel(Vec3(bound().x, bound().y + (bound().h - size.y) / 2, 0), Vec3(kFontColor), name());
 }
 
 }  // namespace ui

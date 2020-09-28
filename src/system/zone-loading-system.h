@@ -2,8 +2,8 @@
 #ifndef NYAA_SYSETM_ZONE_LOADING_SYSTEM_H_
 #define NYAA_SYSETM_ZONE_LOADING_SYSTEM_H_
 
+#include "system/system.h"
 #include "component/zone-component.h"
-#include "base/base.h"
 #include <unordered_map>
 
 namespace nyaa {

@@ -2,10 +2,10 @@
 #ifndef NYAA_SYSTEM_GEOMETRY_TRANSFORM_SYSTEM_H_
 #define NYAA_SYSTEM_GEOMETRY_TRANSFORM_SYSTEM_H_
 
+#include "system/system.h"
 #include "game/constants.h"
 #include "game/vector.h"
 #include "game/matrix.h"
-#include "base/base.h"
 
 namespace nyaa {
 

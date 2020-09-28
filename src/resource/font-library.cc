@@ -95,7 +95,7 @@ Boundf FontFace::Render(std::string_view text, float x, float y, Vector3f color)
     vertices.reserve(text.size() * 5 * 4);
     Boundf bound = Render(Vec3(x, y, 0), 1.0, text, &vertices);
 
-    Game::This()->transform()->Enter2DProjection();
+    System::This()->transform()->Enter2DProjection();
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -113,7 +113,7 @@ Boundf FontFace::Render(std::string_view text, float x, float y, Vector3f color)
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
-    Game::This()->transform()->Exit2DProjection();
+    System::This()->transform()->Exit2DProjection();
     return bound;
 }
 

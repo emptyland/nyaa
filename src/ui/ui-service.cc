@@ -145,7 +145,7 @@ void UIService::HandleCharInput(char32_t codepoint, bool *should_break) {
 }
 
 void UIService::Render(double delta) {
-    Game::This()->transform()->Enter2DProjection();
+    System::This()->transform()->Enter2DProjection();
     glEnable(GL_BLEND);
     glEnable(GL_LINE_SMOOTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -154,7 +154,7 @@ void UIService::Render(double delta) {
 
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
-    Game::This()->transform()->Exit2DProjection();
+    System::This()->transform()->Exit2DProjection();
 }
 
 void UIService::DoRender(Component *ctrl, double delta) {

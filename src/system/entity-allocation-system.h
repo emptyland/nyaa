@@ -2,8 +2,8 @@
 #ifndef NYAA_SYSTEM_ENTITY_ALLOCATION_SYSTEM_H_
 #define NYAA_SYSTEM_ENTITY_ALLOCATION_SYSTEM_H_
 
+#include "system/system.h"
 #include "entity/entity.h"
-#include "base/base.h"
 #include <type_traits>
 
 namespace nyaa {

@@ -2,7 +2,7 @@
 #ifndef NYAA_ACTOR_AI_SYSTEM_H_
 #define NYAA_ACTOR_AI_SYSTEM_H_
 
-#include "base/base.h"
+#include "system/system.h"
 
 namespace nyaa {
 namespace com {

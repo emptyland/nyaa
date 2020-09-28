@@ -89,6 +89,8 @@ set(GAME_SRC
     src/system/actor-ai-system.cc
     src/system/actor-billboard-render-system.cc
     src/system/impact-checking-system.cc
+    src/system/zone-generating-system.cc
+    src/system/system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc
     src/resource/texture-library.cc
