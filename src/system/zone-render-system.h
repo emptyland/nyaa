@@ -19,7 +19,7 @@ class Texture;
 
 namespace sys {
 
-class ZoneRenderSystem {
+class ZoneRenderSystem final : public base::ArenaObject {
 public:
     ZoneRenderSystem();
 

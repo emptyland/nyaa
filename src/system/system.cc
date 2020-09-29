@@ -9,7 +9,7 @@
 #include "system/sprite-render-system.h"
 #include "system/avatar-render-system.h"
 #include "system/geometry-transform-system.h"
-#include "system/zone-generating-system.h"
+#include "system/world-generating-system.h"
 #include "resource/texture-library.h"
 #include "game/game.h"
 
@@ -17,17 +17,17 @@ namespace nyaa {
 
 namespace sys {
 
-System::System()
-    : entity_allocator_(new sys::EntityAllocationSystem())
-    , zone_render_(new sys::ZoneRenderSystem())
-    , zone_loader_(new sys::ZoneLoadingSystem())
-    , random_zone_(new sys::RandomZoneSystem())
-    , actor_movement_(new sys::ActorMovementSystem())
-    , actor_ai_(new sys::ActorAISystem())
-    , actor_billboard_(new sys::ActorBillboardRenderSystem())
-    , sprite_render_(new sys::SpriteRenderSystem())
-    , avatar_render_(new sys::AvatarRenderSystem())
-    , transform_(new sys::GeometryTransformSystem()) {}
+System::System(base::Arena *arena)
+    : entity_allocator_(new (arena) EntityAllocationSystem())
+    , zone_render_(new (arena) ZoneRenderSystem())
+    , zone_loader_(new (arena) ZoneLoadingSystem())
+    , random_zone_(new (arena) RandomZoneSystem())
+    , actor_movement_(new (arena) ActorMovementSystem())
+    , actor_ai_(new (arena) ActorAISystem())
+    , actor_billboard_(new (arena) ActorBillboardRenderSystem())
+    , sprite_render_(new (arena) SpriteRenderSystem())
+    , avatar_render_(new (arena) AvatarRenderSystem())
+    , transform_(new (arena) GeometryTransformSystem()) {}
 
 System::~System() {}
 

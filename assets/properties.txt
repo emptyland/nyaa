@@ -2,6 +2,7 @@
 -------------------------------------
 name              | The Legend of Grand Karma
 assets_dir        | assets
+data_dir          | data
 show_fps          | 1
 window_width      | 300
 window_height     | 300

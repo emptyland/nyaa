@@ -16,7 +16,7 @@ namespace sys {
 
 class ImpactCheckingSystem;
 
-class ActorMovementSystem {
+class ActorMovementSystem final : public base::ArenaObject {
 public:
     ActorMovementSystem() = default;
 

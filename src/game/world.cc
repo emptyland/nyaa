@@ -1,4 +1,5 @@
 #include "game/world.h"
+#include "game/world-def.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/shader-library.h"

@@ -14,7 +14,7 @@ class AIStateComponent;
 class EntityGridDB;
 namespace sys {
 
-class ActorAISystem {
+class ActorAISystem final : public base::ArenaObject {
 public:
     ActorAISystem() = default;
 

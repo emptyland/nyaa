@@ -17,7 +17,7 @@ class AvatarLibrary;
 
 namespace sys {
 
-class AvatarRenderSystem {
+class AvatarRenderSystem final : public base::ArenaObject {
 public:
     AvatarRenderSystem() = default;
 

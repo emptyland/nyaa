@@ -14,7 +14,7 @@ class RegionComponent;
 
 namespace sys {
 
-class ZoneLoadingSystem {
+class ZoneLoadingSystem : public base::ArenaObject {
 public:
     ZoneLoadingSystem() = default;
 

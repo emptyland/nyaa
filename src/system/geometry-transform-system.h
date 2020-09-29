@@ -11,7 +11,7 @@ namespace nyaa {
 
 namespace sys {
 
-class GeometryTransformSystem {
+class GeometryTransformSystem : public base::ArenaObject {
 public:
     GeometryTransformSystem() = default;
 

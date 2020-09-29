@@ -29,11 +29,12 @@ public:
     static inline World *This() { return Game::This()->world(); }
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(World);
+
 private:
     std::unique_ptr<com::ZoneComponent>   zone_;
     std::unique_ptr<entity::PlayerEntity> player_;
-    std::unique_ptr<EntityGridSet> entity_grid_set_;
-    PseudoRandomGenerator random_;
+    std::unique_ptr<EntityGridSet>        entity_grid_set_;
+    PseudoRandomGenerator                 random_;
 };  // class World
 
 }  // namespace nyaa

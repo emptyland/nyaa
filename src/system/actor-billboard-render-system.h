@@ -15,7 +15,7 @@ class NaturePropertiesComponent;
 
 namespace sys {
 
-class ActorBillboardRenderSystem {
+class ActorBillboardRenderSystem final : public base::ArenaObject {
 public:
     ActorBillboardRenderSystem();
 

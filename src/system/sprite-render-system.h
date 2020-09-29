@@ -17,8 +17,10 @@ class Sprite;
 
 namespace sys {
 
-class SpriteRenderSystem {
+class SpriteRenderSystem final : public base::ArenaObject {
 public:
+    SpriteRenderSystem() = default;
+
     void Prepare(res::SpriteLibrary *lib);
 
     void RenderPlant(const Vector3f &view, com::PlantComponent *plant, double delta);

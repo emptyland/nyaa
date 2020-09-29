@@ -51,6 +51,7 @@ set(GAME_SRC
     src/game/entity-virtual-db.cc
     src/game/entity-grid-set.cc
     src/game/matrix.cc
+    src/game/world-def.cc
     src/game/world.cc
     src/scene/scene.cc
     src/scene/boot-scene.cc
@@ -89,7 +90,7 @@ set(GAME_SRC
     src/system/actor-ai-system.cc
     src/system/actor-billboard-render-system.cc
     src/system/impact-checking-system.cc
-    src/system/zone-generating-system.cc
+    src/system/world-generating-system.cc
     src/system/system.cc
     src/resource/font-library.cc
     src/resource/text-library.cc

@@ -13,7 +13,7 @@ class ZoneComponent;
 
 namespace sys {
 
-class RandomZoneSystem {
+class RandomZoneSystem final : public base::ArenaObject {
 public:
     RandomZoneSystem() = default;
 

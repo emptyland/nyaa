@@ -17,7 +17,7 @@ class CubeComponent;
 
 namespace sys {
 
-class ImpactCheckingSystem {
+class ImpactCheckingSystem : public base::ArenaObject {
 public:
     ImpactCheckingSystem(com::ZoneComponent *zone, EntityGridSet *entities) : zone_(zone), entities_(entities) {}
 

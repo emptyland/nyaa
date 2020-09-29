@@ -10,7 +10,7 @@ namespace nyaa {
 
 namespace sys {
 
-class EntityAllocationSystem {
+class EntityAllocationSystem : public base::ArenaObject {
 public:
     using ClassId = uintptr_t;
 

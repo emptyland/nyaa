@@ -29,7 +29,6 @@
 
 namespace nyaa {
 
-
 class Game::UIController : public ui::InputBox::Delegate {
 public:
     UIController(Game *owns) : owns_(owns), service_(new ui::UIService(1) /*TODO*/) {}
@@ -105,7 +104,7 @@ private:
 
 Game::Game()
     : boot_scene_(new BootScene(this))
-    , system_(new sys::System())
+    , system_(new sys::System(&arena_))
     , font_lib_(new res::FontLibrary(&arena_))
     , text_lib_(new res::TextLibrary(&arena_))
     , texture_lib_(new res::TextureLibrary(&arena_))

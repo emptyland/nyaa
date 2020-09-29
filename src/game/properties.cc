@@ -9,6 +9,7 @@ namespace nyaa {
     { #name, sizeof(#name) - 1, offsetof(Properties, name##_), res::DefValType::type }
     PROPERTY_DEF(name, STRING),
     PROPERTY_DEF(assets_dir, STRING),
+    PROPERTY_DEF(data_dir, STRING),
     PROPERTY_DEF(show_fps, I32),
     PROPERTY_DEF(language, STRING),
     PROPERTY_DEF(window_width, I32),
@@ -25,6 +26,7 @@ void Properties::Print(base::AbstractPrinter *out) const {
     out->Println("----[properties]----");
     out->Println("name: %s", name().c_str());
     out->Println("assets_dir: %s", assets_dir().c_str());
+    out->Println("data_dir: %s", data_dir().c_str());
     out->Println("language: %s", language().c_str());
     out->Println("window_width: %d", window_width());
     out->Println("window_height: %d", window_height());

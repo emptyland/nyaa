@@ -8,7 +8,7 @@ namespace nyaa {
 
 namespace sys {
 
-class ActorNavigationSystem {
+class ActorNavigationSystem final : public base::ArenaObject {
 public:
     ActorNavigationSystem() = default;
 
