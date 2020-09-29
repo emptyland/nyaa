@@ -6,6 +6,9 @@
 #include "base/base.h"
 
 namespace nyaa {
+namespace sys {
+class System;
+}  // namespace sys
 
 class Game;
 
@@ -15,12 +18,14 @@ public:
     virtual ~Scene();
 
     DEF_PTR_GETTER(Game, game);
+    DEF_PTR_GETTER(sys::System, system);
     DEF_PTR_PROP_RW(Scene, prev);
 
     void SwitchTo(Scene *prev = nullptr);
     void DelayDispose();
 
     virtual const char *Name() const = 0;
+
     virtual void Reset();
     virtual void OnKeyInput(int key, int code, int action, int mods);
     virtual void Render(double delta);
@@ -32,6 +37,7 @@ public:
 private:
     EntityId id_;
     Game *   game_;
+    sys::System *system_;
     Scene *  prev_ = nullptr;
 };
 

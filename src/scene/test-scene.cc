@@ -36,24 +36,24 @@ void TestScene::Reset() {
     zone_.reset(new com::ZoneComponent());
     com::RegionComponent *region = zone_->mutable_region();
     region->set_global_coord({0, 0});
-    System::This()->random_zone()->Update(region);
+    system()->random_zone()->Update(region);
     for (int i = 0; i < region->plants_size(); i++) {
         // entity_grid_set_->UpdatePlant()
-        entity::PlantEntity *plant = System::This()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
+        entity::PlantEntity *plant = system()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
         entity_grid_set_->UpdatePlant(plant);
     }
 
     zone_->mutable_viewport()->set_center_coord({kRegionSize / 2, kRegionSize / 2});
 
-    System::This()->entity_allocator()->Register<entity::PlayerEntity>();
+    system()->entity_allocator()->Register<entity::PlayerEntity>();
     player_.reset(
-        System::This()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(101110)));
+        system()->entity_allocator()->New<entity::PlayerEntity>(game()->NextEntityId(), ResourceId::Of(101110)));
     player_->mutable_movement()->mutable_coord()->z = kTerrainSurfaceLevel + 2;
     player_->mutable_movement()->mutable_coord()->x = zone_->viewport().center_coord().x;
     player_->mutable_movement()->mutable_coord()->y = zone_->viewport().center_coord().y;
 
     entity::ActorEntity *actor =
-        System::This()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100010));
+        system()->entity_allocator()->New<entity::ActorEntity>(game()->NextEntityId(), ResourceId::Of(100010));
     *actor->mutable_movement() = player_->movement();
     actor->mutable_movement()->mutable_coord()->x += 1;
     actor->mutable_movement()->mutable_coord()->y += 1;
@@ -61,7 +61,7 @@ void TestScene::Reset() {
 
     entity_grid_set_->UpdateActor(actor);
 
-    System::This()->zone_render()->Reset();
+    system()->zone_render()->Reset();
     // TODO: player_->mutable_movement()->set_coord(zone_->viewport().center_coord());
 }
 
@@ -135,9 +135,15 @@ int TestScene::HandleKeyInput() {
 }
 
 void TestScene::Render(double delta) {
-    sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
+    int command = !game()->break_input() ? HandleKeyInput() : 0;
 
-    System::This()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
+    sys::ImpactCheckingSystem impact(zone_.get(), entity_grid_set_.get());
+    system()->actor_movement()->Update(player_->id(), player_->mutable_movement(), 0.3, &impact, delta);
+
+    if (command > 0) {
+        zone_->mutable_viewport()->set_center_coord({player_->movement().coord().x, player_->movement().coord().y});
+        //System::This()->zone_loader()->Update(zone_.get());
+    }
 
     entity_grid_set_->UpdatePlayer(player_.get());
 
@@ -180,7 +186,7 @@ void TestScene::Render(double delta) {
     bk_shader->SetPointLightPosition(Vec3(0, 0, 2));
     bk_shader->SetCameraPosition({camera.x, camera.y, camera.z});
 
-    System::This()->zone_render()->RenderTerrain(zone_.get());
+    system()->zone_render()->RenderTerrain(zone_.get());
 
     Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel);
 
@@ -191,21 +197,18 @@ void TestScene::Render(double delta) {
             // for (int x = zone_->viewport().bound().x - 1; x >= 0; x--) {
             for (entity::Entity *obj : *entity_grid_set_->ViewGrid(zone_->viewport(), x, y)) {
                 if (obj->Is<entity::PlayerEntity>()) {
-                    System::This()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(),
-                                                            nullptr, delta);
+                    system()->avatar_render()->Render(player_->mutable_movement(), player_->mutable_avatar(), nullptr,
+                                                      delta);
                 } else if (obj->Is<entity::PlantEntity>()) {
-                    System::This()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(),
-                                                                 delta);
+                    system()->sprite_render()->RenderPlant(view, obj->AsOrNull<entity::PlantEntity>()->plant(), delta);
                 } else if (obj->Is<entity::ActorEntity>()) {
                     actor = obj->AsOrNull<entity::ActorEntity>();
 
-                    System::This()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
-                                                       actor->mutable_nature(), zone_.get(), nullptr, delta);
-                    System::This()->actor_movement()->Update(actor->id(), actor->mutable_movement(), 0.3, &impact,
-                                                             delta);
+                    system()->actor_ai()->Update(actor->mutable_ai_state(), actor->mutable_movement(),
+                                                 actor->mutable_nature(), zone_.get(), nullptr, delta);
+                    system()->actor_movement()->Update(actor->id(), actor->mutable_movement(), 0.3, &impact, delta);
                     entity_grid_set_->UpdateActor(actor);
-                    System::This()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view,
-                                                            delta);
+                    system()->avatar_render()->Render(actor->mutable_movement(), actor->mutable_avatar(), &view, delta);
                 }
             }
         }
@@ -216,8 +219,8 @@ void TestScene::Render(double delta) {
         bb_shader->Use();
         bb_shader->SetViewMatrix(view_mat);
         bb_shader->SetProjectionMatrix(proj_mat);
-        System::This()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
-                                                  actor->mutable_nature(), &view);
+        system()->actor_billboard()->Render(actor->movement().coord(), Vec3(1.0, 1.0, 1.0), actor->id(),
+                                            actor->mutable_nature(), &view);
 
         // Matrix<float> model_view;
         Vector3f d = actor->movement().coord() - view;

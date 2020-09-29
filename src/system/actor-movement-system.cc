@@ -40,7 +40,10 @@ void ActorMovementSystem::Update(EntityId id, com::MovementComponent *movement, 
     body.h = 0.2;
 
     bool stop = impact->PredictTest(body, next, movement->speed(), id);
-    if (!stop) { movement->set_coord(next); }
+    if (!stop) {
+        // :format
+        movement->set_coord(next);
+    }
 }
 
 }  // namespace sys

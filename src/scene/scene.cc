@@ -7,11 +7,11 @@
 
 namespace nyaa {
 
-Scene::Scene(Game *game) : id_(game->NextEntityId()), game_(DCHECK_NOTNULL(game)) {}
+Scene::Scene(Game *game) : id_(game->NextEntityId()), game_(DCHECK_NOTNULL(game)), system_(game_->system()) {}
 
 /*virtual*/ Scene::~Scene() {}
 
-void Scene::SwitchTo(Scene *prev/* = nullptr*/) {
+void Scene::SwitchTo(Scene *prev /* = nullptr*/) {
     set_prev(prev);
     Reset();
     game()->set_scene(this);
@@ -25,8 +25,6 @@ void Scene::DelayDispose() { game()->DelayDeleteScene(this); }
 
 /*virtual*/ void Scene::Render(double delta) {}
 
-bool Scene::TestKeyPressed(int key) {
-    return ::glfwGetKey(game()->window(), key) == GLFW_PRESS;
-}
+bool Scene::TestKeyPressed(int key) { return ::glfwGetKey(game()->window(), key) == GLFW_PRESS; }
 
 }  // namespace nyaa
