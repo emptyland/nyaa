@@ -46,9 +46,9 @@ const ZoneEnv kAllZoneEnv[ZoneEnv::kMaxKinds] = {
 
 /*static*/ fs::path Files::WorldsPath() {
     fs::path path;
-    return path.append(Game::This()->properties()->data_dir()).append("/").append(kWorldsDirName);
+    return path.append(Game::This()->properties()->data_dir()).append(kWorldsDirName);
 }
 
-/*static*/ fs::path Files::WorldPath(std::string_view world_id) { return WorldsPath().append("/").append(world_id); }
+/*static*/ fs::path Files::WorldPath(std::string_view world_id) { return WorldsPath().append(world_id); }
 
 }  // namespace nyaa

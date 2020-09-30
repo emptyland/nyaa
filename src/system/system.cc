@@ -19,6 +19,7 @@ namespace sys {
 
 System::System(base::Arena *arena)
     : entity_allocator_(new (arena) EntityAllocationSystem())
+    , world_generator_(new (arena) WorldGeneratingSystem())
     , zone_render_(new (arena) ZoneRenderSystem())
     , zone_loader_(new (arena) ZoneLoadingSystem())
     , random_zone_(new (arena) RandomZoneSystem())

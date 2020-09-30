@@ -38,11 +38,11 @@ private:
 };  // class ZoneGeneratingSystem::Core
 
 bool WorldGeneratingSystem::InitWorldMap(PseudoRandomGenerator *random, WorldMapDef::Size size, std::string *err) {
-    fs::path path(Game::This()->properties()->data_dir());
-    path.append("/").append(Files::kWorldListName);
-
+    fs::path path;
+    path.append(Game::This()->properties()->data_dir()).append(Files::kWorldListName);
     const char *mod = fs::exists(path) ? "ab" : "wb";
-    FILE *      fp  = ::fopen(path.generic_u8string().c_str(), mod);
+
+    FILE *fp = ::fopen(path.generic_u8string().c_str(), mod);
     if (!fp) {
         PLOG(ERROR) << "Open file: " << path << " fail!";
         *err = strerror(errno);
@@ -60,7 +60,7 @@ bool WorldGeneratingSystem::InitWorldMap(PseudoRandomGenerator *random, WorldMap
         return false;
     }
 
-    path.append("/").append(Files::kWorldIndexName);
+    path.append(Files::kWorldIndexName);
     if (fp = ::fopen(path.generic_u8string().c_str(), "wb"); !fp) {
         PLOG(ERROR) << "Open file: " << path << " fail!";
         *err = strerror(errno);

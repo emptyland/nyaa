@@ -4,6 +4,7 @@
 #include "scene/tile-view-scene.h"
 #include "scene/cube-view-scene.h"
 #include "system/system.h"
+#include "system/world-generating-system.h"
 #include "resource/definition.h"
 #include "resource/font-library.h"
 #include "resource/text-library.h"
@@ -445,6 +446,17 @@ public:
         return 0;
     }
 
+    static int Cmd_WorldInitTest(Game *owns, Command *cmd) {
+        std::string err;
+        owns->system()->world_generator()->InitWorldMap(owns->random(), WorldMapDef::kSmall, &err);
+        if (!err.empty()) {
+            CONSOLE(Vec3(1, 0, 0), "init world fail: %s", err.c_str());
+        } else {
+            CONSOLE(Vec3(0, 1, 0), "%s", "init world ok.");
+        }
+        return 0;
+    }
+
     static void ProcessCommand(Game *owns, std::string_view text);
 
     DISALLOW_IMPLICIT_CONSTRUCTORS(CommandDispatcher);
@@ -492,6 +504,7 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"random", Cmd_Random, {I32, nullptr}},
     {"random.f", Cmd_RandomF, {I32, nullptr}},
     {"format.test", Cmd_FormatTest, {nullptr}},
+    {"world.init.test", Cmd_WorldInitTest, {nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 
