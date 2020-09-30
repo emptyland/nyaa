@@ -1,5 +1,6 @@
 #include "game/world.h"
 #include "game/world-def.h"
+#include "game/world-map.h"
 #include "resource/texture-library.h"
 #include "resource/font-library.h"
 #include "resource/shader-library.h"
@@ -10,6 +11,7 @@
 #include "component/cube-component.h"
 #include "component/avatar-component.h"
 #include "system/entity-allocation-system.h"
+#include "system/world-generating-system.h"
 #include "system/geometry-transform-system.h"
 #include "system/random-zone-system.h"
 #include "system/zone-render-system.h"
@@ -36,6 +38,21 @@ World::~World() {
     // :format
 }
 
-bool World::Prepare() { return false; }
+bool World::Prepare(base::Arena *arena, std::string_view world_id) {
+    zone_            = arena->New<com::ZoneComponent>();
+    //player_          = arena->New<entity::PlayerEntity>();
+    entity_grid_set_ = arena->New<EntityGridSet>();
+
+    std::string err;
+    Vector2i    size = System::This()->world_generator()->ReadWorldSize(world_id, &err);
+    if (!err.empty()) { return false; }
+    map_ = WorldMap::New(arena, world_id, size);
+
+    System::This()->world_generator()->ReadWorldIndex(world_id, map_, &err);
+    if (!err.empty()) { return false; }
+
+    // Load index
+    return false;
+}
 
 }  // namespace nyaa

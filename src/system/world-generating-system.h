@@ -12,6 +12,7 @@ namespace com {
 class ZoneComponent;
 }  // namespace com
 
+class WorldMap;
 class PseudoRandomGenerator;
 
 namespace sys {
@@ -20,7 +21,11 @@ class WorldGeneratingSystem final : public base::ArenaObject {
 public:
     WorldGeneratingSystem() = default;
 
-    bool InitWorldMap(PseudoRandomGenerator *random, WorldMapDef::Size size, std::string *err);
+    std::string InitWorldMap(std::string_view name, PseudoRandomGenerator *random, WorldMapDef::Size size,
+                             std::string *err);
+
+    Vector2i ReadWorldSize(std::string_view world_id, std::string *err);
+    void     ReadWorldIndex(std::string_view world_id, WorldMap *index, std::string *err);
 
     void Generate(uint64_t seed, ZoneEnv::Kind env, com::ZoneComponent *zone);
 

@@ -21,6 +21,7 @@
 #include "ui/list-box.h"
 #include "game/properties.h"
 #include "game/world.h"
+#include "game/world-map.h"
 #include "glog/logging.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -448,11 +449,33 @@ public:
 
     static int Cmd_WorldInitTest(Game *owns, Command *cmd) {
         std::string err;
-        owns->system()->world_generator()->InitWorldMap(owns->random(), WorldMapDef::kSmall, &err);
+        std::string world_id =
+            owns->system()->world_generator()->InitWorldMap("default", owns->random(), WorldMapDef::kSmall, &err);
         if (!err.empty()) {
             CONSOLE(Vec3(1, 0, 0), "init world fail: %s", err.c_str());
         } else {
-            CONSOLE(Vec3(0, 1, 0), "%s", "init world ok.");
+            CONSOLE(Vec3(0, 1, 0), "init world ok: %s", world_id.c_str());
+        }
+        return 0;
+    }
+
+    static int Cmd_WorldReadTest(Game *owns, Command *cmd) {
+        if (cmd->argc < 1) { return -1; }
+        std::string err;
+
+        Vector2i size = System::This()->world_generator()->ReadWorldSize(cmd->str(0), &err);
+        if (!err.empty()) {
+            CONSOLE(Vec3(1, 0, 0), "read world fail: %s", err.c_str());
+            return -1;
+        }
+        CONSOLE(Vec3(0, 1, 0), "world: %s size: %dx%d", cmd->str(0), size.x, size.y);
+
+        base::StandaloneArena arena;
+        WorldMap *map = WorldMap::New(&arena, cmd->str(0), size);
+        System::This()->world_generator()->ReadWorldIndex(cmd->str(0), map, &err);
+        if (!err.empty()) {
+            CONSOLE(Vec3(1, 0, 0), "read world fail: %s", err.c_str());
+            return -1;
         }
         return 0;
     }
@@ -505,6 +528,7 @@ const Game::CommandDispatcher::CommandDesc Game::CommandDispatcher::kCommandTabl
     {"random.f", Cmd_RandomF, {I32, nullptr}},
     {"format.test", Cmd_FormatTest, {nullptr}},
     {"world.init.test", Cmd_WorldInitTest, {nullptr}},
+    {"world.read.test", Cmd_WorldReadTest, {Str, nullptr}},
     {nullptr},
 };  // static const CommandDesc kCommandTable
 

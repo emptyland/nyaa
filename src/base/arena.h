@@ -22,9 +22,9 @@ public:
 
     virtual size_t memory_usage() const = 0;
 
-    template <class T>
-    T *New() {
-        return new (Allocate(sizeof(T))) T();
+    template <class T, class... Args>
+    T *New(Args &&... args) {
+        return new (Allocate(sizeof(T))) T(std::forward(args)...);
     }
 
     template <class T>
