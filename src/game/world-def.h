@@ -29,6 +29,7 @@ struct ZoneEnv {
         kPlain,
         kForest,
         kSnowfield,
+        kMountain,
         kMaxKinds,
     };
 
@@ -46,12 +47,12 @@ extern const ZoneEnv kAllZoneEnv[ZoneEnv::kMaxKinds];
 struct Files {
     static constexpr uint32_t kVersion = 0x1;
 
-    static constexpr char kWorldListName[]  = "world-list.txt";
-    static constexpr char kWorldsDirName[]  = "worlds";
-    static constexpr char kWorldIndexName[] = "world-index.dat";
-    static constexpr char kWorldIndexMagic[] = "world:";
-    static constexpr int kWorldIdSize = 8;
-    static constexpr int kWorldIndexHeaderSize = sizeof(kWorldIndexMagic) + kWorldIdSize;
+    static constexpr char kWorldListName[]      = "world-list.txt";
+    static constexpr char kWorldsDirName[]      = "worlds";
+    static constexpr char kWorldIndexName[]     = "world-index.dat";
+    static constexpr char kWorldIndexMagic[]    = "world:";
+    static constexpr int  kWorldIdSize          = 8;
+    static constexpr int  kWorldIndexHeaderSize = sizeof(kWorldIndexMagic) + kWorldIdSize;
 
     static fs::path WorldsPath();
     static fs::path WorldPath(std::string_view world_id) { return WorldsPath().append(world_id); }
