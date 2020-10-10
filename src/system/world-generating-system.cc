@@ -135,31 +135,52 @@ public:
         fill.cubes[4] = {res::Cube::CUBE_STONE_1, 1.0f};
         FillFloor(&fill);
 
-        fill.lower    = fill.floor;
         fill.floor    = zone->mutable_region()->floor(1);
         fill.cubes[0] = {res::Cube::CUBE_DIRT_1, 0.2f};
-        fill.cubes[1] = {res::Cube::CUBE_STONE_1, 0.4f};
+        fill.cubes[1] = {res::Cube::CUBE_GRASS_1, 0.4f};
         fill.cubes[2] = {res::Cube::CUBE_AIR, 1.0f};
         FillFloor(&fill);
-        SmoothFloorManyTimes(&fill, 4);
-
-        fill.lower = fill.floor;
         fill.floor = zone->mutable_region()->floor(2);
         FillFloor(&fill);
+
+        fill.lower    = zone->mutable_region()->floor(0);
+        fill.floor    = zone->mutable_region()->floor(1);
+        fill.cubes[0] = {res::Cube::CUBE_DIRT_1, 0.2f};
+        fill.cubes[1] = {res::Cube::CUBE_DIRT_2, 0.4f};
+        fill.cubes[2] = {res::Cube::CUBE_GRASS_1, 0.6f};
+        fill.cubes[3] = {res::Cube::CUBE_GRASS_2, 0.8f};
+        fill.cubes[4] = {res::Cube::CUBE_STONE_1, 1.0f};
         SmoothFloorManyTimes(&fill, 4);
+
+        fill.lower = zone->mutable_region()->floor(1);
+        fill.floor = zone->mutable_region()->floor(2);
+        SmoothFloorManyTimes(&fill, 4);
+
+        FillAir(zone, 3, kTerrainMaxLevels);
     }
 
 private:
+    static void FillAir(com::ZoneComponent *zone, int n, int m) {
+        for (int i = n; i < m; i++) {
+            auto floor = zone->mutable_region()->floor(i);
+            ::memset(floor, 0, sizeof(*floor));
+        }
+    }
+
     static void FillFloor(FillContext *ctx) {
         for (int y = 0; y < kRegionSize; y++) {
             for (int x = 0; x < kRegionSize; x++) {
                 com::CubeComponent *cube = &ctx->floor->cubes[x][y];
+
+                cube->set_kind(res::Cube::CUBE_AIR);
+                if (ctx->lower && ctx->lower->cubes[x][y].IsAir()) { continue; }
 
                 float factor = ctx->random->NextFactor();
                 for (int i = 0; i < arraysize(ctx->cubes); i++) {
                     if (factor < ctx->cubes[i].ratio) {
                         cube->set_kind(ctx->cubes[i].kind);
                         if (!cube->IsAir()) { cube->set_hardness(4); }
+                        break;
                     }
                 }
             }
@@ -174,19 +195,18 @@ private:
         for (int y = 1; y < kRegionSize - 1; y++) {
             for (int x = 1; x < kRegionSize - 1; x++) {
                 com::CubeComponent *cube = &ctx->floor->cubes[x][y];
-                if (cube->IsAir() || ctx->lower->cubes[x][y].IsAir()) { continue; }
+                if (ctx->lower->cubes[x][y].IsAir()) { continue; }
 
-                if (ShouldCubeOpen(ctx->floor, x, y)) {
-                    cube->set_kind(res::Cube::CUBE_AIR);
-                    cube->set_hardness(0);
-                    continue;
-                }
+                cube->set_kind(res::Cube::CUBE_AIR);
+                cube->set_hardness(0);
+                if (ShouldCubeOpen(ctx->floor, x, y)) { continue; }
 
                 float factor = ctx->random->NextFactor();
                 for (int i = 0; i < arraysize(ctx->cubes); i++) {
                     if (factor < ctx->cubes[i].ratio) {
                         cube->set_kind(ctx->cubes[i].kind);
-                        if (!cube->IsAir()) { cube->set_hardness(4); }
+                        cube->set_hardness(4);
+                        break;
                     }
                 }
             }
@@ -204,6 +224,7 @@ private:
                 if (!floor->cubes[x][y].IsAir()) { count++; }
             }
         }
+        if (count >= 4) { printf("count=%d\n", count); }
         return count;
     }
 };  // class ZoneGeneratingSystem::Core

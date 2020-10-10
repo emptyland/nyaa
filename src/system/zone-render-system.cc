@@ -145,6 +145,25 @@ void ZoneRenderSystem::MakeCube(const res::Cube *cube, const Vector3f &p0, bool 
             vertices[i * 8 + 7] = cube->edge_tex()->coord(i % 4).y;
         }
     }
+
+    // int n_vertices = 24;
+
+    // size_t pos = buf->size();
+    // buf->resize(pos + n_vertices * 8);
+    // float *vertices = &(*buf)[pos];
+    // for (int i = 0; i < n_vertices; i++) {
+    //     vertices[i * 8 + 0] = p0.x + kVertices[i * 8 + 0] * cube_size_;
+    //     vertices[i * 8 + 1] = p0.y + kVertices[i * 8 + 1] * cube_size_;
+    //     vertices[i * 8 + 2] = p0.z + kVertices[i * 8 + 2] * cube_size_;
+
+    //     vertices[i * 8 + 3] = kVertices[i * 8 + 3];
+    //     vertices[i * 8 + 4] = kVertices[i * 8 + 4];
+    //     vertices[i * 8 + 5] = kVertices[i * 8 + 5];
+    // }
+    // for (int i = 0; i < n_vertices; i++) {
+    //     vertices[i * 8 + 6] = cube->top_tex()->coord(i % 4).x;
+    //     vertices[i * 8 + 7] = cube->top_tex()->coord(i % 4).y;
+    // }
 }
 
 }  // namespace sys

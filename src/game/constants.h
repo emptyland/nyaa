@@ -10,7 +10,7 @@ static constexpr int kRegionSize = 1024;
 
 static constexpr int kTerrainMaxLevels = 16;
 
-static constexpr int kTerrainSurfaceLevel = 7;
+static constexpr int kTerrainSurfaceLevel = 0;
 
 static constexpr int kDefaultViewportSize = 50;
 

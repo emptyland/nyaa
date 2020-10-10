@@ -16,7 +16,7 @@ const ZoneEnv kAllZoneEnv[ZoneEnv::kMaxKinds] = {
     {
         ZoneEnv::kPlain,
         "Plain",
-        0.2f,
+        0.5f,
     },
     {
         ZoneEnv::kForest,
@@ -27,6 +27,11 @@ const ZoneEnv kAllZoneEnv[ZoneEnv::kMaxKinds] = {
         ZoneEnv::kSnowfield,
         "Snowfield",
         0.1f,
+    },
+    {
+        ZoneEnv::kMountain,
+        "Mountain",
+        0.2f,
     },
 };
 

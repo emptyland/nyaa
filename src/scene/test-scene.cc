@@ -19,6 +19,7 @@
 #include "system/actor-billboard-render-system.h"
 #include "system/actor-ai-system.h"
 #include "system/impact-checking-system.h"
+#include "system/world-generating-system.h"
 #include "game/game.h"
 #include "game/matrix.h"
 #include "game/entity-grid-set.h"
@@ -36,7 +37,11 @@ void TestScene::Reset() {
     zone_.reset(new com::ZoneComponent());
     com::RegionComponent *region = zone_->mutable_region();
     region->set_global_coord({0, 0});
-    system()->random_zone()->Update(region);
+    system()->world_generator()->Generate(game()->random()->Next(), ZoneEnv::kPlain, zone_.get());
+    //system()->world_generator()
+    // com::RegionComponent *region = zone_->mutable_region();
+    // region->set_global_coord({0, 0});
+    // system()->random_zone()->Update(region);
     for (int i = 0; i < region->plants_size(); i++) {
         // entity_grid_set_->UpdatePlant()
         entity::PlantEntity *plant = system()->entity_allocator()->New<entity::PlantEntity>(region->plant(i));
@@ -188,7 +193,7 @@ void TestScene::Render(double delta) {
 
     system()->zone_render()->RenderTerrain(zone_.get());
 
-    Vector3f view = Vec3(zone_->viewport().center_coord(), kTerrainSurfaceLevel);
+    Vector3f view = Vec3(zone_->viewport().center_coord(), player_->movement().coord().z);
 
     entity::ActorEntity *actor = nullptr;
     // for (int y = 0; y < zone_->viewport().bound().y; y++) {
